@@ -1,105 +1,40 @@
-<!-- index.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- ✅ CSS Critique inline (visible immédiatement) -->
-    <style>
-      /* ===== CRITICAL CSS ===== */
-      :root {
-        --background: 40 25% 97%;
-        --foreground: 30 20% 15%;
-        --primary: 30 60% 45%;
-        --primary-foreground: 40 25% 97%;
-        --accent: 35 55% 48%;
-        --border: 35 15% 85%;
-        --muted: 35 15% 88%;
-      }
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
 
-      * {
-        border-color: hsl(var(--border));
-      }
-
-      body {
-        margin: 0;
-        background-color: hsl(var(--background));
-        color: hsl(var(--foreground));
-        font-family: 'Inter', system-ui, sans-serif;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      h1, h2, h3, h4, .font-display {
-        font-family: 'Cormorant Garamond', Georgia, serif;
-      }
-
-      .gradient-rose {
-        background-image: linear-gradient(
-          135deg,
-          hsl(35 25% 92%) 0%,
-          hsl(30 20% 88%) 50%,
-          hsl(35 30% 85%) 100%
-        );
-      }
-
-      .bg-grid {
-        background-image: radial-gradient(
-          circle at 1px 1px,
-          rgba(200, 180, 160, 0.6) 1px,
-          transparent 0
-        );
-        background-size: 24px 24px;
-      }
-
-      .text-balance {
-        text-wrap: balance;
-      }
-
-      /* Scrollbar (visible immédiatement) */
-      ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: hsl(var(--muted));
-      }
-      ::-webkit-scrollbar-thumb {
-        background: hsl(30 40% 60%);
-        border-radius: 999px;
-        border: 2px solid hsl(var(--muted));
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: hsl(30 50% 45%);
-      }
-    </style>
-    
-    <!-- ✅ Preconnect (3 seulement : Google Fonts + Supabase) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- ✅ Chargement non bloquant des polices -->
+    <!--
+      Polices auto-hébergées : plus aucune requête vers un tiers. Archivo est
+      variable — un seul fichier couvre 400 à 700, d'où l'unique préchargement.
+      Le mono n'est préchargé nulle part : il ne sert qu'aux données, plus bas
+      dans la page.
+    -->
     <link
       rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+      as="font"
+      type="font/woff2"
+      href="/fonts/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLydOxI.woff2"
+      crossorigin
     />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
-      />
-    </noscript>
-    
-    <!-- Titre et description génériques : BusinessConfigProvider les remplace
-         par ceux de l'entreprise dès que la configuration est chargée. -->
+
+    <!--
+      Fond posé avant le chargement du CSS, pour éviter l'éclair blanc entre
+      le premier octet et la feuille de style. Une seule déclaration : tout le
+      reste vit dans src/index.css.
+    -->
+    <style>
+      html { background: hsl(40 14% 97%); }
+      @media (prefers-color-scheme: dark) {
+        html { background: hsl(30 8% 9%); }
+      }
+    </style>
+
+    <!--
+      Titre et description génériques. BusinessConfigProvider les remplace par
+      ceux de l'entreprise dès que la configuration est chargée.
+    -->
     <title>Prise de rendez-vous en ligne</title>
     <meta name="description" content="Réservez votre rendez-vous en ligne." />
   </head>

@@ -1,79 +1,100 @@
+@import './styles/fonts.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Système visuel — éditorial.
+ *
+ * Trois partis pris, tenus partout :
+ *
+ * 1. La structure vient des filets, pas des ombres. Une bordure d'un pixel
+ *    sépare mieux qu'un halo, et ne suggère pas une profondeur qui n'existe
+ *    pas. Aucune ombre portée dans le produit.
+ *
+ * 2. Les angles sont droits. Le rayon vaut zéro sauf exception justifiée
+ *    (pastilles d'état, jetons de couleur), où la forme porte du sens.
+ *
+ * 3. Une seule couleur. Le reste est une échelle de gris chauds. L'accent
+ *    vient de `business_settings` : c'est la seule variable d'identité, donc
+ *    elle doit rester rare pour signifier quelque chose.
+ */
+
 @layer base {
   :root {
-    /* Couleurs de base - Beige chaud */
-    --background: 40 25% 97%;
-    --foreground: 30 20% 15%;
+    /* Papier et encre. Le fond n'est pas blanc : un blanc pur fatigue et
+       trahit l'écran. Le texte n'est pas noir : le noir pur vibre. */
+    --background: 40 14% 97%;
+    --foreground: 30 8% 11%;
 
-    --card: 40 20% 100%;
-    --card-foreground: 30 20% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 30 8% 11%;
 
-    --popover: 40 20% 100%;
-    --popover-foreground: 30 20% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 8% 11%;
 
-    /* Doré cuivré/marron - Couleur primaire */
-    --primary: 30 60% 45%;
-    --primary-foreground: 40 25% 97%;
+    /* Remplacées à l'exécution par les couleurs du client. */
+    --primary: 12 68% 44%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Beige clair */
-    --secondary: 35 20% 90%;
-    --secondary-foreground: 30 25% 20%;
+    --secondary: 40 12% 93%;
+    --secondary-foreground: 30 8% 11%;
 
-    /* ✅ Champagne - Assombri pour meilleur contraste */
-    --muted: 35 15% 88%;
-    --muted-foreground: 30 20% 30%; /* ✅ Plus sombre (était 30 15% 45%) */
+    --muted: 40 12% 93%;
+    --muted-foreground: 30 5% 40%;
 
-    /* Doré accent */
-    --accent: 35 55% 48%;
-    --accent-foreground: 40 25% 97%;
+    --accent: 30 8% 11%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 40 25% 97%;
+    --destructive: 4 66% 44%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 35 15% 85%;
-    --input: 35 15% 85%;
-    --ring: 30 60% 45%;
+    /* Deux valeurs de filet : la règle courante, et celle qui structure. */
+    --border: 30 8% 87%;
+    --border-strong: 30 8% 20%;
+    --input: 30 8% 80%;
+    --ring: 30 8% 11%;
 
-    /* Graphiques */
-    --chart-1: 30 60% 45%;
-    --chart-2: 40 50% 50%;
-    --chart-3: 20 40% 55%;
-    --chart-4: 45 45% 45%;
-    --chart-5: 15 50% 50%;
+    /* Camaïeu de l'accent, pour les graphiques uniquement. */
+    --chart-1: 12 68% 44%;
+    --chart-2: 30 8% 25%;
+    --chart-3: 30 6% 48%;
+    --chart-4: 30 5% 68%;
+    --chart-5: 30 5% 82%;
 
-    --radius: 0.75rem;
+    --radius: 0px;
   }
 
   .dark {
-    --background: 30 20% 10%;
-    --foreground: 40 25% 96%;
-    --card: 30 20% 13%;
-    --card-foreground: 40 25% 96%;
-    --popover: 30 20% 13%;
-    --popover-foreground: 40 25% 96%;
-    
-    /* Doré cuivré plus lumineux pour le mode sombre */
-    --primary: 30 60% 50%;
-    --primary-foreground: 30 20% 10%;
-    
-    --secondary: 30 15% 18%;
-    --secondary-foreground: 40 25% 96%;
-    
-    --muted: 30 15% 22%; /* ✅ Plus clair */
-    --muted-foreground: 40 15% 75%; /* ✅ Plus clair (était 40 10% 70%) */
-    
-    --accent: 35 55% 50%;
-    --accent-foreground: 30 20% 10%;
-    
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 40 30% 99%;
-    
-    --border: 30 15% 22%;
-    --input: 30 15% 22%;
-    --ring: 30 60% 50%;
+    --background: 30 8% 9%;
+    --foreground: 40 14% 94%;
+
+    --card: 30 8% 12%;
+    --card-foreground: 40 14% 94%;
+
+    --popover: 30 8% 12%;
+    --popover-foreground: 40 14% 94%;
+
+    --primary: 12 70% 54%;
+    --primary-foreground: 30 8% 9%;
+
+    --secondary: 30 6% 17%;
+    --secondary-foreground: 40 14% 94%;
+
+    --muted: 30 6% 17%;
+    --muted-foreground: 40 8% 65%;
+
+    --accent: 40 14% 94%;
+    --accent-foreground: 30 8% 9%;
+
+    --destructive: 4 62% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 6% 22%;
+    --border-strong: 40 10% 70%;
+    --input: 30 6% 28%;
+    --ring: 40 14% 94%;
   }
 }
 
@@ -81,102 +102,96 @@
   * {
     @apply border-border;
   }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: Archivo, system-ui, sans-serif;
+    /* Chiffres tabulaires par défaut : prix et horaires s'alignent en colonne
+       sans réglage au cas par cas. */
+    font-feature-settings: 'tnum' 1, 'cv05' 1;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  h1,
-  h2,
-  h3,
-  h4,
-  .font-display {
-    font-family: 'Cormorant Garamond', Georgia, serif;
-  }
-}
 
-@layer utilities {
-  .text-balance {
+  /* Les grandes tailles ont besoin d'un crénage resserré ; les petites, non.
+     Le réglage suit donc l'échelle plutôt que d'être appliqué globalement. */
+  h1, h2, h3 {
+    letter-spacing: -0.022em;
     text-wrap: balance;
   }
-  .bg-grid {
-    background-image: radial-gradient(
-      circle at 1px 1px,
-      hsl(var(--border) / 0.6) 1px,
-      transparent 0
-    );
-    background-size: 24px 24px;
+
+  /* Le focus est visible et carré, comme le reste. Jamais supprimé. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--foreground));
+    outline-offset: 2px;
   }
-  
-  /* Dégradé doré cuivré */
-  .gradient-gold {
-    background-image: linear-gradient(
-      135deg,
-      hsl(35 25% 92%) 0%,
-      hsl(30 20% 88%) 50%,
-      hsl(35 30% 85%) 100%
-    );
+
+  ::selection {
+    background: hsl(var(--foreground));
+    color: hsl(var(--background));
   }
-  
-  /* Dégradé doré intense */
-  .gradient-gold-intense {
-    background-image: linear-gradient(
-      135deg,
-      hsl(30 60% 50%) 0%,
-      hsl(35 55% 45%) 50%,
-      hsl(25 55% 40%) 100%
-    );
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
   }
-  
-  /* Gardé pour compatibilité avec les anciens composants */
-  .gradient-rose {
-    background-image: linear-gradient(
-      135deg,
-      hsl(35 25% 92%) 0%,
-      hsl(30 20% 88%) 50%,
-      hsl(35 30% 85%) 100%
-    );
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
   }
-  
-  .shadow-soft {
-    box-shadow:
-      0 1px 2px hsl(30 20% 12% / 0.04),
-      0 8px 24px hsl(30 20% 12% / 0.06);
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border: 3px solid hsl(var(--background));
   }
-  
-  .shadow-glow {
-    box-shadow: 0 8px 40px hsl(30 60% 45% / 0.25);
-  }
-  
-  .shadow-glow-gold {
-    box-shadow: 0 8px 40px hsl(30 60% 45% / 0.35);
-  }
-  
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
   }
 }
 
-html {
-  scroll-behavior: smooth;
+@layer components {
+  /* Libellé en petites capitales espacées — sert de sur-titre de section et
+     d'étiquette de champ. Le mono le sépare nettement du texte courant. */
+  .label-mono {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    @apply text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-muted-foreground;
+  }
+
+  /* Chiffres à comparer : prix, durées, horaires. */
+  .figure {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* Filet structurant, plus appuyé que la bordure courante. */
+  .rule-strong {
+    border-color: hsl(var(--border-strong));
+  }
+
+  /* Le trait qui se dessine au survol d'un lien, de gauche à droite. */
+  .link-underline {
+    @apply relative inline-block;
+  }
+  .link-underline::after {
+    content: '';
+    @apply absolute bottom-[-2px] left-0 h-px w-full origin-right scale-x-0 bg-current transition-transform duration-300;
+  }
+  .link-underline:hover::after {
+    @apply origin-left scale-x-100;
+  }
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-}
-::-webkit-scrollbar-thumb {
-  background: hsl(30 40% 60%);
-  border-radius: 999px;
-  border: 2px solid hsl(var(--muted));
-}
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(30 50% 45%);
+/* Le mouvement se limite à la réponse au geste. Rien n'apparaît en fondu au
+   défilement : c'est le tic le plus reconnaissable des pages générées, et il
+   retarde la lecture sans rien apporter. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
