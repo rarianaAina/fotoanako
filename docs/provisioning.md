@@ -23,6 +23,7 @@ Dans l'éditeur SQL du dashboard, **dans cet ordre** :
 | `supabase/migrations/0002_rls.sql` | Politiques Row Level Security |
 | `supabase/migrations/0003_booking_rpc.sql` | Réservation publique, synchronisation des rappels |
 | `supabase/migrations/0004_storage.sql` | Bucket d'images et ses politiques |
+| `supabase/migrations/0005_auth_bootstrap.sql` | Création du profil, promotion administrateur |
 | `supabase/seed.sql` | Singletons, moyens de paiement, créneaux |
 | `supabase/presets/<métier>.sql` | Vocabulaire, modules et catégories du secteur |
 
@@ -48,16 +49,25 @@ l'administration, sans SQL.
 
 ## 3. Créer l'administrateur
 
-Le compte se crée depuis l'application, puis se promeut **une seule fois**
-en SQL :
+Créez le compte, indifféremment depuis la page d'inscription de
+l'application ou depuis *Authentication → Users* du dashboard. Le mot de
+passe est celui que vous choisissez à ce moment-là : il n'en existe aucun par
+défaut.
+
+Le profil applicatif est créé automatiquement. Reste la promotion, **une
+seule fois**, depuis l'éditeur SQL :
 
 ```sql
-UPDATE public.users SET role = 'admin' WHERE email = 'client@exemple.fr';
+SELECT public.promote_to_admin('client@exemple.fr');
 ```
 
+Une adresse inconnue lève une erreur explicite. N'utilisez pas un `UPDATE`
+direct : s'il ne correspond à aucune ligne, il réussit en n'en modifiant
+aucune, et l'éditeur affiche un succès trompeur.
+
 La promotion ne peut pas passer par l'application : un déclencheur interdit à
-un compte de s'attribuer le rôle `admin`. C'est volontaire — sans cela,
-n'importe quel visiteur inscrit deviendrait administrateur.
+un compte de s'attribuer le rôle `admin`. Sans cela, n'importe quel visiteur
+inscrit deviendrait administrateur.
 
 ## 4. Déployer
 

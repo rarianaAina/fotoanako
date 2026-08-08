@@ -54,6 +54,9 @@ redéployable. À appliquer dans l'ordre sur un projet Supabase vierge :
 ```
 supabase/migrations/0001_schema.sql   -- tables, index, déclencheurs
 supabase/migrations/0002_rls.sql      -- politiques Row Level Security
+supabase/migrations/0003_booking_rpc.sql  -- réservation publique, rappels
+supabase/migrations/0004_storage.sql      -- bucket d'images
+supabase/migrations/0005_auth_bootstrap.sql -- profils et administrateur
 supabase/seed.sql                     -- données initiales selon le preset métier
 supabase/presets/<métier>.sql         -- vocabulaire, modules et catégories
 ```

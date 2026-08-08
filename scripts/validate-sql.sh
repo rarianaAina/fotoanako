@@ -43,7 +43,10 @@ run <<'SQL'
 CREATE SCHEMA auth;
 CREATE SCHEMA storage;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE TABLE auth.users (id uuid PRIMARY KEY DEFAULT gen_random_uuid());
+CREATE TABLE auth.users (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email text,
+  raw_user_meta_data jsonb DEFAULT '{}'::jsonb);
 CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT NULL::uuid $$;
 CREATE TABLE storage.buckets (
   id text PRIMARY KEY, name text, public boolean,
@@ -137,11 +140,44 @@ END $$;
 SQL
 echo "  ✅ tarif relu en base, fiche client, rappel, anti-doublon, annulation"
 
+echo "▸ Amorçage de l'administrateur"
+run <<'SQL' >/dev/null
+DO $$
+DECLARE v_role text; v_count int;
+BEGIN
+  -- Un compte créé hors de l'application (dashboard Supabase)
+  INSERT INTO auth.users (email, raw_user_meta_data)
+  VALUES ('patron@exemple.fr', '{"name": "Patron"}'::jsonb);
+
+  -- Le profil doit exister sans intervention
+  SELECT count(*) INTO v_count FROM public.users WHERE email = 'patron@exemple.fr';
+  IF v_count <> 1 THEN RAISE EXCEPTION 'Profil non créé par le déclencheur'; END IF;
+
+  -- ...et en simple client
+  SELECT role INTO v_role FROM public.users WHERE email = 'patron@exemple.fr';
+  IF v_role <> 'client' THEN RAISE EXCEPTION 'Rôle initial incorrect : %', v_role; END IF;
+
+  -- La promotion depuis l'éditeur SQL doit aboutir
+  PERFORM public.promote_to_admin('patron@exemple.fr');
+  SELECT role INTO v_role FROM public.users WHERE email = 'patron@exemple.fr';
+  IF v_role <> 'admin' THEN RAISE EXCEPTION 'Promotion sans effet : %', v_role; END IF;
+
+  -- Une adresse inconnue doit lever une erreur, pas réussir en silence
+  BEGIN
+    PERFORM public.promote_to_admin('personne@exemple.fr');
+    RAISE EXCEPTION 'Une adresse inconnue aurait dû être refusée';
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLERRM LIKE '%aurait dû%' THEN RAISE; END IF;
+  END;
+END $$;
+SQL
+echo "  ✅ profil créé automatiquement, promotion effective, adresse inconnue refusée"
+
 echo "▸ Remise à zéro, puis reconstruction complète"
 # Un objet et un compte préexistants, pour que les garde-fous soient sollicités.
 run <<'SQL' >/dev/null
 INSERT INTO storage.objects (bucket_id, name) VALUES ('images', 'gallery/vieux.webp');
-INSERT INTO auth.users DEFAULT VALUES;
+INSERT INTO auth.users (email) VALUES ('ancien@exemple.fr');
 SQL
 run -f "$REPO/supabase/reset.sql" >/dev/null
 for f in "$REPO"/supabase/migrations/*.sql "$REPO"/supabase/seed.sql \
