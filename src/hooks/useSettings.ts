@@ -1,46 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
-import type { SalonSettings } from '@/types';
-import { settingsService } from '@/services/settingsService';
+import { useBusinessConfig } from '@/contexts/BusinessConfigContext';
+import type { BusinessSettings, UpdateBusinessSettingsDto } from '@/types';
 
 interface UseSettingsReturn {
-  settings: SalonSettings | null;
+  settings: BusinessSettings;
   loading: boolean;
   error: string | null;
-  updateSettings: (data: Partial<SalonSettings>) => Promise<void>;
+  updateSettings: (data: UpdateBusinessSettingsDto) => Promise<void>;
   refresh: () => Promise<void>;
 }
 
+/**
+ * Accès aux réglages de l'entreprise.
+ *
+ * Lit le contexte partagé au lieu de déclencher sa propre requête : la ligne
+ * `business_settings` est un singleton, et l'ancienne implémentation la
+ * rechargeait dans chacun des composants qui en avait besoin.
+ *
+ * `settings` n'est jamais `null` — en cas d'échec, les valeurs de repli
+ * prennent le relais et `error` est renseigné.
+ */
 export function useSettings(): UseSettingsReturn {
-  const [settings, setSettings] = useState<SalonSettings | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data = await settingsService.get();
-      console.log('✅ Settings chargés:', data);
-      setSettings(data);
-      setError(null);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur de chargement');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const updateSettings = async (data: Partial<SalonSettings>) => {
-    const updated = await settingsService.update(data);
-    setSettings(updated);
-  };
-
-  return {
-    settings,
-    loading,
-    error,
-    updateSettings,
-    refresh: load,
-  };
+  const { settings, loading, error, update, refresh } = useBusinessConfig();
+  return { settings, loading, error, updateSettings: update, refresh };
 }

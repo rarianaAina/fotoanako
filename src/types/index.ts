@@ -25,7 +25,13 @@ export type {
 } from './service';
 export type { Review, CreateReviewDto } from './review';
 export type { GalleryItem, CreateGalleryItemDto } from './gallery';
-export type { SalonSettings, BusinessHours, ColorPreset } from './settings';
+export type {
+  BusinessSettings,
+  UpdateBusinessSettingsDto,
+  BusinessHours,
+  ColorPreset,
+  CurrencyPosition,
+} from './settings';
 export type {
   ChartDataPoint,
   ServicePopularity,

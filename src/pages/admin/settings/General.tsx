@@ -9,38 +9,57 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useSettings } from '@/hooks/useSettings';
 import { uploadImage } from '@/services/storageService';
-import type { SalonSettings } from '@/types';
+import type { BusinessSettings } from '@/types';
 
-// ✅ Logo par défaut (si aucun logo n'est configuré)
-const DEFAULT_LOGO = 'https://tzgcyehdjgqxljjttflj.supabase.co/storage/v1/object/public/images/logos/logo.webp';
+/**
+ * Champs pilotés par cet écran. Énumérés explicitement plutôt que dérivés par
+ * exclusion : les réglages de couleurs, d'horaires, de réseaux sociaux, de
+ * modules et de vocabulaire ont chacun leur propre page, et un `...rest`
+ * finirait par les écraser au premier champ ajouté au modèle.
+ */
+type GeneralInfo = Pick<
+  BusinessSettings,
+  'name' | 'tagline' | 'description' | 'address' | 'phone' | 'whatsapp' | 'email' | 'website'
+>;
+
+const EMPTY_INFO: GeneralInfo = {
+  name: '',
+  tagline: '',
+  description: '',
+  address: '',
+  phone: '',
+  whatsapp: '',
+  email: '',
+  website: '',
+};
 
 export default function GeneralSettings() {
   const { settings, updateSettings } = useSettings();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [info, setInfo] = useState<Omit<SalonSettings, 'hours'>>({
-    name: '',
-    tagline: '',
-    address: '',
-    phone: '',
-    whatsapp: '',
-    facebook: '',
-    instagram: '',
-    email: '',
-  });
-  const [logoUrl, setLogoUrl] = useState<string>(DEFAULT_LOGO);
+  const [info, setInfo] = useState<GeneralInfo>(EMPTY_INFO);
+  // Aucun logo par défaut : chaque déploiement fournit le sien, et l'initiale
+  // du nom sert de repli.
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!settings) return;
-    const { hours: _h, primaryColor: _p, accentColor: _a, logoUrl: _l, updatedAt: _u, id: _i, ...rest } = settings;
-    setInfo(rest);
-    setLogoUrl(settings.logoUrl || DEFAULT_LOGO);
+    setInfo({
+      name: settings.name,
+      tagline: settings.tagline,
+      description: settings.description,
+      address: settings.address,
+      phone: settings.phone,
+      whatsapp: settings.whatsapp,
+      email: settings.email,
+      website: settings.website ?? '',
+    });
+    setLogoUrl(settings.logoUrl ?? null);
   }, [settings]);
 
   const save = async () => {
-    await updateSettings({ ...info, logoUrl });
+    await updateSettings({ ...info, logoUrl: logoUrl ?? undefined });
     toast.success('Paramètres enregistrés.');
   };
 
@@ -101,8 +120,8 @@ export default function GeneralSettings() {
 
   // ✅ Supprimer le logo (retour au défaut)
   const handleRemoveLogo = async () => {
-    setLogoUrl(DEFAULT_LOGO);
-    toast.success('Logo supprimé, retour au logo par défaut');
+    setLogoUrl(null);
+    toast.success('Logo supprimé.');
   };
 
   return (
@@ -111,12 +130,12 @@ export default function GeneralSettings() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Store className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Informations du salon</CardTitle>
+            <CardTitle className="font-display text-lg">Informations de l’entreprise</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="name">Nom du salon</Label>
+            <Label htmlFor="name">Nom de l’entreprise</Label>
             <Input id="name" value={info.name} onChange={(e) => setInfo({ ...info, name: e.target.value })} />
           </div>
           <div className="space-y-1.5">
@@ -144,16 +163,16 @@ export default function GeneralSettings() {
               <div className="relative h-24 w-24 overflow-hidden rounded-2xl border border-border/60 bg-secondary/30">
                 {(previewUrl || logoUrl) ? (
                   <img
-                    src={previewUrl || logoUrl}
+                    src={previewUrl ?? logoUrl ?? undefined}
                     alt="Logo"
                     className="h-full w-full object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-4xl font-display text-muted-foreground">
-                    {info.name[0] || 'N'}
+                    {info.name[0]?.toUpperCase() ?? '?'}
                   </div>
                 )}
-                {logoUrl !== DEFAULT_LOGO && !previewUrl && (
+                {logoUrl && !previewUrl && (
                   <button
                     onClick={handleRemoveLogo}
                     className="absolute -right-1 -top-1 rounded-full bg-destructive p-0.5 text-destructive-foreground hover:bg-destructive/90"
