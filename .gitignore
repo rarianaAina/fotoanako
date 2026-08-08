@@ -28,3 +28,6 @@ dist-ssr
 # Env local
 .env
 .env.local
+
+# Artefacts TypeScript
+*.tsbuildinfo
