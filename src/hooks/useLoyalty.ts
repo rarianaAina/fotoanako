@@ -1,7 +1,7 @@
 // hooks/useLoyalty.ts
 import { useCallback, useEffect, useState } from 'react';
 import { loyaltyService } from '@/services/loyaltyService';
-import type { LoyaltySettings } from '@/types';
+import type { LoyaltySettings, LoyaltySettingsUpdateDto } from '@/types';
 
 interface UseLoyaltyReturn {
   points: number;
@@ -9,7 +9,7 @@ interface UseLoyaltyReturn {
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
-  updateSettings: (pointsPerVisit: number) => Promise<void>;
+  updateSettings: (data: LoyaltySettingsUpdateDto) => Promise<void>;
 }
 
 export function useLoyalty(userId?: string): UseLoyaltyReturn {
@@ -44,13 +44,8 @@ export function useLoyalty(userId?: string): UseLoyaltyReturn {
     load();
   }, [load]);
 
-  const updateSettings = async (pointsPerVisit: number) => {
-    try {
-      const updated = await loyaltyService.updateSettings(pointsPerVisit);
-      setSettings(updated);
-    } catch (e) {
-      throw e;
-    }
+  const updateSettings = async (data: LoyaltySettingsUpdateDto) => {
+    setSettings(await loyaltyService.updateSettings(data));
   };
 
   return {

@@ -341,6 +341,8 @@ CREATE TRIGGER appointment_settings_touch BEFORE UPDATE ON public.appointment_se
 CREATE TABLE IF NOT EXISTS public.loyalty_settings (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   points_per_visit integer NOT NULL DEFAULT 10 CHECK (points_per_visit >= 0),
+  reward_threshold integer NOT NULL DEFAULT 500 CHECK (reward_threshold > 0),
+  reward_label     text NOT NULL DEFAULT 'récompense',
   created_at       timestamptz NOT NULL DEFAULT now(),
   updated_at       timestamptz NOT NULL DEFAULT now()
 );

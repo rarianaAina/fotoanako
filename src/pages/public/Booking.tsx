@@ -23,6 +23,7 @@ import { toDateString } from '@/utils/date';
 import { uploadImage } from '@/services/storageService';
 import type { BusinessHours, ReferenceImage } from '@/types';
 import { useMoney } from '@/hooks/useMoney';
+import { useModules } from '@/hooks/useModules';
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -46,6 +47,7 @@ const formatDuration = (minutes: number): string => {
 
 export default function Booking() {
   const money = useMoney();
+  const isEnabled = useModules();
   // Dépend du formateur du déploiement, donc défini dans le composant.
   const displayPrice = (price: number): string => (price === 0 ? 'Devis' : money(price));
 
@@ -220,7 +222,9 @@ export default function Booking() {
     (step === 1 && selectedServiceIds.length > 0) ||
     (step === 2 && !!date) ||
     (step === 3 && !!time) ||
-    (step === 4 && !!(info.name && info.phone && info.email && paymentMethodId));
+    (step === 4 &&
+      !!(info.name && info.phone && info.email) &&
+      (!isEnabled('payments') || !!paymentMethodId));
 
   const next = async () => {
     if (!canNext) return;
@@ -280,6 +284,12 @@ export default function Booking() {
   const prev = () => setStep((s) => Math.max(1, s - 1) as Step);
 
   const toggleService = (serviceId: string) => {
+    // Module multiServiceBooking désactivé : le choix se substitue au
+    // précédent au lieu de s'y ajouter.
+    if (!isEnabled('multiServiceBooking')) {
+      setSelectedServiceIds(prev => (prev[0] === serviceId ? [] : [serviceId]));
+      return;
+    }
     setSelectedServiceIds(prev =>
       prev.includes(serviceId)
         ? prev.filter(id => id !== serviceId)
@@ -619,6 +629,7 @@ export default function Booking() {
                       <Input id="email" type="email" value={info.email} onChange={(e) => setInfo({ ...info, email: e.target.value })} placeholder="vous@email.com" />
                     </div>
                     
+                    {isEnabled('payments') && (
                     <div className="space-y-1.5">
                       <Label htmlFor="payment">Moyen de paiement *</Label>
                       <Select value={paymentMethodId} onValueChange={setPaymentMethodId}>
@@ -645,6 +656,7 @@ export default function Booking() {
                         </SelectContent>
                       </Select>
                     </div>
+                    )}
 
                     {/* Images de référence */}
                     <div className="space-y-6 border-t border-border/60 pt-4">

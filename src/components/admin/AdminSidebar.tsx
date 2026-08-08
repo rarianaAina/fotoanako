@@ -21,20 +21,39 @@ import { useReminders } from '@/hooks/useReminders';
 import { toast } from 'sonner';
 import { cn } from '@/utils/cn';
 import { useSettings } from '@/hooks/useSettings';
+import { useModules } from '@/hooks/useModules';
+import { useLabels } from '@/hooks/useLabels';
+import type { ModuleKey } from '@/config/modules';
+import type { LabelKey } from '@/config/labels';
 
-const items = [
+// Les libellés dépendant du vocabulaire sont résolus dans le composant.
+const ITEMS: {
+  to: string;
+  label?: string;
+  labelKey?: LabelKey;
+  icon: typeof LayoutDashboard;
+  end?: boolean;
+  badge?: boolean;
+  module?: ModuleKey;
+}[] = [
   { to: '/admin', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
-  { to: '/admin/rendez-vous', label: 'Rendez-vous', icon: CalendarDays },
+  { to: '/admin/rendez-vous', labelKey: 'booking', icon: CalendarDays },
   { to: '/admin/calendrier', label: 'Calendrier', icon: CalendarRange },
-  { to: '/admin/clientes', label: 'Clientes', icon: Users },
-  { to: '/admin/prestations', label: 'Prestations', icon: Sparkles },
+  { to: '/admin/clientes', labelKey: 'customer', icon: Users },
+  { to: '/admin/prestations', labelKey: 'service', icon: Sparkles },
   { to: '/admin/statistiques', label: 'Statistiques', icon: BarChart3 },
-  { to: '/admin/notifications', label: 'Notifications', icon: Bell, badge: true },
+  { to: '/admin/notifications', label: 'Notifications', icon: Bell, badge: true, module: 'reminders' },
   { to: '/admin/parametres', label: 'Paramètres', icon: Settings },
 ];
 
 export default function AdminSidebar() {
   const { settings } = useSettings();
+  const isEnabled = useModules();
+  const t = useLabels();
+  const items = ITEMS.filter((i) => !i.module || isEnabled(i.module)).map((i) => ({
+    ...i,
+    label: i.labelKey ? t(i.labelKey, 'many') : (i.label as string),
+  }));
   const [open, setOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();

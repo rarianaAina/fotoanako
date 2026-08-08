@@ -43,6 +43,7 @@ import { cn } from '@/utils/cn';
 import type { Appointment } from '@/types';
 import { useMoney } from '@/hooks/useMoney';
 import { useSettings } from '@/hooks/useSettings';
+import { useModules } from '@/hooks/useModules';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -58,6 +59,7 @@ const statusIcon: Record<string, typeof CheckCircle2> = {
 };
 
 export default function ClientSpace() {
+  const isEnabled = useModules();
   const { settings } = useSettings();
   const money = useMoney();
   const { user, logout } = useAuth();
@@ -65,7 +67,13 @@ export default function ClientSpace() {
   const { appointments, updateStatus, refresh } = useAppointments();
   const { services } = useNailServices();
   const { settings: appointmentSettings } = useAppointmentSettings();
-  const { points: loyaltyPoints, loading: loadingPoints } = useLoyalty(user?.id);
+  const {
+    points: loyaltyPoints,
+    settings: loyaltySettings,
+    loading: loadingPoints,
+  } = useLoyalty(user?.id);
+  const rewardThreshold = loyaltySettings?.rewardThreshold ?? 500;
+  const rewardLabel = loyaltySettings?.rewardLabel ?? 'récompense';
   const [cancellingAppointment, setCancellingAppointment] = useState<Appointment | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -216,7 +224,9 @@ export default function ClientSpace() {
             { label: 'Rendez-vous à venir', value: String(upcoming.length), icon: Clock, color: 'text-primary' },
             { label: 'Visites totales', value: String(visits), icon: Heart, color: 'text-rose-500' },
             { label: 'Total dépensé', value: money(totalSpent), icon: Wallet, color: 'text-accent' },
-            { label: 'Points fidélité', value: loadingPoints ? '...' : String(loyaltyPoints), icon: Gift, color: 'text-emerald-500' },
+            ...(isEnabled('loyalty')
+              ? [{ label: 'Points fidélité', value: loadingPoints ? '…' : String(loyaltyPoints), icon: Gift, color: 'text-emerald-500' }]
+              : []),
           ].map((s, i) => (
             <motion.div key={s.label} {...fadeUp} transition={{ delay: i * 0.08 }}>
               <Card className="border-border/60 shadow-soft">
@@ -233,36 +243,43 @@ export default function ClientSpace() {
         </div>
 
         {/* Loyalty progress */}
-        <motion.div {...fadeUp} transition={{ delay: 0.2 }}>
-          <Card className="overflow-hidden border-border/60 bg-gradient-to-br from-primary/5 to-accent/5 shadow-soft">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary">
-                    <Gift className="h-6 w-6" />
-                  </span>
-                  <div>
-                    <p className="font-display text-lg font-semibold">Programme fidélité</p>
-                    <p className="text-sm text-muted-foreground">
-                      {loadingPoints ? '...' : `${loyaltyPoints} points`} • Plus que {Math.max(0, 500 - loyaltyPoints)} points avant votre soin offert
-                    </p>
+        {isEnabled('loyalty') && (
+          <motion.div {...fadeUp} transition={{ delay: 0.2 }}>
+            <Card className="overflow-hidden border-border/60 bg-gradient-to-br from-primary/5 to-accent/5 shadow-soft">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary">
+                      <Gift className="h-6 w-6" />
+                    </span>
+                    <div>
+                      <p className="font-display text-lg font-semibold">Programme fidélité</p>
+                      <p className="text-sm text-muted-foreground">
+                        {loadingPoints ? '…' : `${loyaltyPoints} points`} • Plus que{' '}
+                        {Math.max(0, rewardThreshold - loyaltyPoints)} points avant votre {rewardLabel}
+                      </p>
+                    </div>
                   </div>
+                  {/* Affichait « Gold » pour tout le monde, sans niveau
+                      correspondant en base. Le compteur est plus honnête. */}
+                  <Badge className="gap-1 rounded-full bg-primary text-primary-foreground">
+                    <Star className="h-3 w-3 fill-current" />
+                    {loyaltyPoints} / {rewardThreshold}
+                  </Badge>
                 </div>
-                <Badge className="gap-1 rounded-full bg-primary text-primary-foreground">
-                  <Star className="h-3 w-3 fill-current" /> Gold
-                </Badge>
-              </div>
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min(100, (loyaltyPoints / 500) * 100)}%` }}
-                  transition={{ duration: 1, ease: 'easeOut' }}
-                  className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(100, (loyaltyPoints / rewardThreshold) * 100)}%` }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                    className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+        )}
 
         {/* Upcoming appointments */}
         <motion.div {...fadeUp} transition={{ delay: 0.25 }}>

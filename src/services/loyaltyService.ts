@@ -1,9 +1,23 @@
 import { supabase } from '@/lib/supabase';
 
-export interface LoyaltySettings {
+import type { LoyaltySettings, LoyaltySettingsUpdateDto } from '@/types';
+
+interface LoyaltySettingsRow {
   id: string;
-  pointsPerVisit: number;
-  updatedAt?: string;
+  points_per_visit: number;
+  reward_threshold: number;
+  reward_label: string;
+  updated_at: string | null;
+}
+
+function rowToSettings(r: LoyaltySettingsRow): LoyaltySettings {
+  return {
+    id: r.id,
+    pointsPerVisit: r.points_per_visit,
+    rewardThreshold: r.reward_threshold,
+    rewardLabel: r.reward_label,
+    updatedAt: r.updated_at ?? undefined,
+  };
 }
 
 export const loyaltyService = {
@@ -49,22 +63,19 @@ export const loyaltyService = {
         .single();
 
       if (createError) throw createError;
-      return {
-        id: created.id,
-        pointsPerVisit: created.points_per_visit,
-        updatedAt: created.updated_at,
-      };
+      return rowToSettings(created as LoyaltySettingsRow);
     }
 
-    return {
-      id: data.id,
-      pointsPerVisit: data.points_per_visit,
-      updatedAt: data.updated_at,
-    };
+    return rowToSettings(data as LoyaltySettingsRow);
   },
 
   // Mettre à jour les paramètres de fidélité
-  async updateSettings(pointsPerVisit: number): Promise<LoyaltySettings> {
+  async updateSettings(data: LoyaltySettingsUpdateDto): Promise<LoyaltySettings> {
+    const row: Record<string, unknown> = {};
+    if (data.pointsPerVisit !== undefined) row.points_per_visit = data.pointsPerVisit;
+    if (data.rewardThreshold !== undefined) row.reward_threshold = data.rewardThreshold;
+    if (data.rewardLabel !== undefined) row.reward_label = data.rewardLabel;
+
     const { data: existing } = await supabase
       .from('loyalty_settings')
       .select('id')
@@ -73,30 +84,22 @@ export const loyaltyService = {
     if (existing) {
       const { data, error } = await supabase
         .from('loyalty_settings')
-        .update({ points_per_visit: pointsPerVisit })
+        .update(row)
         .eq('id', existing.id)
         .select()
         .single();
 
       if (error) throw error;
-      return {
-        id: data.id,
-        pointsPerVisit: data.points_per_visit,
-        updatedAt: data.updated_at,
-      };
+      return rowToSettings(data as LoyaltySettingsRow);
     } else {
       const { data, error } = await supabase
         .from('loyalty_settings')
-        .insert({ points_per_visit: pointsPerVisit })
+        .insert(row)
         .select()
         .single();
 
       if (error) throw error;
-      return {
-        id: data.id,
-        pointsPerVisit: data.points_per_visit,
-        updatedAt: data.updated_at,
-      };
+      return rowToSettings(data as LoyaltySettingsRow);
     }
   },
 };

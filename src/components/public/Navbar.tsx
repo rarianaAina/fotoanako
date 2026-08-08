@@ -5,18 +5,23 @@ import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/hooks/useSettings';
+import { useModules } from '@/hooks/useModules';
+import type { ModuleKey } from '@/config/modules';
 
 
-const links = [
+// `module` absent = lien toujours visible.
+const LINKS: { to: string; label: string; module?: ModuleKey }[] = [
   { to: '/', label: 'Accueil' },
   { to: '/prestations', label: 'Prestations' },
-  { to: '/galerie', label: 'Galerie' },
+  { to: '/galerie', label: 'Galerie', module: 'gallery' },
   { to: '/contact', label: 'Contact' },
-  { to: '/disponibilites', label: 'Disponibilités' },
+  { to: '/disponibilites', label: 'Disponibilités', module: 'publicAvailability' },
 ];
 
 export default function Navbar() {
   const { settings } = useSettings();
+  const isEnabled = useModules();
+  const links = LINKS.filter((l) => !l.module || isEnabled(l.module));
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();

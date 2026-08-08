@@ -2,39 +2,54 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Store, Clock, Share2, CreditCard, Calendar, Bell, Palette, Tag, Gift, Sparkles, Image,
+  ToggleLeft, Languages, Globe,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { useModules } from '@/hooks/useModules';
+import type { ModuleKey } from '@/config/modules';
 
-const SECTIONS = [
+/** `module` absent = section toujours disponible. */
+const SECTIONS: {
+  id: string;
+  label: string;
+  icon: typeof Store;
+  path: string;
+  module?: ModuleKey;
+}[] = [
   { id: 'general', label: 'Général', icon: Store, path: '/admin/parametres/general' },
   { id: 'hours', label: 'Horaires', icon: Clock, path: '/admin/parametres/horaires' },
   { id: 'social', label: 'Réseaux sociaux', icon: Share2, path: '/admin/parametres/reseaux' },
-  { id: 'payment', label: 'Paiements', icon: CreditCard, path: '/admin/parametres/paiements' },
-  { id: 'cancellation', label: 'Annulation', icon: Calendar, path: '/admin/parametres/annulation' },
-  { id: 'reminders', label: 'Rappels', icon: Bell, path: '/admin/parametres/rappels' },
-  { id: 'loyalty', label: 'Fidélité', icon: Gift, path: '/admin/parametres/fidelite' },
   { id: 'colors', label: 'Couleurs', icon: Palette, path: '/admin/parametres/couleurs' },
+  { id: 'regional', label: 'Devise et région', icon: Globe, path: '/admin/parametres/regional' },
+  { id: 'vocabulary', label: 'Vocabulaire', icon: Languages, path: '/admin/parametres/vocabulaire' },
+  { id: 'modules', label: 'Modules', icon: ToggleLeft, path: '/admin/parametres/modules' },
   { id: 'categories', label: 'Catégories', icon: Tag, path: '/admin/parametres/categories' },
   { id: 'timeslots', label: 'Créneaux', icon: Clock, path: '/admin/parametres/creneaux' },
-  { id: 'informations', label: 'Infos spéciales', icon: Sparkles, path: '/admin/parametres/informations' },
-  { id: 'galerie', label: 'Galerie', icon: Image, path: '/admin/parametres/galerie' },
+  { id: 'cancellation', label: 'Annulation', icon: Calendar, path: '/admin/parametres/annulation' },
+  { id: 'payment', label: 'Paiements', icon: CreditCard, path: '/admin/parametres/paiements', module: 'payments' },
+  { id: 'reminders', label: 'Rappels', icon: Bell, path: '/admin/parametres/rappels', module: 'reminders' },
+  { id: 'loyalty', label: 'Fidélité', icon: Gift, path: '/admin/parametres/fidelite', module: 'loyalty' },
+  { id: 'informations', label: 'Infos spéciales', icon: Sparkles, path: '/admin/parametres/informations', module: 'specialInfos' },
+  { id: 'galerie', label: 'Galerie', icon: Image, path: '/admin/parametres/galerie', module: 'gallery' },
 ];
 
 export default function SettingsLayout() {
   const location = useLocation();
+  const isEnabled = useModules();
+  const sections = SECTIONS.filter((s) => !s.module || isEnabled(s.module));
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl font-semibold">Paramètres</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Personnalisez les informations et l'apparence de votre salon.
+          Personnalisez les informations et l'apparence de votre site.
         </p>
       </div>
 
       {/* Navigation */}
       <div className="flex flex-wrap gap-2 border-b border-border/60 pb-4">
-        {SECTIONS.map((section) => {
+        {sections.map((section) => {
           const Icon = section.icon;
           return (
             <NavLink

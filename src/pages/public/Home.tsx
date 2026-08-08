@@ -20,6 +20,7 @@ import { supabase } from '@/lib/supabase';
 import { useSpecialInfos } from '@/hooks/useSpecialInfos';
 import { useMoney } from '@/hooks/useMoney';
 import { useLabels } from '@/hooks/useLabels';
+import { useModules } from '@/hooks/useModules';
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -40,6 +41,7 @@ const formatDuration = (minutes: number): string => {
 export default function Home() {
   const money = useMoney();
   const t = useLabels();
+  const isEnabled = useModules();
   const { services } = useNailServices();
   const { settings } = useSettings();
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
@@ -293,59 +295,64 @@ export default function Home() {
         </div>
       </section>
 
-      {/* GALERIE */}
-      <section className="bg-secondary/40 py-20 sm:py-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
-            <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary">
-              Galerie
-            </p>
-            <h2 className="mt-3 font-display text-4xl font-semibold text-foreground sm:text-5xl">
-              Nos plus belles réalisations
-            </h2>
-          </motion.div>
+      {isEnabled('gallery') && (
+        <>
+        {/* GALERIE */}
+        <section className="bg-secondary/40 py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
+              <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary">
+                Galerie
+              </p>
+              <h2 className="mt-3 font-display text-4xl font-semibold text-foreground sm:text-5xl">
+                Nos plus belles réalisations
+              </h2>
+            </motion.div>
 
-          {loadingGallery ? (
-            <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {[...Array(8)].map((_, i) => (
-                <div
-                  key={i}
-                  className="aspect-square animate-pulse rounded-2xl bg-secondary"
-                />
-              ))}
-            </div>
-          ) : galleryItems.length === 0 ? (
-            <div className="mt-14 text-center text-muted-foreground">
-              <p>Aucune image dans la galerie pour le moment.</p>
-            </div>
-          ) : (
-            <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {galleryItems.slice(0, 8).map((g, i) => (
-                <motion.div
-                  key={g.id}
-                  {...fadeUp}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="group relative overflow-hidden rounded-2xl shadow-soft aspect-square"
-                >
-                  <img
-                    src={g.image}
-                    alt={g.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    loading="lazy"
-                    decoding="async"
+            {loadingGallery ? (
+              <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square animate-pulse rounded-2xl bg-secondary"
                   />
-                  <div className="absolute inset-0 flex items-end bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
-                    <div className="p-4 text-white">
-                      <p className="text-xs uppercase tracking-wider text-white/80">{g.category}</p>
-                      <p className="font-display text-lg font-semibold">{g.title}</p>
+                ))}
+              </div>
+            ) : galleryItems.length === 0 ? (
+              <div className="mt-14 text-center text-muted-foreground">
+                <p>Aucune image dans la galerie pour le moment.</p>
+              </div>
+            ) : (
+              <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {galleryItems.slice(0, 8).map((g, i) => (
+                  <motion.div
+                    key={g.id}
+                    {...fadeUp}
+                    transition={{ duration: 0.4, delay: i * 0.05 }}
+                    className="group relative overflow-hidden rounded-2xl shadow-soft aspect-square"
+                  >
+                    <img
+                      src={g.image}
+                      alt={g.title}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div className="absolute inset-0 flex items-end bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
+                      <div className="p-4 text-white">
+                        <p className="text-xs uppercase tracking-wider text-white/80">{g.category}</p>
+                        <p className="font-display text-lg font-semibold">{g.title}</p>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        </>
+      )}
 
       {/* COORDONNÉES */}
       <section className="py-20 sm:py-28">

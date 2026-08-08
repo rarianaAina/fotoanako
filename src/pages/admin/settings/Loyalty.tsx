@@ -5,85 +5,48 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase';
-
-interface LoyaltySettings {
-  id: string;
-  points_per_euro: number;
-  updated_at: string;
-}
+import { useLoyalty } from '@/hooks/useLoyalty';
+import { useLowerLabel } from '@/hooks/useLabels';
 
 export default function LoyaltySettings() {
-  const [settings, setSettings] = useState<LoyaltySettings | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [pointsPerEuro, setPointsPerEuro] = useState<number>(1);
+  const { settings, loading, updateSettings } = useLoyalty();
+  const customer = useLowerLabel('customer');
 
-  // Charger les paramètres
+  const [pointsPerVisit, setPointsPerVisit] = useState(10);
+  const [rewardThreshold, setRewardThreshold] = useState(500);
+  const [rewardLabel, setRewardLabel] = useState('récompense');
+  const [saving, setSaving] = useState(false);
+
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('loyalty_settings')
-          .select('*')
-          .maybeSingle();
-
-        if (error) throw error;
-
-        if (data) {
-          setSettings(data);
-          setPointsPerEuro(data.points_per_euro);
-        } else {
-          // Créer les paramètres par défaut
-          const { data: created, error: createError } = await supabase
-            .from('loyalty_settings')
-            .insert({ points_per_euro: 1 })
-            .select()
-            .single();
-
-          if (createError) throw createError;
-          setSettings(created);
-          setPointsPerEuro(created.points_per_euro);
-        }
-      } catch (error) {
-        console.error('Erreur:', error);
-        toast.error('Erreur lors du chargement des paramètres');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
+    if (!settings) return;
+    setPointsPerVisit(settings.pointsPerVisit);
+    setRewardThreshold(settings.rewardThreshold);
+    setRewardLabel(settings.rewardLabel);
+  }, [settings]);
 
   const save = async () => {
-    if (!settings) return;
-
+    setSaving(true);
     try {
-      const { error } = await supabase
-        .from('loyalty_settings')
-        .update({ 
-          points_per_euro: pointsPerEuro,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', settings.id);
-
-      if (error) throw error;
-
-      toast.success(`Paramètres enregistrés : ${pointsPerEuro} point(s) par euro`);
-    } catch (error) {
-      console.error('Erreur:', error);
-      toast.error('Erreur lors de l\'enregistrement');
+      await updateSettings({ pointsPerVisit, rewardThreshold, rewardLabel });
+      toast.success('Programme de fidélité enregistré.');
+    } catch {
+      toast.error('Enregistrement impossible.');
+    } finally {
+      setSaving(false);
     }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center py-10">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
       </div>
     );
   }
+
+  const visitsNeeded = pointsPerVisit > 0 ? Math.ceil(rewardThreshold / pointsPerVisit) : null;
 
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
@@ -91,49 +54,73 @@ export default function LoyaltySettings() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Gift className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Points de fidélité</CardTitle>
+            <CardTitle className="font-display text-lg">Programme de fidélité</CardTitle>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Configurez le nombre de points gagnés par euro dépensé.
+            Les points se cumulent à chaque visite. Le comptage est par visite et non
+            par montant dépensé : la récompense reste ainsi lisible quelle que soit
+            la devise.
           </p>
+        </CardHeader>
 
-          <div className="space-y-2">
-            <Label htmlFor="points-per-euro">Points par euro dépensé</Label>
-            <div className="flex items-center gap-4">
+        <CardContent className="space-y-5">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="points-per-visit">Points gagnés par visite</Label>
               <Input
-                id="points-per-euro"
+                id="points-per-visit"
                 type="number"
                 min={0}
-                max={10}
-                step={0.5}
-                value={pointsPerEuro}
-                onChange={(e) => setPointsPerEuro(Number(e.target.value))}
-                className="w-32"
+                step={1}
+                value={pointsPerVisit}
+                onChange={(e) => setPointsPerVisit(Math.max(0, Number(e.target.value)))}
               />
-              <span className="text-sm text-muted-foreground">
-                point(s) pour 1€ dépensé
-              </span>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Exemple : 1 point = 1€, 2 points = 2€, 0.5 = 0.5€
+            <div className="space-y-1.5">
+              <Label htmlFor="reward-threshold">Points requis pour la récompense</Label>
+              <Input
+                id="reward-threshold"
+                type="number"
+                min={1}
+                step={10}
+                value={rewardThreshold}
+                onChange={(e) => setRewardThreshold(Math.max(1, Number(e.target.value)))}
+              />
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="reward-label">Récompense offerte</Label>
+              <Input
+                id="reward-label"
+                value={rewardLabel}
+                onChange={(e) => setRewardLabel(e.target.value)}
+                placeholder="soin offert, séance offerte, cours offert…"
+              />
+              <p className="text-xs text-muted-foreground">
+                Ce texte s'affiche dans l'espace {customer}.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-secondary/50 p-4 text-sm">
+            <p className="font-medium">Aperçu</p>
+            <p className="mt-1 text-muted-foreground">
+              {visitsNeeded === null ? (
+                <>Aucun point n'est attribué : le programme est inactif.</>
+              ) : (
+                <>
+                  Un {customer} atteint {rewardThreshold} points au bout de{' '}
+                  <strong>{visitsNeeded} visite{visitsNeeded > 1 ? 's' : ''}</strong>, et
+                  débloque : {rewardLabel}.
+                </>
+              )}
             </p>
           </div>
 
-          <div className="rounded-xl bg-secondary/50 p-4 text-sm">
-            <p className="font-medium">Aperçu</p>
-            <div className="mt-2 space-y-1 text-muted-foreground">
-              <p>• 10€ dépensés → {Math.round(10 * pointsPerEuro)} points</p>
-              <p>• 25€ dépensés → {Math.round(25 * pointsPerEuro)} points</p>
-              <p>• 50€ dépensés → {Math.round(50 * pointsPerEuro)} points</p>
-              <p>• 100€ dépensés → {Math.round(100 * pointsPerEuro)} points</p>
-            </div>
-          </div>
-
+          <Separator />
           <div className="flex justify-end">
-            <Button className="rounded-full" onClick={save}>
-              <Save className="mr-2 h-4 w-4" /> Enregistrer
+            <Button className="rounded-full" onClick={save} disabled={saving}>
+              <Save className="mr-2 h-4 w-4" />
+              {saving ? 'Enregistrement…' : 'Enregistrer'}
             </Button>
           </div>
         </CardContent>

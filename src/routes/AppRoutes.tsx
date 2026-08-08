@@ -1,9 +1,10 @@
 // AppRoutes.tsx
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { PublicLayout, AdminLayout } from '@/layouts';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Availability from '@/pages/public/Availability';
+import { useModules } from '@/hooks/useModules';
 
 // ✅ Lazy loading des pages publiques
 const Home = lazy(() => import('@/pages/public/Home'));
@@ -43,6 +44,9 @@ const CategoriesSettings = lazy(() => import('@/pages/admin/settings/Categories'
 const TimeSlotsSettings = lazy(() => import('@/pages/admin/settings/TimeSlots'));
 const LoyaltySettings = lazy(() => import('@/pages/admin/settings/Loyalty'));
 const SpecialInfosSettings = lazy(() => import('@/pages/admin/settings/SpecialInfos'));
+const ModulesSettings = lazy(() => import('@/pages/admin/settings/Modules'));
+const VocabularySettings = lazy(() => import('@/pages/admin/settings/Vocabulary'));
+const RegionalSettings = lazy(() => import('@/pages/admin/settings/Regional'));
 
 // ✅ Composant de chargement
 const PageLoader = () => (
@@ -55,6 +59,8 @@ const PageLoader = () => (
 );
 
 export default function AppRoutes() {
+  const isEnabled = useModules();
+
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
@@ -62,26 +68,31 @@ export default function AppRoutes() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/prestations" element={<Services />} />
-          <Route path="/galerie" element={<Gallery />} />
+          {isEnabled('gallery') && <Route path="/galerie" element={<Gallery />} />}
           <Route path="/contact" element={<Contact />} />
           <Route path="/reservation" element={<Booking />} />
-          <Route path="/disponibilites" element={<Availability />} />
+          {isEnabled('publicAvailability') && (
+            <Route path="/disponibilites" element={<Availability />} />
+          )}
         </Route>
 
-        {/* Auth */}
+        {/* Auth — toujours actives : l'administration en dépend, même quand
+            l'espace client est désactivé pour les visiteurs. */}
         <Route path="/connexion" element={<Auth />} />
         <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
         <Route path="/reinitialisation" element={<ResetPassword />} />
 
         {/* Client (protected) */}
-        <Route
-          path="/mon-espace"
-          element={
-            <ProtectedRoute role="client">
-              <ClientSpace />
-            </ProtectedRoute>
-          }
-        />
+        {isEnabled('clientSpace') && (
+          <Route
+            path="/mon-espace"
+            element={
+              <ProtectedRoute role="client">
+                <ClientSpace />
+              </ProtectedRoute>
+            }
+          />
+        )}
 
         {/* Admin (protected) */}
         <Route
@@ -98,7 +109,7 @@ export default function AppRoutes() {
           <Route path="clientes" element={<Clients />} />
           <Route path="prestations" element={<AdminServices />} />
           <Route path="statistiques" element={<Statistics />} />
-          <Route path="notifications" element={<Notifications />} />
+          {isEnabled('reminders') && <Route path="notifications" element={<Notifications />} />}
 
           {/* ✅ Paramètres avec sous-routes */}
           <Route path="parametres" element={<SettingsLayout />}>
@@ -106,17 +117,28 @@ export default function AppRoutes() {
             <Route path="general" element={<GeneralSettings />} />
             <Route path="horaires" element={<HoursSettings />} />
             <Route path="reseaux" element={<SocialSettings />} />
-            <Route path="paiements" element={<PaymentMethodsSettings />} />
             <Route path="annulation" element={<CancellationSettings />} />
-            <Route path="rappels" element={<RemindersSettings />} />
-            <Route path="fidelite" element={<LoyaltySettings />} />
             <Route path="couleurs" element={<ColorsSettings />} />
             <Route path="categories" element={<CategoriesSettings />} />
             <Route path="creneaux" element={<TimeSlotsSettings />} />
-            <Route path="informations" element={<SpecialInfosSettings />} />
-            <Route path="galerie" element={<GalleryManagement />} />
+            <Route path="modules" element={<ModulesSettings />} />
+            <Route path="vocabulaire" element={<VocabularySettings />} />
+            <Route path="regional" element={<RegionalSettings />} />
+            {isEnabled('payments') && (
+              <Route path="paiements" element={<PaymentMethodsSettings />} />
+            )}
+            {isEnabled('reminders') && <Route path="rappels" element={<RemindersSettings />} />}
+            {isEnabled('loyalty') && <Route path="fidelite" element={<LoyaltySettings />} />}
+            {isEnabled('specialInfos') && (
+              <Route path="informations" element={<SpecialInfosSettings />} />
+            )}
+            {isEnabled('gallery') && <Route path="galerie" element={<GalleryManagement />} />}
           </Route>
         </Route>
+
+        {/* Une URL inconnue — ou celle d'un module désactivé — ramène à
+            l'accueil. Sans cela, react-router n'affiche rien du tout. */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>
   );
