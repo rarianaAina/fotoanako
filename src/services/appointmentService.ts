@@ -1,7 +1,5 @@
 import { supabase } from '@/lib/supabase';
 import type { Appointment, AppointmentStatus, CreateAppointmentDto, UpdateAppointmentDto, ServiceItem, ReferenceImage } from '@/types';
-import { reminderSettingsService } from './reminderSettingsService';
-import { reminderService } from './reminderService';
 
 interface AppointmentRow {
   id: string;
@@ -156,119 +154,56 @@ export const appointmentService = {
       duration: s.duration,
     }));
 
-    const row = {
-      client_id: data.clientId ?? null,
-      client_name: data.clientName,
+    // Tout passe par `create_public_appointment` : une fonction SECURITY
+    // DEFINER qui relit les tarifs en base, vérifie la disponibilité du
+    // créneau, rattache ou crée la fiche client et programme le rappel — le
+    // tout en une transaction.
+    //
+    // Les faire depuis le navigateur imposerait d'ouvrir la table `clients`
+    // à la lecture anonyme, et laisserait le tarif à la main de l'appelant.
+    const { data: newId, error: rpcError } = await supabase.rpc(
+      'create_public_appointment',
+      {
+        p_client_name: data.clientName,
+        p_phone: data.phone,
+        p_email: data.email ?? null,
+        p_service_ids: data.serviceIds,
+        p_date: data.date,
+        p_time: data.time,
+        p_payment_method_id: data.paymentMethodId ?? null,
+        p_reference_images: data.referenceImages ?? [],
+        p_client_notes: data.clientNotes ?? null,
+      },
+    );
+
+    if (rpcError) throw new Error(rpcError.message);
+
+    // La ligne créée n'est pas relisible par un visiteur anonyme — et c'est
+    // voulu. L'écran de confirmation n'a besoin de rien de plus que ce qui
+    // vient d'être soumis, complété de l'identifiant retourné.
+    return {
+      id: newId as string,
+      clientId: data.clientId,
+      clientName: data.clientName,
       phone: data.phone,
-      email: data.email ?? null,
-      services: services,
+      email: data.email,
+      services,
       date: data.date,
       time: data.time,
       status: 'pending',
-      payment_method_id: data.paymentMethodId ?? null,
-      reference_images: data.referenceImages || [], // ✅ Tableau d'images
-      client_notes: data.clientNotes ?? null,
-      notes: data.notes ?? null,
+      paymentMethodId: data.paymentMethodId,
+      referenceImages: data.referenceImages ?? [],
+      clientNotes: data.clientNotes,
+      notes: data.notes,
     };
-
-    if (!row.client_id && row.email) {
-      const { data: existing } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('email', row.email)
-        .maybeSingle();
-      if (existing) {
-        row.client_id = (existing as { id: string }).id;
-      } else {
-        const { data: created, error: clientErr } = await supabase
-          .from('clients')
-          .insert({
-            name: data.clientName,
-            phone: data.phone,
-            email: row.email,
-          })
-          .select('id')
-          .single();
-        if (!clientErr && created) {
-          row.client_id = (created as { id: string }).id;
-        }
-      }
-    }
-
-    const { error: insertError } = await supabase
-      .from('appointments')
-      .insert(row);
-    if (insertError) throw insertError;
-
-    const { data: rows, error: selError } = await supabase
-      .from('appointments')
-      .select(`
-        *,
-        payment_method:payment_method_id (
-          id,
-          name,
-          label,
-          icon
-        )
-      `)
-      .eq('client_name', data.clientName)
-      .eq('phone', data.phone)
-      .eq('date', data.date)
-      .eq('time', data.time)
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    if (selError) throw selError;
-    if (!rows || rows.length === 0) {
-      return {
-        id: '',
-        clientId: data.clientId,
-        clientName: data.clientName,
-        phone: data.phone,
-        email: data.email,
-        services: services,
-        date: data.date,
-        time: data.time,
-        status: 'pending',
-        paymentMethodId: data.paymentMethodId,
-        referenceImages: data.referenceImages || [],
-        clientNotes: data.clientNotes,
-        notes: data.notes,
-      };
-    }
-
-    const appointment = rowToAppointment(rows[0] as AppointmentRow);
-
-    try {
-      const settings = await reminderSettingsService.get();
-      if (settings.enabled) {
-        const serviceNames = appointment.services.map(s => s.name).join(' + ');
-        await reminderService.create({
-          appointmentId: appointment.id,
-          clientName: appointment.clientName,
-          clientPhone: appointment.phone,
-          clientEmail: appointment.email,
-          serviceName: serviceNames,
-          appointmentDate: appointment.date,
-          appointmentTime: appointment.time,
-          delayHours: settings.delayHours,
-          recipients: settings.recipients,
-        });
-        console.log(`✅ Rappel créé pour le rendez-vous ${appointment.id}`);
-      }
-    } catch (reminderError) {
-      console.error('Erreur lors de la création du rappel:', reminderError);
-    }
-
-    return appointment;
   },
 
   async update(id: string, data: UpdateAppointmentDto): Promise<Appointment> {
-    if (data.status === 'cancelled') {
-      await reminderService.deleteByAppointmentId(id);
-      console.log(`🗑️ Rappels supprimés pour le rendez-vous annulé ${id}`);
-    }
-
+    // Les rappels suivent automatiquement : annulation, déplacement et
+    // changement de prestations sont traités par le déclencheur
+    // `appointments_sync_reminders`. Le faire ici imposerait de lire
+    // `reminder_settings`, réservé aux administrateurs — ce qui empêchait
+    // un client d'annuler son propre rendez-vous.
     const row = patchToRow(data);
 
     if (data.serviceIds !== undefined) {
@@ -351,56 +286,6 @@ export const appointmentService = {
       }
     }
 
-    if (data.status === 'confirmed' && !data.date && !data.time && !data.serviceIds) {
-      try {
-        const settings = await reminderSettingsService.get();
-        if (settings.enabled) {
-          await reminderService.deleteByAppointmentId(id);
-          
-          const serviceNames = appointment.services.map(s => s.name).join(' + ');
-          await reminderService.create({
-            appointmentId: appointment.id,
-            clientName: appointment.clientName,
-            clientPhone: appointment.phone,
-            clientEmail: appointment.email,
-            serviceName: serviceNames,
-            appointmentDate: appointment.date,
-            appointmentTime: appointment.time,
-            delayHours: settings.delayHours,
-            recipients: settings.recipients,
-          });
-          console.log(`✅ Rappel recréé pour le rendez-vous confirmé ${id}`);
-        }
-      } catch (reminderError) {
-        console.error('Erreur lors de la mise à jour du rappel:', reminderError);
-      }
-    }
-
-    if (data.date || data.time) {
-      try {
-        await reminderService.deleteByAppointmentId(id);
-        
-        const settings = await reminderSettingsService.get();
-        if (settings.enabled) {
-          const serviceNames = appointment.services.map(s => s.name).join(' + ');
-          await reminderService.create({
-            appointmentId: appointment.id,
-            clientName: appointment.clientName,
-            clientPhone: appointment.phone,
-            clientEmail: appointment.email,
-            serviceName: serviceNames,
-            appointmentDate: appointment.date,
-            appointmentTime: appointment.time,
-            delayHours: settings.delayHours,
-            recipients: settings.recipients,
-          });
-          console.log(`🔄 Rappel mis à jour pour le rendez-vous ${id}`);
-        }
-      } catch (reminderError) {
-        console.error('Erreur lors de la mise à jour du rappel:', reminderError);
-      }
-    }
-
     return appointment;
   },
 
@@ -410,13 +295,7 @@ export const appointmentService = {
   },
 
   async delete(id: string): Promise<void> {
-    try {
-      await reminderService.deleteByAppointmentId(id);
-      console.log(`🗑️ Rappels supprimés pour le rendez-vous ${id}`);
-    } catch (reminderError) {
-      console.error('Erreur lors de la suppression des rappels:', reminderError);
-    }
-
+    // Les rappels partent avec : la clé étrangère est en ON DELETE CASCADE.
     const { error } = await supabase.from('appointments').delete().eq('id', id);
     if (error) throw error;
   },
