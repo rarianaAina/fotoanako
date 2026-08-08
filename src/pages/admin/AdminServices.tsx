@@ -21,8 +21,9 @@ import { toast } from 'sonner';
 import { useNailServices } from '@/hooks/useNailServices';
 import { useConfig } from '@/hooks/useConfig';
 import { uploadImage } from '@/services/storageService';
-import { formatAriary } from '@/utils';
+
 import type { Service } from '@/types';
+import { useMoney } from '@/hooks/useMoney';
 
 const DEFAULT_IMAGE = 'https://images.pexels.com/photos/3997389/pexels-photo-3997389.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop';
 
@@ -48,6 +49,7 @@ const blank: DraftService = {
 };
 
 export default function AdminServices() {
+  const money = useMoney();
   const { services, createService, updateService, deleteService } = useNailServices();
   const { categories } = useConfig();
   const [editing, setEditing] = useState<DraftService | null>(null);
@@ -167,7 +169,7 @@ export default function AdminServices() {
                 <div className="flex items-start justify-between">
                   <h3 className="font-display text-lg font-semibold">{s.name}</h3>
                   <span className="text-sm font-semibold text-primary">
-                    {s.price === 0 ? 'Devis' : formatAriary(s.price)}
+                    {s.price === 0 ? 'Devis' : money(s.price)}
                   </span>
                 </div>
                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.description}</p>
@@ -293,7 +295,7 @@ export default function AdminServices() {
                   }}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {editing.price === 0 ? 'Le prix sera affiché comme "Devis"' : `Prix : ${formatAriary(editing.price)}`}
+                  {editing.price === 0 ? 'Le prix sera affiché comme "Devis"' : `Prix : ${money(editing.price)}`}
                 </p>
               </div>
 

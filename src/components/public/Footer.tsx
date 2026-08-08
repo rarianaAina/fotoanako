@@ -5,21 +5,22 @@ import { useSettings } from '@/hooks/useSettings';
 export default function Footer() {
   const { settings } = useSettings();
 
-  // Fallback si settings n'est pas encore chargé
-  const salonInfo = settings || {
-    name: 'Harrys Studio',
-    address: '12 Rue Jean-Jaurès, Analakely, Antananarivo 101, Madagascar',
-    phone: '+261 34 12 345 67',
-    email: 'contact@nida-nail.mg',
-    whatsapp: '+261 34 12 345 67',
-    facebook: 'https://facebook.com/nida.nail.studio',
-    instagram: 'https://instagram.com/nida.nail.studio',
-  };
-
   // ✅ Fonction pour remonter en haut de page
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Seuls les réseaux renseignés sont affichés : sans cela, un client sans
+  // page Facebook hériterait d'une icône pointant dans le vide.
+  const socials = [
+    { label: 'Facebook', href: settings.facebook, Icon: Facebook },
+    { label: 'Instagram', href: settings.instagram, Icon: Instagram },
+    {
+      label: 'WhatsApp',
+      href: settings.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/\D/g, '')}` : '',
+      Icon: MessageCircle,
+    },
+  ].filter((s): s is { label: string; href: string; Icon: typeof Facebook } => Boolean(s.href));
 
   return (
     <footer className="border-t border-border/60 bg-secondary/40">
@@ -31,13 +32,14 @@ export default function Footer() {
                 <CalendarHeart className="h-5 w-5" />
               </span>
               <div>
-                <p className="font-display text-xl font-semibold">{salonInfo.name}</p>
+                <p className="font-display text-xl font-semibold">{settings.name}</p>
               </div>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              Salon d'onglerie haut de gamme. Sublimez vos mains
-              dans un cadre raffiné et apaisant.
-            </p>
+            {(settings.description || settings.tagline) && (
+              <p className="mt-4 text-sm text-muted-foreground">
+                {settings.description || settings.tagline}
+              </p>
+            )}
           </div>
 
           <div>
@@ -68,56 +70,42 @@ export default function Footer() {
             <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 text-primary" />
-                <span>{salonInfo.address}</span>
+                <span>{settings.address}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-primary" />
-                <span>{salonInfo.phone}</span>
+                <span>{settings.phone}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>{salonInfo.email}</span>
+                <span>{settings.email}</span>
               </li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-display text-lg font-semibold">Suivez-nous</h4>
-            <div className="mt-4 flex gap-3">
-              <a
-                href={salonInfo.facebook}
-                className="grid h-10 w-10 place-items-center rounded-full bg-white text-foreground shadow-soft transition-colors hover:bg-primary hover:text-primary-foreground"
-                aria-label="Facebook"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a
-                href={salonInfo.instagram}
-                className="grid h-10 w-10 place-items-center rounded-full bg-white text-foreground shadow-soft transition-colors hover:bg-primary hover:text-primary-foreground"
-                aria-label="Instagram"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Instagram className="h-4 w-4" />
-              </a>
-              <a
-                href={salonInfo.whatsapp ? `https://wa.me/${salonInfo.whatsapp.replace(/\s/g, '')}` : '#'}
-                className="grid h-10 w-10 place-items-center rounded-full bg-white text-foreground shadow-soft transition-colors hover:bg-primary hover:text-primary-foreground"
-                aria-label="WhatsApp"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MessageCircle className="h-4 w-4" />
-              </a>
+          {socials.length > 0 && (
+            <div>
+              <h4 className="font-display text-lg font-semibold">Suivez-nous</h4>
+              <div className="mt-4 flex gap-3">
+                {socials.map(({ label, href, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    className="grid h-10 w-10 place-items-center rounded-full bg-white text-foreground shadow-soft transition-colors hover:bg-primary hover:text-primary-foreground"
+                    aria-label={label}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} {salonInfo.name}. Tous droits réservés.</p>
-          <p>Conçu avec soin à Paris, France.</p>
+          <p>© {new Date().getFullYear()} {settings.name}. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

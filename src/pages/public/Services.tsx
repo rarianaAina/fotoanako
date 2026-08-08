@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/utils/cn';
-import { formatAriary } from '@/utils';
+
 import { useNailServices } from '@/hooks/useNailServices';
 import { useActiveConfig } from '@/hooks/useActiveConfig';
+import { useMoney } from '@/hooks/useMoney';
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -18,6 +19,7 @@ const fadeUp = {
 };
 
 export default function Services() {
+  const money = useMoney();
   const { services } = useNailServices();
   const { categories } = useActiveConfig();
   const [active, setActive] = useState<string>('Toutes');
@@ -31,7 +33,7 @@ export default function Services() {
 
   // Fonction pour afficher le prix ou "Devis"
   const displayPrice = (price: number) => {
-    return price === 0 ? 'Devis' : formatAriary(price);
+    return price === 0 ? 'Devis' : money(price);
   };
 
   return (

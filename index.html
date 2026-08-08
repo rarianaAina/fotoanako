@@ -78,8 +78,6 @@
     <!-- ✅ Preconnect (3 seulement : Google Fonts + Supabase) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://tzgcyehdjgqxljjttflj.supabase.co" />
-    <link rel="preconnect" href="https://images.pexels.com" />
     
     <!-- ✅ Chargement non bloquant des polices -->
     <link
@@ -100,22 +98,10 @@
       />
     </noscript>
     
-    <!-- ✅ CSS principal chargé en différé -->
-    <link
-      rel="preload"
-      as="style"
-      href="/assets/index.css"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript>
-      <link rel="stylesheet" href="/assets/index.css" />
-    </noscript>
-    
-    <title data-default>Harrys Studio — Salon d'onglerie</title>
-    <meta
-      name="description"
-      content="Harrys Studio — Salon d'onglerie haut de gamme à Antananarivo. Pose de vernis, manucure, soins des mains et des pieds."
-    />
+    <!-- Titre et description génériques : BusinessConfigProvider les remplace
+         par ceux de l'entreprise dès que la configuration est chargée. -->
+    <title>Prise de rendez-vous en ligne</title>
+    <meta name="description" content="Réservez votre rendez-vous en ligne." />
   </head>
   <body>
     <div id="root"></div>

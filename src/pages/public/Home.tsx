@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import {
   CalendarHeart,
   Sparkles,
-  Award,
   Clock,
   Phone,
   MapPin,
@@ -14,13 +13,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatAriary } from '@/utils';
+
 import { useNailServices } from '@/hooks/useNailServices';
 import { useSettings } from '@/hooks/useSettings';
 import { supabase } from '@/lib/supabase';
 import { useSpecialInfos } from '@/hooks/useSpecialInfos';
-
-const LOGO_URL = 'https://tzgcyehdjgqxljjttflj.supabase.co/storage/v1/object/public/images/logos/logo.webp';
+import { useMoney } from '@/hooks/useMoney';
+import { useLabels } from '@/hooks/useLabels';
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -39,31 +38,15 @@ const formatDuration = (minutes: number): string => {
 };
 
 export default function Home() {
+  const money = useMoney();
+  const t = useLabels();
   const { services } = useNailServices();
   const { settings } = useSettings();
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [loadingGallery, setLoadingGallery] = useState(true);
   const { infos: specialInfos, loading: loadingInfos } = useSpecialInfos();
-
-  const salonInfo = settings || {
-    name: 'Harrys Studio',
-    tagline: "L'art des ongles, sublimé",
-    address: '12 Rue Jean-Jaurès, Analakely, Antananarivo 101, Madagascar',
-    phone: '+261 34 12 345 67',
-    whatsapp: '+261 34 12 345 67',
-    facebook: 'https://facebook.com/nida.nail.studio',
-    instagram: 'https://instagram.com/nida.nail.studio',
-    email: 'contact@nida-nail.mg',
-    hours: [
-      { day: 'Lundi', open: '09:00', close: '18:00' },
-      { day: 'Mardi', open: '09:00', close: '18:00' },
-      { day: 'Mercredi', open: '09:00', close: '18:00' },
-      { day: 'Jeudi', open: '09:00', close: '18:00' },
-      { day: 'Vendredi', open: '09:00', close: '19:00' },
-      { day: 'Samedi', open: '09:00', close: '19:00' },
-      { day: 'Dimanche', open: '00:00', close: '00:00', closed: true },
-    ],
-  };
+  // Les deux premières alimentent les pastilles du visuel principal.
+  const heroBadges = specialInfos.slice(0, 2);
 
   // Récupérer les images de la galerie
   useEffect(() => {
@@ -102,20 +85,22 @@ export default function Home() {
             transition={{ duration: 0.7 }}
             className="text-center lg:text-left"
           >
-            <Badge
-              variant="secondary"
-              className="mb-6 gap-1.5 rounded-full border border-primary/20 bg-white/70 px-4 py-1.5 text-xs font-medium text-primary backdrop-blur"
-            >
-              <Sparkles className="h-3.5 w-3.5" /> Salon d'onglerie haut de gamme
-            </Badge>
+            {settings.tagline && (
+              <Badge
+                variant="secondary"
+                className="mb-6 gap-1.5 rounded-full border border-primary/20 bg-white/70 px-4 py-1.5 text-xs font-medium text-primary backdrop-blur"
+              >
+                <Sparkles className="h-3.5 w-3.5" /> {settings.tagline}
+              </Badge>
+            )}
             <h1 className="font-display text-5xl font-semibold leading-[1.05] text-balance text-foreground sm:text-6xl lg:text-7xl">
-              L'art des ongles,
-              <span className="block italic text-primary">sublimé avec {salonInfo.name}</span>
+              <span className="block italic text-primary">{settings.name}</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-base text-foreground/70 lg:mx-0">
-              Des mains soignées, des ongles sublimes. Découvrez un univers de
-              raffinement où chaque geste est pensé pour révéler votre beauté.
-            </p>
+            {settings.description && (
+              <p className="mx-auto mt-6 max-w-xl text-base text-foreground/70 lg:mx-0">
+                {settings.description}
+              </p>
+            )}
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
               <Button asChild size="lg" className="rounded-full px-7 shadow-glow">
                 <Link to="/reservation">
@@ -127,27 +112,17 @@ export default function Home() {
               </Button>
             </div>
             <div className="mt-10 flex items-center justify-center gap-6 lg:justify-start">
-              <div className="flex -space-x-3">
+              {settings.logoUrl && (
                 <Link to="/">
                   <img
-                    src={LOGO_URL}
-                    alt="Harrys Studio Logo"
-                    className="h-10 w-10 rounded-full border-2 border-white object-cover cursor-pointer transition-transform hover:scale-105"
+                    src={settings.logoUrl}
+                    alt={settings.name}
+                    className="h-10 w-10 rounded-full border-2 border-white object-cover transition-transform hover:scale-105"
                     loading="lazy"
                     decoding="async"
                   />
                 </Link>
-                {[3997389, 3997391, 704815].map((id) => (
-                  <img
-                    key={id}
-                    src={`https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop`}
-                    alt="Cliente"
-                    className="h-10 w-10 rounded-full border-2 border-white object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ))}
-              </div>
+              )}
               <div className="text-left">
                 <div className="flex items-center gap-1 text-accent">
                   {[...Array(5)].map((_, i) => (
@@ -155,7 +130,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Plusieurs clientes satisfaites
+                  {t('customer', 'many')} satisfaits
                 </p>
               </div>
             </div>
@@ -168,48 +143,57 @@ export default function Home() {
             className="relative mx-auto w-full max-w-md"
           >
             <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-glow ring-1 ring-primary/10">
-              <img
-                src="https://tzgcyehdjgqxljjttflj.supabase.co/storage/v1/object/public/images/services/1785598830482-uymrlg1.webp"
-                alt="Réalisation Harrys Studio"
-                className="h-full w-full object-cover"
-                fetchPriority="high"
-                loading="eager"
-                decoding="sync"
-              />
+              {settings.heroImageUrl ? (
+                <img
+                  src={settings.heroImageUrl}
+                  alt={settings.name}
+                  className="h-full w-full object-cover"
+                  fetchPriority="high"
+                  loading="eager"
+                  decoding="sync"
+                />
+              ) : (
+                // Sans visuel configuré, un aplat aux couleurs de la marque
+                // plutôt qu'une image cassée.
+                <div className="grid h-full w-full place-items-center bg-gradient-to-br from-primary/20 via-accent/10 to-primary/5">
+                  <span className="font-display text-6xl text-primary/40">
+                    {settings.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 via-transparent to-transparent" />
             </div>
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
-              className="absolute -left-4 top-12 rounded-2xl bg-white/90 p-3 shadow-soft backdrop-blur sm:-left-8"
-            >
-              <div className="flex items-center gap-2">
-                <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/10 text-primary">
-                  <Award className="h-4 w-4" />
-                </span>
-                <div>
-                  <p className="text-xs font-semibold">Produits premium</p>
-                  <p className="text-[13px] text-muted-foreground font-semibold">SANS TPO, SANS HEMA</p>
+            {/* Les deux pastilles reprennent les premières informations
+                spéciales configurées. Le contenu appartenait au métier
+                (« SANS TPO, SANS HEMA ») : il est désormais éditable depuis
+                Réglages → Informations spéciales. */}
+            {heroBadges.map((info, i) => (
+              <motion.div
+                key={info.id}
+                initial={{ opacity: 0, x: i === 0 ? -20 : 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 + i * 0.2 }}
+                className={
+                  i === 0
+                    ? 'absolute -left-4 top-12 max-w-[13rem] rounded-2xl bg-white/90 p-3 shadow-soft backdrop-blur sm:-left-8'
+                    : 'absolute -right-4 bottom-16 max-w-[13rem] rounded-2xl bg-white/90 p-3 shadow-soft backdrop-blur sm:-right-8'
+                }
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-base ${
+                      i === 0 ? 'bg-primary/10' : 'bg-accent/15'
+                    }`}
+                  >
+                    {info.icon}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-semibold">{info.title}</p>
+                    <p className="text-[11px] leading-tight text-muted-foreground">{info.content}</p>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
-              className="absolute -right-4 bottom-16 rounded-2xl bg-white/90 p-3 shadow-soft backdrop-blur sm:-right-8"
-            >
-              <div className="flex items-center gap-2">
-                <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent/15 text-accent">
-                  <Clock className="h-4 w-4" />
-                </span>
-                <div>
-                  <p className="text-xs font-semibold">Réservation 24/7</p>
-                  <p className="text-[10px] text-muted-foreground">En ligne, simple</p>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
@@ -286,7 +270,7 @@ export default function Home() {
                     <div className="flex items-center justify-between">
                       <h2 className="font-display text-xl font-semibold">{s.name}</h2>
                       <span className="text-sm font-semibold text-primary">
-                        {s.price === 0 ? 'Devis' : formatAriary(s.price)}
+                        {s.price === 0 ? 'Devis' : money(s.price)}
                       </span>
                     </div>
                     <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
@@ -381,7 +365,7 @@ export default function Home() {
                   </span>
                   <div>
                     <p className="font-medium">Adresse</p>
-                    <p className="text-sm text-muted-foreground">{salonInfo.address}</p>
+                    <p className="text-sm text-muted-foreground">{settings.address}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -390,7 +374,7 @@ export default function Home() {
                   </span>
                   <div>
                     <p className="font-medium">Téléphone</p>
-                    <p className="text-sm text-muted-foreground">{salonInfo.phone}</p>
+                    <p className="text-sm text-muted-foreground">{settings.phone}</p>
                   </div>
                 </div>
               </div>

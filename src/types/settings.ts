@@ -45,6 +45,7 @@ export interface BusinessSettings {
   accentColor: string;
   logoUrl?: string;
   faviconUrl?: string;
+  heroImageUrl?: string;
 
   // Régionalisation
   currencyCode: string;

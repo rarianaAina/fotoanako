@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS public.business_settings (
   accent_color      text NOT NULL DEFAULT 'hsl(35 55% 48%)',
   logo_url          text,
   favicon_url       text,
+  hero_image_url    text,               -- visuel principal de la page d'accueil
 
   -- Régionalisation
   currency_code     text NOT NULL DEFAULT 'EUR',

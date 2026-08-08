@@ -27,9 +27,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppointments } from '@/hooks/useAppointments';
 import { useClients } from '@/hooks/useClients';
 import { useStats } from '@/hooks/useStats';
-import { formatAriary, STATUS_COLORS, STATUS_LABELS } from '@/utils';
+import { STATUS_COLORS, STATUS_LABELS } from '@/utils';
 import { todayISO } from '@/utils/formatters';
 import { getServiceNames, getTotalPrice } from '@/types';
+import { useMoney } from '@/hooks/useMoney';
 
 const PIE_COLORS = [
   'hsl(340 55% 62%)',
@@ -46,6 +47,7 @@ const fadeUp = {
 };
 
 export default function Dashboard() {
+  const money = useMoney();
   const { appointments } = useAppointments();
   const { aggregates } = useClients();
   const {
@@ -64,14 +66,14 @@ export default function Dashboard() {
   const stats = [
     {
       label: "CA du jour",
-      value: formatAriary(dashboardStats?.dailyRevenue ?? 0),
+      value: money(dashboardStats?.dailyRevenue ?? 0),
       delta: '+12%',
       up: true,
       icon: Wallet,
     },
     {
       label: "CA du mois",
-      value: formatAriary(dashboardStats?.monthlyRevenue ?? 0),
+      value: money(dashboardStats?.monthlyRevenue ?? 0),
       delta: '+8%',
       up: true,
       icon: TrendingUp,
@@ -99,7 +101,7 @@ export default function Dashboard() {
   // Formatters avec typage permissif pour Recharts
   const formatCurrencyTooltip = (value: any): string => {
     if (typeof value === 'number') {
-      return formatAriary(value);
+      return money(value);
     }
     return String(value ?? '0');
   };
@@ -155,7 +157,7 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-muted-foreground">Panier moyen</p>
               <p className="mt-1 font-display text-3xl font-semibold text-primary">
-                {formatAriary(dashboardStats?.averageBasket ?? 0)}
+                {money(dashboardStats?.averageBasket ?? 0)}
               </p>
             </div>
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary">
@@ -285,7 +287,7 @@ export default function Dashboard() {
                       <Clock className="h-3 w-3" /> {a.time}
                     </span>
                     <span className="shrink-0 text-xs font-medium text-primary">
-                      {formatAriary(totalPrice)}
+                      {money(totalPrice)}
                     </span>
                     <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs ${STATUS_COLORS[a.status]}`}>
                       {STATUS_LABELS[a.status]}

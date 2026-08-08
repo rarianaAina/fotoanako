@@ -1,6 +1,5 @@
 export { cn } from './cn';
 export {
-  formatAriary,
   formatShortDate,
   formatFullDate,
   todayISO,

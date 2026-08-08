@@ -37,10 +37,12 @@ import { useAppointments } from '@/hooks/useAppointments';
 import { useNailServices } from '@/hooks/useNailServices';
 import { useAppointmentSettings } from '@/hooks/useAppointmentSettings';
 import { useLoyalty } from '@/hooks/useLoyalty';
-import { formatAriary, STATUS_COLORS, STATUS_LABELS } from '@/utils';
+import { STATUS_COLORS, STATUS_LABELS } from '@/utils';
 import { getTotalPrice, getServiceNames } from '@/types';
 import { cn } from '@/utils/cn';
 import type { Appointment } from '@/types';
+import { useMoney } from '@/hooks/useMoney';
+import { useSettings } from '@/hooks/useSettings';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -56,6 +58,8 @@ const statusIcon: Record<string, typeof CheckCircle2> = {
 };
 
 export default function ClientSpace() {
+  const { settings } = useSettings();
+  const money = useMoney();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { appointments, updateStatus, refresh } = useAppointments();
@@ -162,7 +166,7 @@ export default function ClientSpace() {
               <CalendarHeart className="h-5 w-5" />
             </span>
             <div>
-              <p className="font-display text-lg font-semibold leading-tight">Harrys Studio</p>
+              <p className="font-display text-lg font-semibold leading-tight">{settings.name}</p>
               <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                 Mon espace
               </p>
@@ -211,7 +215,7 @@ export default function ClientSpace() {
           {[
             { label: 'Rendez-vous à venir', value: String(upcoming.length), icon: Clock, color: 'text-primary' },
             { label: 'Visites totales', value: String(visits), icon: Heart, color: 'text-rose-500' },
-            { label: 'Total dépensé', value: formatAriary(totalSpent), icon: Wallet, color: 'text-accent' },
+            { label: 'Total dépensé', value: money(totalSpent), icon: Wallet, color: 'text-accent' },
             { label: 'Points fidélité', value: loadingPoints ? '...' : String(loyaltyPoints), icon: Gift, color: 'text-emerald-500' },
           ].map((s, i) => (
             <motion.div key={s.label} {...fadeUp} transition={{ delay: i * 0.08 }}>
@@ -316,7 +320,7 @@ export default function ClientSpace() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between gap-3 sm:justify-end">
-                        <span className="text-sm font-semibold text-primary">{formatAriary(totalPrice)}</span>
+                        <span className="text-sm font-semibold text-primary">{money(totalPrice)}</span>
                         <span className={cn('rounded-full border px-2.5 py-0.5 text-xs', STATUS_COLORS[a.status])}>
                           {STATUS_LABELS[a.status]}
                         </span>
@@ -366,7 +370,7 @@ export default function ClientSpace() {
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-sm font-medium text-primary">{formatAriary(totalPrice)}</span>
+                          <span className="text-sm font-medium text-primary">{money(totalPrice)}</span>
                           <span className={cn('rounded-full border px-2.5 py-0.5 text-xs', STATUS_COLORS[a.status])}>
                             {STATUS_LABELS[a.status]}
                           </span>
@@ -385,7 +389,7 @@ export default function ClientSpace() {
           <h2 className="font-display text-2xl font-semibold">Recommandé pour vous</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {services.filter((s) => s.popular).slice(0, 3).map((s) => {
-              const displayPrice = s.price === 0 ? 'Devis' : formatAriary(s.price);
+              const displayPrice = s.price === 0 ? 'Devis' : money(s.price);
               return (
                 <Card key={s.id} className="group overflow-hidden border-border/60 shadow-soft transition-all hover:-translate-y-1 hover:shadow-glow">
                   <div className="relative aspect-[4/3] overflow-hidden">

@@ -20,6 +20,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useReminders } from '@/hooks/useReminders';
 import { toast } from 'sonner';
 import { cn } from '@/utils/cn';
+import { useSettings } from '@/hooks/useSettings';
 
 const items = [
   { to: '/admin', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
@@ -33,6 +34,7 @@ const items = [
 ];
 
 export default function AdminSidebar() {
+  const { settings } = useSettings();
   const [open, setOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -51,7 +53,7 @@ export default function AdminSidebar() {
           <CalendarHeart className="h-5 w-5" />
         </span>
         <div>
-          <p className="font-display text-lg font-semibold leading-tight">Harrys Studio</p>
+          <p className="font-display text-lg font-semibold leading-tight">{settings.name}</p>
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Admin</p>
         </div>
       </Link>
@@ -119,7 +121,7 @@ export default function AdminSidebar() {
           <span className="grid h-9 w-9 place-items-center rounded-full bg-primary/10 text-primary">
             <CalendarHeart className="h-4 w-4" />
           </span>
-          <span className="font-display text-lg font-semibold">Harrys Studio Admin</span>
+          <span className="font-display text-lg font-semibold">{settings.name} Admin</span>
         </Link>
         <div className="flex items-center gap-2">
           {pending.length > 0 && (

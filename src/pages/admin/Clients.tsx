@@ -4,9 +4,11 @@ import { Search, Phone, Mail, Calendar, Wallet, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useClients } from '@/hooks/useClients';
-import { formatAriary } from '@/utils';
+import { useMoney } from '@/hooks/useMoney';
+
 
 export default function Clients() {
+  const money = useMoney();
   const { clients, aggregates } = useClients();
   const [query, setQuery] = useState('');
 
@@ -31,7 +33,7 @@ export default function Clients() {
         {[
           { label: 'Total clientes', value: String(aggregates.totalClients), icon: Users },
           { label: 'Total visites', value: String(aggregates.totalVisits), icon: Calendar },
-          { label: 'CA cumulé', value: formatAriary(aggregates.totalRevenue), icon: Wallet },
+          { label: 'CA cumulé', value: money(aggregates.totalRevenue), icon: Wallet },
         ].map((s) => (
           <Card key={s.label} className="border-border/60 shadow-soft">
             <CardContent className="flex items-center gap-3 p-5">
@@ -106,7 +108,7 @@ export default function Clients() {
                   <div>
                     <p className="text-xs text-muted-foreground">Total</p>
                     <p className="text-xs font-semibold text-primary">
-                      {c.totalSpent > 0 ? formatAriary(c.totalSpent) : '0 Ar'}
+                      {c.totalSpent > 0 ? money(c.totalSpent) : '0 Ar'}
                     </p>
                   </div>
                 </div>

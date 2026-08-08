@@ -6,7 +6,8 @@ import {
 import { TrendingUp, Wallet, XCircle, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useStats } from '@/hooks/useStats';
-import { formatAriary } from '@/utils';
+import { useMoney } from '@/hooks/useMoney';
+
 
 const PIE_COLORS = [
   'hsl(340 55% 62%)',
@@ -23,6 +24,7 @@ const fadeUp = {
 };
 
 export default function Statistics() {
+  const money = useMoney();
   const {
     dashboardStats,
     revenueByDay,
@@ -41,16 +43,16 @@ export default function Statistics() {
   }));
 
   const kpis = [
-    { label: 'CA journalier moyen', value: formatAriary(dashboardStats?.dailyRevenue ?? 0), icon: Wallet, color: 'text-primary' },
-    { label: 'CA mensuel', value: formatAriary(dashboardStats?.monthlyRevenue ?? 0), icon: TrendingUp, color: 'text-accent' },
+    { label: 'CA journalier moyen', value: money(dashboardStats?.dailyRevenue ?? 0), icon: Wallet, color: 'text-primary' },
+    { label: 'CA mensuel', value: money(dashboardStats?.monthlyRevenue ?? 0), icon: TrendingUp, color: 'text-accent' },
     { label: "Taux d'annulation", value: `${dashboardStats?.cancellationRate?.toFixed(1) ?? '0'}%`, icon: XCircle, color: 'text-rose-500' },
     { label: 'Fidélisation', value: `${dashboardStats?.retentionRate ?? 0}%`, icon: Heart, color: 'text-emerald-500' },
   ];
 
   // Formatters avec un typage permissif
-  const formatAriaryTooltip = (value: any): string => {
+  const moneyTooltip = (value: any): string => {
     if (typeof value === 'number') {
-      return formatAriary(value);
+      return money(value);
     }
     return String(value ?? '0');
   };
@@ -116,7 +118,7 @@ export default function Statistics() {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                   <XAxis dataKey="jour" tickLine={false} axisLine={false} fontSize={12} />
                   <YAxis tickFormatter={formatCurrencyYAxis} tickLine={false} axisLine={false} fontSize={12} />
-                  <Tooltip formatter={formatAriaryTooltip} contentStyle={{ borderRadius: 12, border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))' }} />
+                  <Tooltip formatter={moneyTooltip} contentStyle={{ borderRadius: 12, border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))' }} />
                   <Bar dataKey="montant" radius={[8, 8, 0, 0]} fill="hsl(340 55% 62%)" />
                 </BarChart>
               </ResponsiveContainer>
@@ -133,7 +135,7 @@ export default function Statistics() {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                   <XAxis dataKey="mois" tickLine={false} axisLine={false} fontSize={12} />
                   <YAxis tickFormatter={formatMillionsYAxis} tickLine={false} axisLine={false} fontSize={12} />
-                  <Tooltip formatter={formatAriaryTooltip} contentStyle={{ borderRadius: 12, border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))' }} />
+                  <Tooltip formatter={moneyTooltip} contentStyle={{ borderRadius: 12, border: '1px solid hsl(var(--border))', background: 'hsl(var(--card))' }} />
                   <Line type="monotone" dataKey="montant" stroke="hsl(40 55% 62%)" strokeWidth={3} dot={{ r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>

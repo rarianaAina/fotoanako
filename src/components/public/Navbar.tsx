@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useSettings } from '@/hooks/useSettings';
 
-const LOGO_URL = 'https://tzgcyehdjgqxljjttflj.supabase.co/storage/v1/object/public/images/logos/logo.webp';
 
 const links = [
   { to: '/', label: 'Accueil' },
@@ -16,6 +16,7 @@ const links = [
 ];
 
 export default function Navbar() {
+  const { settings } = useSettings();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
@@ -40,14 +41,20 @@ export default function Navbar() {
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2">
-          <img 
-            src={LOGO_URL} 
-            alt="Harrys Studio Logo" 
-            className="h-10 w-10 rounded-full object-cover border-2 border-primary/20"
-          />
+          {settings.logoUrl ? (
+            <img
+              src={settings.logoUrl}
+              alt={settings.name}
+              className="h-10 w-10 rounded-full border-2 border-primary/20 object-cover"
+            />
+          ) : (
+            <span className="grid h-10 w-10 place-items-center rounded-full border-2 border-primary/20 bg-primary/10 font-display text-lg text-primary">
+              {settings.name.charAt(0).toUpperCase()}
+            </span>
+          )}
           <span className="flex flex-col leading-tight">
             <span className="font-display text-xl font-semibold text-foreground">
-              Harrys Studio
+              {settings.name}
             </span>
           </span>
         </Link>

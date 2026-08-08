@@ -26,13 +26,15 @@ import { useReminderSettings } from '@/hooks/useReminderSettings';
 import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { reminderService } from '@/services/reminderService';
 import { supabase } from '@/lib/supabase';
-import { formatAriary, STATUS_COLORS, STATUS_LABELS } from '@/utils';
+import { STATUS_COLORS, STATUS_LABELS } from '@/utils';
 import { getTotalPrice, getTotalDuration, getServiceNames } from '@/types';
 import type { Appointment, AppointmentStatus } from '@/types';
+import { useMoney } from '@/hooks/useMoney';
 
 const FILTERS: ('Tous' | AppointmentStatus)[] = ['Tous', 'pending', 'confirmed', 'completed', 'cancelled'];
 
 export default function Appointments() {
+  const money = useMoney();
   const { appointments, updateStatus, createAppointment, refresh } = useAppointments();
   const { reminderSettings } = useReminderSettings();
   const { services } = useNailServices();
@@ -220,7 +222,7 @@ export default function Appointments() {
                       <TableCell className="max-w-[150px] truncate" title={serviceNames}>
                         {serviceNames}
                       </TableCell>
-                      <TableCell className="font-medium text-primary">{formatAriary(totalPrice)}</TableCell>
+                      <TableCell className="font-medium text-primary">{money(totalPrice)}</TableCell>
                       <TableCell>
                         {new Date(a.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
                       </TableCell>
@@ -305,7 +307,7 @@ export default function Appointments() {
                     <span className="text-xs text-muted-foreground">
                       {new Date(a.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })} • {a.time}
                     </span>
-                    <span className="text-sm font-semibold text-primary">{formatAriary(totalPrice)}</span>
+                    <span className="text-sm font-semibold text-primary">{money(totalPrice)}</span>
                   </div>
                   <div className="mt-3 flex gap-1">
                     <Button size="sm" variant="outline" className="h-8 flex-1 rounded-full" onClick={() => setViewing(a)}>
@@ -405,7 +407,7 @@ export default function Appointments() {
                         {isSelected && <Check className="h-3 w-3" />}
                       </span>
                       <span className="flex-1 truncate">{s.name}</span>
-                      <span className="text-[10px] text-muted-foreground">{formatAriary(s.price)}</span>
+                      <span className="text-[10px] text-muted-foreground">{money(s.price)}</span>
                     </button>
                   );
                 })}
@@ -544,12 +546,12 @@ export default function Appointments() {
                 {viewing.services.map((s, index) => (
                   <div key={index} className="flex justify-between text-sm pl-4">
                     <span>{s.name}</span>
-                    <span>{formatAriary(s.price)}</span>
+                    <span>{money(s.price)}</span>
                   </div>
                 ))}
                 <div className="flex justify-between font-semibold border-t border-border/60 pt-1 mt-1">
                   <span>Total</span>
-                  <span className="text-primary">{formatAriary(getTotalPrice(viewing))}</span>
+                  <span className="text-primary">{money(getTotalPrice(viewing))}</span>
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Durée totale</span>

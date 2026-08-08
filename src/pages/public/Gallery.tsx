@@ -4,6 +4,8 @@ import { Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
+import { useSettings } from '@/hooks/useSettings';
+import { useLabels } from '@/hooks/useLabels';
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -13,6 +15,8 @@ const fadeUp = {
 };
 
 export default function Gallery() {
+  const t = useLabels();
+  const { settings } = useSettings();
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState('Toutes');
@@ -65,11 +69,11 @@ export default function Gallery() {
               <Sparkles className="h-3.5 w-3.5" /> Galerie
             </Badge>
             <h1 className="font-display text-5xl font-semibold text-foreground sm:text-6xl">
-              Nos plus belles réalisations
+              Nos {t('gallery', 'many').toLowerCase()}
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-foreground/70">
-              Une sélection de créations signées Harrys Studio. Laissez-vous
-              inspirer pour votre prochain rendez-vous.
+              Une sélection signée {settings.name}. Laissez-vous inspirer pour
+              votre prochain rendez-vous.
             </p>
           </motion.div>
         </div>

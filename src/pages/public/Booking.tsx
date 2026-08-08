@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/utils/cn';
-import { formatAriary } from '@/utils';
+
 import { useNailServices } from '@/hooks/useNailServices';
 import { useAppointments } from '@/hooks/useAppointments';
 import { useAuth } from '@/hooks/useAuth';
@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import { toDateString } from '@/utils/date';
 import { uploadImage } from '@/services/storageService';
 import type { BusinessHours, ReferenceImage } from '@/types';
+import { useMoney } from '@/hooks/useMoney';
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -35,10 +36,6 @@ const stepsMeta = [
   { n: 5, label: 'Confirmation' },
 ] as const;
 
-const displayPrice = (price: number): string => {
-  return price === 0 ? 'Devis' : formatAriary(price);
-};
-
 const formatDuration = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
@@ -48,6 +45,10 @@ const formatDuration = (minutes: number): string => {
 };
 
 export default function Booking() {
+  const money = useMoney();
+  // Dépend du formateur du déploiement, donc défini dans le composant.
+  const displayPrice = (price: number): string => (price === 0 ? 'Devis' : money(price));
+
   const { services } = useNailServices();
   const { createAppointment } = useAppointments();
   const { user } = useAuth();

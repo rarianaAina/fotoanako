@@ -1,5 +1,6 @@
 // src/pages/auth/ForgotPassword.tsx
 import { useState } from 'react';
+import BrandLogo from '@/components/BrandLogo';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
@@ -10,7 +11,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 
-const LOGO_URL = 'https://tzgcyehdjgqxljjttflj.supabase.co/storage/v1/object/public/images/logos/logo.webp';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -90,11 +90,7 @@ export default function ForgotPassword() {
         <Card className="border-border/60 shadow-soft">
           <CardContent className="p-8">
             <div className="text-center">
-              <img
-                src={LOGO_URL}
-                alt="Harrys Studio"
-                className="mx-auto h-16 w-16 rounded-full object-cover"
-              />
+              <BrandLogo size={12} className="mx-auto" />
               <h2 className="mt-4 font-display text-2xl font-semibold">Mot de passe oublié</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Entrez votre email pour recevoir un lien de réinitialisation.

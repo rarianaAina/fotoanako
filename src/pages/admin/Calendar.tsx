@@ -6,13 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/utils/cn';
 import { useAppointments } from '@/hooks/useAppointments';
-import { formatAriary, STATUS_COLORS, STATUS_LABELS } from '@/utils';
+import { STATUS_COLORS, STATUS_LABELS } from '@/utils';
 import { getTotalPrice, getServiceNames } from '@/types';
 import type { AppointmentStatus } from '@/types';
+import { useMoney } from '@/hooks/useMoney';
 
 const weekdays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
 export default function CalendarPage() {
+  const money = useMoney();
   const { appointments } = useAppointments();
 
   const [cursor, setCursor] = useState(() => {
@@ -151,7 +153,7 @@ export default function CalendarPage() {
                       </div>
                       <p className="mt-2 text-sm font-medium">{a.clientName}</p>
                       <p className="text-xs text-muted-foreground line-clamp-2">{serviceNames}</p>
-                      <p className="mt-1 text-xs font-medium text-primary">{formatAriary(totalPrice)}</p>
+                      <p className="mt-1 text-xs font-medium text-primary">{money(totalPrice)}</p>
                     </motion.div>
                   );
                 })

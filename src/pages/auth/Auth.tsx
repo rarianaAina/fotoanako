@@ -12,12 +12,16 @@ import { cn } from '@/utils/cn';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import type { UserRole } from '@/types/user';
+import BrandLogo from '@/components/BrandLogo';
+import { useSettings } from '@/hooks/useSettings';
+import { useLabels } from '@/hooks/useLabels';
 
 type Mode = 'login' | 'register';
 
-const LOGO_URL = 'https://tzgcyehdjgqxljjttflj.supabase.co/storage/v1/object/public/images/logos/logo.webp';
 
 export default function Auth() {
+  const { settings } = useSettings();
+  const t = useLabels();
   const { login, register } = useAuth();
   const navigate = useNavigate();
 
@@ -60,27 +64,23 @@ export default function Auth() {
         
         {/* ✅ Logo et nom cliquables vers l'accueil */}
         <Link to="/" className="relative flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <img 
-            src={LOGO_URL} 
-            alt="Harrys Studio Logo" 
-            className="h-12 w-12 rounded-full object-cover border-2 border-white/20"
-          />
+          <BrandLogo size={12} />
           <div>
-            <p className="font-display text-xl font-semibold">Harrys Studio</p>
+            <p className="font-display text-xl font-semibold">{settings.name}</p>
           </div>
         </Link>
         
         <div className="relative">
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
             className="font-display text-5xl font-semibold leading-tight text-foreground">
-            L'art des ongles,<span className="block italic text-primary">sublimé avec élégance</span>
+            {settings.name}<span className="block italic text-primary">{settings.tagline}</span>
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
             className="mt-5 max-w-md text-foreground/70">
             Connectez-vous pour réserver vos rendez-vous, suivre votre historique et profiter d'offres exclusives.
           </motion.p>
         </div>
-        <div className="relative text-xs text-muted-foreground">© {new Date().getFullYear()} Harrys Studio — Paris, France</div>
+        <div className="relative text-xs text-muted-foreground">© {new Date().getFullYear()} {settings.name}</div>
       </div>
 
       {/* Right form */}
@@ -89,14 +89,9 @@ export default function Auth() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="relative w-full max-w-md">
           {/* ✅ Logo et nom cliquables vers l'accueil (version mobile) */}
           <Link to="/" className="mb-8 flex items-center justify-center gap-3 hover:opacity-80 transition-opacity lg:hidden">
-            <img 
-              src={LOGO_URL} 
-              alt="Harrys Studio Logo" 
-              className="h-12 w-12 rounded-full object-cover border-2 border-primary/20"
-            />
+            <BrandLogo size={12} />
             <div>
-              <p className="font-display text-xl font-semibold">Harrys Studio</p>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Nail Studio</p>
+              <p className="font-display text-xl font-semibold">{settings.name}</p>
             </div>
           </Link>
 
@@ -116,12 +111,12 @@ export default function Auth() {
             <AnimatePresence mode="wait">
               <motion.div key={mode} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: 0.25 }}>
                 <h2 className="font-display text-2xl font-semibold">{mode === 'login' ? 'Bon retour parmi nous' : 'Créez votre compte'}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">{mode === 'login' ? 'Connectez-vous pour accéder à votre espace.' : 'Rejoignez Harrys Studio pour réserver en ligne.'}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{mode === 'login' ? 'Connectez-vous pour accéder à votre espace.' : `Rejoignez ${settings.name} pour réserver en ligne.`}</p>
 
                 {/* ✅ Sélecteur de rôle : affiché uniquement en mode connexion */}
                 {mode === 'login' && (
                   <div className="mt-5 grid grid-cols-2 gap-2">
-                    {([{ v: 'client', label: 'Cliente', icon: Heart }, { v: 'admin', label: 'Administrateur', icon: ShieldCheck }] as { v: UserRole; label: string; icon: typeof Heart }[]).map((r) => (
+                    {([{ v: 'client', label: t('customer'), icon: Heart }, { v: 'admin', label: 'Administrateur', icon: ShieldCheck }] as { v: UserRole; label: string; icon: typeof Heart }[]).map((r) => (
                       <button key={r.v} type="button" onClick={() => setRole(r.v)}
                         className={cn('flex items-center justify-center gap-2 rounded-xl border py-2.5 text-sm font-medium transition-all',
                           role === r.v ? 'border-primary bg-primary/5 text-primary shadow-glow' : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground')}>

@@ -1,11 +1,4 @@
 /**
- * Format a number as Malagasy Ariary.
- * e.g. 25000 → "25 000 €"
- */
-export const formatAriary = (amount: number): string =>
-  new Intl.NumberFormat('fr-FR').format(amount) + ' €';
-
-/**
  * Format a date string for display.
  * e.g. "2026-07-14" → "14 juil."
  */

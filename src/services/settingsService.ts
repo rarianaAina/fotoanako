@@ -26,6 +26,7 @@ interface BusinessSettingsRow {
   accent_color: string;
   logo_url: string | null;
   favicon_url: string | null;
+  hero_image_url: string | null;
   currency_code: string;
   currency_symbol: string;
   currency_position: string;
@@ -80,6 +81,7 @@ function rowToSettings(r: BusinessSettingsRow): BusinessSettings {
     accentColor: r.accent_color,
     logoUrl: r.logo_url ?? undefined,
     faviconUrl: r.favicon_url ?? undefined,
+    heroImageUrl: r.hero_image_url ?? undefined,
     currencyCode: r.currency_code,
     currencySymbol: r.currency_symbol,
     currencyPosition: (r.currency_position as CurrencyPosition) ?? 'suffix',
@@ -111,6 +113,7 @@ function settingsToRow(data: UpdateBusinessSettingsDto): Record<string, unknown>
     accentColor: 'accent_color',
     logoUrl: 'logo_url',
     faviconUrl: 'favicon_url',
+    heroImageUrl: 'hero_image_url',
     currencyCode: 'currency_code',
     currencySymbol: 'currency_symbol',
     currencyPosition: 'currency_position',
