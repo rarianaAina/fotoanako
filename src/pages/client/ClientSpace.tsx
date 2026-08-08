@@ -34,7 +34,7 @@ import {
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { useAppointments } from '@/hooks/useAppointments';
-import { useNailServices } from '@/hooks/useNailServices';
+import { useServiceCatalog } from '@/hooks/useServiceCatalog';
 import { useAppointmentSettings } from '@/hooks/useAppointmentSettings';
 import { useLoyalty } from '@/hooks/useLoyalty';
 import { STATUS_COLORS, STATUS_LABELS } from '@/utils';
@@ -65,7 +65,7 @@ export default function ClientSpace() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { appointments, updateStatus, refresh } = useAppointments();
-  const { services } = useNailServices();
+  const { services } = useServiceCatalog();
   const { settings: appointmentSettings } = useAppointmentSettings();
   const {
     points: loyaltyPoints,

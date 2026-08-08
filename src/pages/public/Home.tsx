@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-import { useNailServices } from '@/hooks/useNailServices';
+import { useServiceCatalog } from '@/hooks/useServiceCatalog';
 import { useSettings } from '@/hooks/useSettings';
 import { supabase } from '@/lib/supabase';
 import { useSpecialInfos } from '@/hooks/useSpecialInfos';
@@ -42,7 +42,7 @@ export default function Home() {
   const money = useMoney();
   const t = useLabels();
   const isEnabled = useModules();
-  const { services } = useNailServices();
+  const { services } = useServiceCatalog();
   const { settings } = useSettings();
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [loadingGallery, setLoadingGallery] = useState(true);

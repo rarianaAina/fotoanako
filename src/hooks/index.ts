@@ -1,7 +1,7 @@
 export { useAuth } from './useAuth';
 export { useAppointments } from './useAppointments';
 export { useClients } from './useClients';
-export { useNailServices } from './useNailServices';
+export { useServiceCatalog } from './useServiceCatalog';
 export { useSettings } from './useSettings';
 export { useModule, useModules } from './useModules';
 export { useLabels, useLabel, useLowerLabel } from './useLabels';
@@ -13,3 +13,4 @@ export { useReminders } from './useReminders';
 export { useReminderSettings } from './useReminderSettings';
 export { useConfig } from './useConfig';
 export { useActiveConfig } from './useActiveConfig';
+export { useImageSlots } from './useImageSlots';

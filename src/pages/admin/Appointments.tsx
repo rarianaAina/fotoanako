@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Eye, Pencil, Check, X, CalendarPlus, Bell, Image as ImageIcon } from 'lucide-react';
-import { useNailServices } from '@/hooks/useNailServices';
+import { useServiceCatalog } from '@/hooks/useServiceCatalog';
 import { useClients } from '@/hooks/useClients';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -30,14 +30,43 @@ import { STATUS_COLORS, STATUS_LABELS } from '@/utils';
 import { getTotalPrice, getTotalDuration, getServiceNames } from '@/types';
 import type { Appointment, AppointmentStatus } from '@/types';
 import { useMoney } from '@/hooks/useMoney';
+import { useImageSlots } from '@/hooks/useImageSlots';
+import type { ImageSlot, ReferenceImage } from '@/types';
 
 const FILTERS: ('Tous' | AppointmentStatus)[] = ['Tous', 'pending', 'confirmed', 'completed', 'cancelled'];
 
+/**
+ * Regroupe les images par emplacement, dans l'ordre configuré.
+ *
+ * Une image dont l'emplacement a été supprimé depuis la réservation reste
+ * affichée sous sa clé brute : mieux vaut un intitulé technique qu'une pièce
+ * jointe invisible.
+ */
+function groupImagesBySlot(
+  images: ReferenceImage[],
+  slots: ImageSlot[],
+): { key: string; label: string; images: ReferenceImage[] }[] {
+  const labels = new Map(slots.map((s) => [s.key, s.label]));
+  const order = new Map(slots.map((s, i) => [s.key, i]));
+  const groups = new Map<string, ReferenceImage[]>();
+
+  for (const img of images) {
+    const key = img.slot || 'autre';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(img);
+  }
+
+  return [...groups.entries()]
+    .sort(([a], [b]) => (order.get(a) ?? 999) - (order.get(b) ?? 999))
+    .map(([key, imgs]) => ({ key, label: labels.get(key) ?? key, images: imgs }));
+}
+
 export default function Appointments() {
+  const { slots: imageSlots } = useImageSlots(true);
   const money = useMoney();
   const { appointments, updateStatus, createAppointment, refresh } = useAppointments();
   const { reminderSettings } = useReminderSettings();
-  const { services } = useNailServices();
+  const { services } = useServiceCatalog();
   const { clients } = useClients();
   const { paymentMethods, loading: loadingPayments } = usePaymentMethods();
   const [query, setQuery] = useState('');
@@ -559,115 +588,48 @@ export default function Appointments() {
                 </div>
               </div>
 
-              {/* Images de référence */}
+              {/* Images de référence — regroupées par emplacement configuré.
+                  Les trois blocs « main gauche / main droite / inspiration »
+                  étaient dupliqués à l'identique et codés en dur. */}
               {viewing.referenceImages && viewing.referenceImages.length > 0 && (
                 <div>
                   <span className="text-muted-foreground">Images de référence</span>
                   <div className="mt-2 space-y-3">
-                    {/* Main gauche */}
-                    {viewing.referenceImages.filter(img => img.type === 'left').length > 0 && (
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground">Main gauche</p>
-                        <div className="mt-1 flex flex-wrap gap-2">
-                          {viewing.referenceImages.filter(img => img.type === 'left').map((img, idx) => (
-                            <a
-                              key={idx}
-                              href={img.url}
-                              download={`reference-main-gauche-${idx + 1}.webp`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="relative block hover:opacity-80 transition-opacity cursor-pointer"
-                              title="Cliquez pour télécharger"
-                            >
-                              <img
-                                src={img.url}
-                                alt={`Main gauche ${img.caption || ''}`}
-                                className="h-16 w-16 rounded-lg border border-border/60 object-cover"
-                              />
-                              {img.caption && (
-                                <span className="absolute bottom-0 left-0 right-0 truncate rounded-b-lg bg-black/60 px-1 text-[8px] text-white">
-                                  {img.caption}
-                                </span>
-                              )}
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                                <span className="text-white text-[10px] font-medium">Télécharger</span>
-                              </div>
-                            </a>
-                          ))}
+                    {groupImagesBySlot(viewing.referenceImages, imageSlots).map(
+                      ({ key, label, images }) => (
+                        <div key={key}>
+                          <p className="text-xs font-medium text-muted-foreground">{label}</p>
+                          <div className="mt-1 flex flex-wrap gap-2">
+                            {images.map((img, idx) => (
+                              <a
+                                key={img.id ?? idx}
+                                href={img.url}
+                                download={`${key}-${idx + 1}.webp`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group relative block transition-opacity hover:opacity-80"
+                                title="Ouvrir dans un nouvel onglet"
+                              >
+                                <img
+                                  src={img.url}
+                                  alt={img.caption || label}
+                                  className="h-16 w-16 rounded-lg border border-border/60 object-cover"
+                                />
+                                {img.caption && (
+                                  <span className="absolute bottom-0 left-0 right-0 truncate rounded-b-lg bg-black/60 px-1 text-[8px] text-white">
+                                    {img.caption}
+                                  </span>
+                                )}
+                              </a>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-
-                    {/* Main droite */}
-                    {viewing.referenceImages.filter(img => img.type === 'right').length > 0 && (
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground">Main droite</p>
-                        <div className="mt-1 flex flex-wrap gap-2">
-                          {viewing.referenceImages.filter(img => img.type === 'right').map((img, idx) => (
-                            <a
-                              key={idx}
-                              href={img.url}
-                              download={`reference-main-droite-${idx + 1}.webp`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="relative block hover:opacity-80 transition-opacity cursor-pointer"
-                              title="Cliquez pour télécharger"
-                            >
-                              <img
-                                src={img.url}
-                                alt={`Main droite ${img.caption || ''}`}
-                                className="h-16 w-16 rounded-lg border border-border/60 object-cover"
-                              />
-                              {img.caption && (
-                                <span className="absolute bottom-0 left-0 right-0 truncate rounded-b-lg bg-black/60 px-1 text-[8px] text-white">
-                                  {img.caption}
-                                </span>
-                              )}
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                                <span className="text-white text-[10px] font-medium">Télécharger</span>
-                              </div>
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Inspiration */}
-                    {viewing.referenceImages.filter(img => img.type === 'inspiration').length > 0 && (
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground">Inspiration</p>
-                        <div className="mt-1 flex flex-wrap gap-2">
-                          {viewing.referenceImages.filter(img => img.type === 'inspiration').map((img, idx) => (
-                            <a
-                              key={idx}
-                              href={img.url}
-                              download={`reference-inspiration-${idx + 1}.webp`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="relative block hover:opacity-80 transition-opacity cursor-pointer"
-                              title="Cliquez pour télécharger"
-                            >
-                              <img
-                                src={img.url}
-                                alt={`Inspiration ${img.caption || ''}`}
-                                className="h-16 w-16 rounded-lg border border-border/60 object-cover"
-                              />
-                              {img.caption && (
-                                <span className="absolute bottom-0 left-0 right-0 truncate rounded-b-lg bg-black/60 px-1 text-[8px] text-white">
-                                  {img.caption}
-                                </span>
-                              )}
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                                <span className="text-white text-[10px] font-medium">Télécharger</span>
-                              </div>
-                            </a>
-                          ))}
-                        </div>
-                      </div>
+                      ),
                     )}
                   </div>
                 </div>
               )}
+
 
               {/* Notes client */}
               {viewing.clientNotes && (

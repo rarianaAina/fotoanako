@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Service, CreateServiceDto } from '@/types';
-import { nailServiceService } from '@/services/nailServiceService';
+import { serviceCatalogService } from '@/services/serviceCatalogService';
 
-interface UseNailServicesReturn {
+interface UseServiceCatalogReturn {
   services: Service[];
   loading: boolean;
   error: string | null;
@@ -12,7 +12,7 @@ interface UseNailServicesReturn {
   refresh: () => Promise<void>;
 }
 
-export function useNailServices(): UseNailServicesReturn {
+export function useServiceCatalog(): UseServiceCatalogReturn {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +20,7 @@ export function useNailServices(): UseNailServicesReturn {
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await nailServiceService.getAll();
+      const data = await serviceCatalogService.getAll();
       setServices(data);
       setError(null);
     } catch (e) {
@@ -33,18 +33,18 @@ export function useNailServices(): UseNailServicesReturn {
   useEffect(() => { load(); }, [load]);
 
   const createService = async (data: CreateServiceDto) => {
-    const created = await nailServiceService.create(data);
+    const created = await serviceCatalogService.create(data);
     setServices((prev) => [...prev, created]);
     return created;
   };
 
   const updateService = async (id: string, data: Partial<Service>) => {
-    const updated = await nailServiceService.update(id, data);
+    const updated = await serviceCatalogService.update(id, data);
     setServices((prev) => prev.map((s) => (s.id === id ? updated : s)));
   };
 
   const deleteService = async (id: string) => {
-    await nailServiceService.delete(id);
+    await serviceCatalogService.delete(id);
     setServices((prev) => prev.filter((s) => s.id !== id));
   };
 

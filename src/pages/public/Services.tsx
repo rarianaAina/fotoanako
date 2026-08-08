@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/utils/cn';
 
-import { useNailServices } from '@/hooks/useNailServices';
+import { useServiceCatalog } from '@/hooks/useServiceCatalog';
 import { useActiveConfig } from '@/hooks/useActiveConfig';
 import { useMoney } from '@/hooks/useMoney';
 
@@ -20,7 +20,7 @@ const fadeUp = {
 
 export default function Services() {
   const money = useMoney();
-  const { services } = useNailServices();
+  const { services } = useServiceCatalog();
   const { categories } = useActiveConfig();
   const [active, setActive] = useState<string>('Toutes');
 

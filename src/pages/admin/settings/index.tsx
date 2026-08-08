@@ -2,7 +2,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Store, Clock, Share2, CreditCard, Calendar, Bell, Palette, Tag, Gift, Sparkles, Image,
-  ToggleLeft, Languages, Globe,
+  ToggleLeft, Languages, Globe, Images,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useModules } from '@/hooks/useModules';
@@ -30,6 +30,7 @@ const SECTIONS: {
   { id: 'reminders', label: 'Rappels', icon: Bell, path: '/admin/parametres/rappels', module: 'reminders' },
   { id: 'loyalty', label: 'Fidélité', icon: Gift, path: '/admin/parametres/fidelite', module: 'loyalty' },
   { id: 'informations', label: 'Infos spéciales', icon: Sparkles, path: '/admin/parametres/informations', module: 'specialInfos' },
+  { id: 'images', label: 'Images de référence', icon: Images, path: '/admin/parametres/images', module: 'referenceImages' },
   { id: 'galerie', label: 'Galerie', icon: Image, path: '/admin/parametres/galerie', module: 'gallery' },
 ];
 

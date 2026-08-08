@@ -31,7 +31,7 @@ function rowToService(r: ServiceRow): Service {
   };
 }
 
-export const nailServiceService = {
+export const serviceCatalogService = {
   async getAll(): Promise<Service[]> {
     const { data, error } = await supabase
       .from('services')

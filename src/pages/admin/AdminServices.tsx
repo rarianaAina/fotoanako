@@ -18,7 +18,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { useNailServices } from '@/hooks/useNailServices';
+import { useServiceCatalog } from '@/hooks/useServiceCatalog';
 import { useConfig } from '@/hooks/useConfig';
 import { uploadImage } from '@/services/storageService';
 
@@ -50,7 +50,7 @@ const blank: DraftService = {
 
 export default function AdminServices() {
   const money = useMoney();
-  const { services, createService, updateService, deleteService } = useNailServices();
+  const { services, createService, updateService, deleteService } = useServiceCatalog();
   const { categories } = useConfig();
   const [editing, setEditing] = useState<DraftService | null>(null);
   const [deleting, setDeleting] = useState<Service | null>(null);

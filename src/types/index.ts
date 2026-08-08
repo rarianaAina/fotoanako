@@ -72,3 +72,4 @@ export type {
   UpdateSpecialInfoDto,
 } from './specialInfo';
 export type { ReferenceImage } from './appointment'; // ✅ Ajout du type ReferenceImage
+export type { ImageSlot, CreateImageSlotDto, UpdateImageSlotDto } from './imageSlot';

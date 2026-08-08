@@ -11,7 +11,8 @@ export interface ServiceItem {
 export interface ReferenceImage {
   id: string;
   url: string;
-  type: 'left' | 'right' | 'inspiration';
+  /** Clé de l'emplacement configuré (image_slots.key). */
+  slot: string;
   caption?: string;
   file?: File; // Pour l'upload temporaire
 }

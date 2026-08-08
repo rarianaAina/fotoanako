@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CalendarHeart, Check, Clock, ArrowLeft, ArrowRight, PartyPopper, Sparkles, ChevronLeft, ChevronRight, X, Plus } from 'lucide-react';
+import { CalendarHeart, Check, Clock, ArrowLeft, ArrowRight, PartyPopper, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/utils/cn';
 
-import { useNailServices } from '@/hooks/useNailServices';
+import { useServiceCatalog } from '@/hooks/useServiceCatalog';
 import { useAppointments } from '@/hooks/useAppointments';
 import { useAuth } from '@/hooks/useAuth';
 import { useActiveConfig } from '@/hooks/useActiveConfig';
@@ -24,6 +24,8 @@ import { uploadImage } from '@/services/storageService';
 import type { BusinessHours, ReferenceImage } from '@/types';
 import { useMoney } from '@/hooks/useMoney';
 import { useModules } from '@/hooks/useModules';
+import { useImageSlots } from '@/hooks/useImageSlots';
+import ImageSlotUpload, { MAX_BYTES } from '@/components/public/ImageSlotUpload';
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -48,10 +50,11 @@ const formatDuration = (minutes: number): string => {
 export default function Booking() {
   const money = useMoney();
   const isEnabled = useModules();
+  const { slots: imageSlots } = useImageSlots(true);
   // Dépend du formateur du déploiement, donc défini dans le composant.
   const displayPrice = (price: number): string => (price === 0 ? 'Devis' : money(price));
 
-  const { services } = useNailServices();
+  const { services } = useServiceCatalog();
   const { createAppointment } = useAppointments();
   const { user } = useAuth();
   const { getActiveTimeSlotsByDate } = useActiveConfig();
@@ -74,10 +77,8 @@ export default function Booking() {
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [slotsByDate, setSlotsByDate] = useState<Record<string, number>>({});
 
-  // États pour les images de référence
-  const [leftHandImages, setLeftHandImages] = useState<ReferenceImage[]>([]);
-  const [rightHandImages, setRightHandImages] = useState<ReferenceImage[]>([]);
-  const [inspirationImages, setInspirationImages] = useState<ReferenceImage[]>([]);
+  // Images de référence, indexées par clé d'emplacement configuré.
+  const [slotImages, setSlotImages] = useState<Record<string, ReferenceImage[]>>({});
   const [clientNotes, setClientNotes] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
 
@@ -176,13 +177,12 @@ export default function Booking() {
     return arr;
   }, [calendarMonth]);
 
-  const handleImageUpload = (type: 'left' | 'right' | 'inspiration', file: File) => {
+  const handleImageAdd = (slotKey: string, file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Veuillez sélectionner une image');
       return;
     }
-
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > MAX_BYTES) {
       toast.error('L\'image ne doit pas dépasser 5 Mo');
       return;
     }
@@ -190,33 +190,36 @@ export default function Booking() {
     const reader = new FileReader();
     reader.onload = () => {
       const newImage: ReferenceImage = {
-        id: Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         url: reader.result as string,
-        type: type,
-        file: file,
+        slot: slotKey,
+        file,
       };
-
-      if (type === 'left') setLeftHandImages([...leftHandImages, newImage]);
-      else if (type === 'right') setRightHandImages([...rightHandImages, newImage]);
-      else setInspirationImages([...inspirationImages, newImage]);
+      setSlotImages((prev) => ({ ...prev, [slotKey]: [...(prev[slotKey] ?? []), newImage] }));
     };
     reader.readAsDataURL(file);
   };
 
-  const handleImageRemove = (type: 'left' | 'right' | 'inspiration', id: string) => {
-    if (type === 'left') setLeftHandImages(leftHandImages.filter(img => img.id !== id));
-    else if (type === 'right') setRightHandImages(rightHandImages.filter(img => img.id !== id));
-    else setInspirationImages(inspirationImages.filter(img => img.id !== id));
+  const handleImageRemove = (slotKey: string, imageId: string) => {
+    setSlotImages((prev) => ({
+      ...prev,
+      [slotKey]: (prev[slotKey] ?? []).filter((img) => img.id !== imageId),
+    }));
   };
 
-  const handleCaptionChange = (type: 'left' | 'right' | 'inspiration', id: string, caption: string) => {
-    const updateFn = (images: ReferenceImage[]) =>
-      images.map(img => img.id === id ? { ...img, caption } : img);
-
-    if (type === 'left') setLeftHandImages(updateFn(leftHandImages));
-    else if (type === 'right') setRightHandImages(updateFn(rightHandImages));
-    else setInspirationImages(updateFn(inspirationImages));
+  const handleCaptionChange = (slotKey: string, imageId: string, caption: string) => {
+    setSlotImages((prev) => ({
+      ...prev,
+      [slotKey]: (prev[slotKey] ?? []).map((img) =>
+        img.id === imageId ? { ...img, caption } : img,
+      ),
+    }));
   };
+
+  /** Emplacements obligatoires encore vides. */
+  const missingRequiredSlots = imageSlots.filter(
+    (slot) => slot.required && (slotImages[slot.key]?.length ?? 0) === 0,
+  );
 
   const canNext =
     (step === 1 && selectedServiceIds.length > 0) ||
@@ -224,7 +227,8 @@ export default function Booking() {
     (step === 3 && !!time) ||
     (step === 4 &&
       !!(info.name && info.phone && info.email) &&
-      (!isEnabled('payments') || !!paymentMethodId));
+      (!isEnabled('payments') || !!paymentMethodId) &&
+      (!isEnabled('referenceImages') || missingRequiredSlots.length === 0));
 
   const next = async () => {
     if (!canNext) return;
@@ -232,7 +236,7 @@ export default function Booking() {
       setSubmitting(true);
       setIsUploading(true);
       try {
-        const allImages = [...leftHandImages, ...rightHandImages, ...inspirationImages];
+        const allImages = Object.values(slotImages).flat();
         let uploadedImages: ReferenceImage[] = [];
         
         if (allImages.length > 0) {
@@ -296,79 +300,6 @@ export default function Booking() {
         : [...prev, serviceId]
     );
   };
-
-  const ImageUploadSection = ({ 
-    type, 
-    label, 
-    description, 
-    images,
-    maxImages = 4 
-  }: { 
-    type: 'left' | 'right' | 'inspiration';
-    label: string;
-    description: string;
-    images: ReferenceImage[];
-    maxImages?: number;
-  }) => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Label className="font-medium">{label}</Label>
-        <span className="text-xs text-muted-foreground">{images.length}/{maxImages}</span>
-      </div>
-      <p className="text-xs text-muted-foreground">{description}</p>
-
-      <div className="flex flex-wrap gap-2">
-        {images.map((img) => (
-          <motion.div
-            key={img.id}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="relative group"
-          >
-            <div className="relative h-20 w-20 overflow-hidden rounded-lg border border-border/60">
-              <img src={img.url} alt={`${label} ${img.caption || ''}`} className="h-full w-full object-cover" />
-              <button
-                type="button"
-                onClick={() => handleImageRemove(type, img.id)}
-                className="absolute -right-1 -top-1 rounded-full bg-destructive p-0.5 text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/90"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <input
-              type="text"
-              placeholder="Légende..."
-              value={img.caption || ''}
-              onChange={(e) => handleCaptionChange(type, img.id, e.target.value)}
-              className="mt-1 w-full text-[10px] bg-transparent border-b border-transparent hover:border-border focus:border-primary focus:outline-none transition-colors"
-            />
-          </motion.div>
-        ))}
-
-        {images.length < maxImages && (
-          <div
-            className="flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border/60 transition-colors hover:border-primary/40"
-            onClick={() => document.getElementById(`upload-${type}`)?.click()}
-          >
-            <input
-              id={`upload-${type}`}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleImageUpload(type, file);
-                e.target.value = '';
-              }}
-            />
-            <Plus className="h-5 w-5 text-muted-foreground" />
-            <span className="text-[8px] text-muted-foreground">Ajouter</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen gradient-rose pt-24 pb-20">
@@ -658,31 +589,20 @@ export default function Booking() {
                     </div>
                     )}
 
-                    {/* Images de référence */}
+                    {/* Images de référence — emplacements configurés
+                        depuis Réglages → Images de référence. */}
+                    {isEnabled('referenceImages') && (
                     <div className="space-y-6 border-t border-border/60 pt-4">
-                      <ImageUploadSection
-                        type="left"
-                        label="Main gauche"
-                        description="Photos de la main gauche"
-                        images={leftHandImages}
-                        maxImages={4}
-                      />
-
-                      <ImageUploadSection
-                        type="right"
-                        label="Main droite"
-                        description="Photos de la main droite"
-                        images={rightHandImages}
-                        maxImages={4}
-                      />
-
-                      <ImageUploadSection
-                        type="inspiration"
-                        label="Photos d'inspiration"
-                        description="Photos de référence pour le style souhaité"
-                        images={inspirationImages}
-                        maxImages={6}
-                      />
+                      {imageSlots.map((slot) => (
+                        <ImageSlotUpload
+                          key={slot.id}
+                          slot={slot}
+                          images={slotImages[slot.key] ?? []}
+                          onAdd={handleImageAdd}
+                          onRemove={handleImageRemove}
+                          onCaptionChange={handleCaptionChange}
+                        />
+                      ))}
 
                       <div className="space-y-1.5">
                         <Label htmlFor="client-notes">Description du rendu souhaité (optionnel)</Label>
@@ -691,11 +611,12 @@ export default function Booking() {
                           rows={3}
                           value={clientNotes}
                           onChange={(e) => setClientNotes(e.target.value)}
-                          placeholder="Décrivez ce que vous souhaitez : couleur, style, effets..."
+                          placeholder="Décrivez ce que vous souhaitez…"
                           className="resize-none"
                         />
                       </div>
                     </div>
+                    )}
 
                     <div className="rounded-xl bg-secondary/50 p-3 text-sm">
                       <p className="font-medium">Récapitulatif de votre commande</p>

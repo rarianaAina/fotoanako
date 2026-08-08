@@ -47,6 +47,7 @@ const SpecialInfosSettings = lazy(() => import('@/pages/admin/settings/SpecialIn
 const ModulesSettings = lazy(() => import('@/pages/admin/settings/Modules'));
 const VocabularySettings = lazy(() => import('@/pages/admin/settings/Vocabulary'));
 const RegionalSettings = lazy(() => import('@/pages/admin/settings/Regional'));
+const ImageSlotsSettings = lazy(() => import('@/pages/admin/settings/ImageSlots'));
 
 // ✅ Composant de chargement
 const PageLoader = () => (
@@ -131,6 +132,9 @@ export default function AppRoutes() {
             {isEnabled('loyalty') && <Route path="fidelite" element={<LoyaltySettings />} />}
             {isEnabled('specialInfos') && (
               <Route path="informations" element={<SpecialInfosSettings />} />
+            )}
+            {isEnabled('referenceImages') && (
+              <Route path="images" element={<ImageSlotsSettings />} />
             )}
             {isEnabled('gallery') && <Route path="galerie" element={<GalleryManagement />} />}
           </Route>
