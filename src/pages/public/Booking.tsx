@@ -299,7 +299,7 @@ export default function Booking() {
     <div className="min-h-screen pt-24 pb-20">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <Badge variant="secondary" className="mb-4 gap-1.5 border border-primary/20 bg-white/70 px-4 py-1.5 text-xs text-primary">
+          <Badge variant="neutral" className="mb-4 gap-1.5 border border-primary/20 bg-white/70 px-4 py-1.5 text-xs text-primary">
             <CalendarHeart className="h-3.5 w-3.5" /> Réservation
           </Badge>
           <h1 className="text-4xl font-semibold text-foreground sm:text-5xl">Prendre rendez-vous</h1>

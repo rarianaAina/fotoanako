@@ -55,18 +55,18 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-50 bg-background transition-[border-color] duration-200',
-        scrolled ? 'border-b border-border' : 'border-b border-transparent',
+        'fixed inset-x-0 top-0 z-50 transition-all duration-300',
+        scrolled ? 'bg-background/88 shadow-sm backdrop-blur-md' : 'bg-background',
       )}
     >
-      <nav className="mx-auto flex h-16 max-w-grid items-center justify-between gap-8 px-gutter lg:px-gutter-lg">
+      <nav className="mx-auto flex h-16 max-w-grid items-center justify-between gap-8 px-4 sm:px-6 lg:px-8">
         {/* Le nom EST le logo. Une pastille ronde à côté du nom faisait double
             emploi ; l'image n'apparaît que si le client en a fourni une. */}
         <Link to="/" className="flex shrink-0 items-center gap-2.5">
           {settings.logoUrl && (
-            <img src={settings.logoUrl} alt="" className="h-7 w-7 object-contain" />
+            <img src={settings.logoUrl} alt="" className="h-8 w-8 rounded-lg object-cover" />
           )}
-          <span className="text-base font-semibold tracking-[-0.02em]">{settings.name}</span>
+          <span className="font-display text-lg">{settings.name}</span>
         </Link>
 
         <div className="hidden items-center gap-7 md:flex">
@@ -78,7 +78,7 @@ export default function Navbar() {
                 cn(
                   'relative py-1 text-sm transition-colors',
                   isActive
-                    ? 'text-foreground after:absolute after:-bottom-px after:left-0 after:h-px after:w-full after:bg-foreground'
+                    ? 'font-medium text-foreground after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:rounded-pill after:bg-primary'
                     : 'text-muted-foreground hover:text-foreground',
                 )
               }
@@ -91,7 +91,7 @@ export default function Navbar() {
         <div className="hidden shrink-0 items-center gap-5 md:flex">
           <Link
             to="/connexion"
-            className="link-underline text-sm text-muted-foreground hover:text-foreground"
+            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             Connexion
           </Link>
@@ -114,22 +114,22 @@ export default function Navbar() {
           est plus nette qu'un dépliement de 200 ms. */}
       {open && (
         <div className="border-t border-border bg-background md:hidden">
-          <div className="flex flex-col px-gutter py-2">
+          <div className="flex flex-col gap-1 px-4 py-3">
             {links.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
                 className={({ isActive }) =>
                   cn(
-                    'border-b border-border py-3.5 text-sm transition-colors last:border-b-0',
-                    isActive ? 'font-medium text-foreground' : 'text-muted-foreground',
+                    'rounded-xl px-4 py-3 text-sm transition-colors',
+                    isActive ? 'bg-secondary font-medium text-foreground' : 'text-muted-foreground hover:bg-secondary/60',
                   )
                 }
               >
                 {l.label}
               </NavLink>
             ))}
-            <div className="flex flex-col gap-2 border-t border-border py-4">
+            <div className="mt-2 flex flex-col gap-2 border-t border-border pt-4">
               <Button asChild size="lg">
                 <Link to="/reservation">Prendre rendez-vous</Link>
               </Button>

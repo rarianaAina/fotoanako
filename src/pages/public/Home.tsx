@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, Clock, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import { useServiceCatalog } from '@/hooks/useServiceCatalog';
@@ -10,14 +10,15 @@ import { useMoney } from '@/hooks/useMoney';
 import { useLabels } from '@/hooks/useLabels';
 import { useModules } from '@/hooks/useModules';
 import { supabase } from '@/lib/supabase';
+import { cn } from '@/lib/utils';
 import type { GalleryItem } from '@/types';
 
 const formatDuration = (minutes: number): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  if (hours === 0) return `${mins} min`;
-  if (mins === 0) return `${hours} h`;
-  return `${hours} h ${String(mins).padStart(2, '0')}`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return `${h} h`;
+  return `${h} h ${String(m).padStart(2, '0')}`;
 };
 
 export default function Home() {
@@ -38,7 +39,7 @@ export default function Home() {
         .from('gallery')
         .select('id, title, image')
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(6);
       if (mounted) setGallery(data ?? []);
     })();
     return () => {
@@ -46,198 +47,196 @@ export default function Home() {
     };
   }, [isEnabled]);
 
-  const featured = services.filter((s) => s.active).slice(0, 6);
-  const openDays = settings.hours.filter((h) => !h.closed);
+  const featured = services.filter((s) => s.active).slice(0, 4);
+  const today = new Date().toLocaleDateString('fr-FR', { weekday: 'long' });
+  const todayHours = settings.hours.find((h) => h.day.toLowerCase() === today.toLowerCase());
 
   return (
     <>
       {/*
-        Titre à gauche, informations pratiques à droite, sur une grille
-        asymétrique. L'ancien héros centrait un bandeau-pastille au-dessus
-        d'un titre au-dessus de deux boutons, le tout flottant sur des taches
-        floues — la composition la plus reproduite du web.
-
-        Ce qu'un visiteur cherche en arrivant, ce n'est pas une accroche :
-        c'est de savoir si c'est ouvert, où c'est, et comment réserver.
+        Le visuel occupe presque tout l'écran, arrondi et détaché du bord —
+        un cadre posé sur l'ivoire, pas une bannière collée en haut de page.
+        Le texte se pose dessus, en bas à gauche, protégé par un voile
+        dégradé : on ne maîtrise pas la photo que le client téléversera.
       */}
-      <section className="border-b border-border-strong">
-        <div className="mx-auto max-w-grid px-gutter pb-16 pt-16 lg:px-gutter-lg lg:pb-24 lg:pt-24">
-          <div className="grid gap-12 lg:grid-cols-[1.55fr_1fr] lg:gap-16">
-            <div>
-              <h1 className="text-4xl font-semibold lg:text-6xl">
-                {settings.tagline || 'Prendre rendez-vous en ligne'}
-              </h1>
+      <section className="px-4 pt-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-[100rem]">
+          <div
+            className={cn(
+              'frame frame-veil h-[min(84vh,46rem)] rounded-3xl',
+              !settings.heroImageUrl && 'frame-empty',
+            )}
+          >
+            {settings.heroImageUrl && (
+              <img
+                src={settings.heroImageUrl}
+                alt=""
+                fetchPriority="high"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
+            )}
+          </div>
 
+          {/* Contenu en superposition, pas dans le flux : la hauteur du cadre
+              reste maîtrisée quelle que soit la longueur du texte. */}
+          <div className="absolute inset-x-0 bottom-0 p-6 sm:p-10 lg:p-14">
+            <div className="max-w-3xl">
+              {settings.tagline && (
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
+                  {settings.tagline}
+                </p>
+              )}
+              <h1 className="mt-4 font-display text-4xl text-white sm:text-5xl lg:text-6xl">
+                {settings.name}
+              </h1>
               {settings.description && (
-                <p className="mt-7 max-w-prose text-lg text-muted-foreground">
+                <p className="mt-5 max-w-prose text-base text-white/85 sm:text-lg">
                   {settings.description}
                 </p>
               )}
 
-              <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg">
                   <Link to="/reservation">
                     Prendre rendez-vous
                     <ArrowRight />
                   </Link>
                 </Button>
-                <Link to="/prestations" className="link-underline text-sm">
-                  Voir les {t('service', 'many').toLowerCase()}
-                </Link>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="border-white/35 bg-white/10 text-white backdrop-blur-sm hover:border-white/60 hover:bg-white/20"
+                >
+                  <Link to="/prestations">Voir les {t('service', 'many').toLowerCase()}</Link>
+                </Button>
               </div>
             </div>
-
-            {/* Colonne des faits. Alignée en bas du titre, séparée par un
-                filet vertical sur grand écran. */}
-            <dl className="grid content-end gap-6 border-border pt-2 text-sm lg:border-l lg:pl-16 lg:pt-0">
-              {openDays.length > 0 && (
-                <div>
-                  <dt className="label-mono">Ouvert</dt>
-                  <dd className="mt-2 space-y-0.5">
-                    {openDays.map((h) => (
-                      <div key={h.day} className="flex justify-between gap-6">
-                        <span className="text-muted-foreground">{h.day}</span>
-                        <span className="figure text-xs">
-                          {h.open}–{h.close}
-                        </span>
-                      </div>
-                    ))}
-                  </dd>
-                </div>
-              )}
-
-              {settings.address && (
-                <div>
-                  <dt className="label-mono">Adresse</dt>
-                  <dd className="mt-2 whitespace-pre-line">{settings.address}</dd>
-                </div>
-              )}
-
-              {settings.phone && (
-                <div>
-                  <dt className="label-mono">Téléphone</dt>
-                  <dd className="mt-2">
-                    <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="link-underline">
-                      {settings.phone}
-                    </a>
-                  </dd>
-                </div>
-              )}
-            </dl>
           </div>
         </div>
       </section>
 
-      {/* Informations spéciales : un bandeau de filets, pas des cartes
-          flottantes. Elles annoncent un congé ou une promotion — c'est une
-          brève, pas une fonctionnalité. */}
-      {isEnabled('specialInfos') && specialInfos.length > 0 && (
-        <section className="border-b border-border">
-          <div className="mx-auto max-w-grid px-gutter lg:px-gutter-lg">
-            <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
-              {specialInfos.slice(0, 3).map((info) => (
-                <div key={info.id} className="flex gap-3 py-6 md:px-8 md:first:pl-0 md:last:pr-0">
-                  <span aria-hidden className="text-base leading-tight">
-                    {info.icon}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium">{info.title}</p>
-                    <p className="mt-0.5 text-sm text-muted-foreground">{info.content}</p>
-                  </div>
-                </div>
-              ))}
+      {/* Bandeau pratique : trois faits utiles, sur des surfaces sable. */}
+      <section className="mx-auto max-w-grid px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-3 sm:grid-cols-3">
+          {todayHours && (
+            <div className="flex items-center gap-3 rounded-2xl bg-secondary/70 px-5 py-4">
+              <Clock className="h-4 w-4 shrink-0 text-primary" />
+              <p className="text-sm">
+                {todayHours.closed ? (
+                  <>Fermé aujourd&apos;hui</>
+                ) : (
+                  <>
+                    Ouvert aujourd&apos;hui{' '}
+                    <span className="font-semibold">
+                      {todayHours.open}–{todayHours.close}
+                    </span>
+                  </>
+                )}
+              </p>
             </div>
-          </div>
-        </section>
-      )}
+          )}
+          {settings.address && (
+            <div className="flex items-center gap-3 rounded-2xl bg-secondary/70 px-5 py-4">
+              <MapPin className="h-4 w-4 shrink-0 text-primary" />
+              <p className="truncate text-sm">{settings.address}</p>
+            </div>
+          )}
+          {settings.phone && (
+            <a
+              href={`tel:${settings.phone.replace(/\s/g, '')}`}
+              className="flex items-center gap-3 rounded-2xl bg-secondary/70 px-5 py-4 transition-colors hover:bg-accent"
+            >
+              <Phone className="h-4 w-4 shrink-0 text-primary" />
+              <p className="text-sm font-medium">{settings.phone}</p>
+            </a>
+          )}
+        </div>
+      </section>
 
       {/*
-        Catalogue en liste tabulaire numérotée, pas en grille de cartes.
-        Un prix se compare verticalement : aligné en colonne, l'œil descend.
-        Réparti en cartes, il faut sauter de l'un à l'autre.
+        Catalogue en cartes photographiques : ici l'image compte autant que le
+        prix, on choisit une prestation en la voyant. Format portrait, tarif
+        posé en gélule sur le coin de l'image.
       */}
       {featured.length > 0 && (
-        <section className="border-b border-border">
-          <div className="mx-auto max-w-grid px-gutter py-20 lg:px-gutter-lg">
-            <div className="flex items-end justify-between gap-8">
-              <h2 className="text-2xl font-semibold lg:text-3xl">{t('service', 'many')}</h2>
-              <Link to="/prestations" className="link-underline shrink-0 text-sm">
-                Tout voir
-              </Link>
+        <section className="mx-auto max-w-grid px-4 py-12 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">Notre carte</p>
+              <h2 className="mt-2 font-display text-3xl lg:text-4xl">{t('service', 'many')}</h2>
             </div>
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link to="/prestations">
+                Tout voir <ArrowRight />
+              </Link>
+            </Button>
+          </div>
 
-            <ul className="mt-10 border-t border-border-strong">
-              {featured.map((s, i) => (
-                <li key={s.id} className="border-b border-border">
-                  <Link
-                    to="/reservation"
-                    className="group grid grid-cols-[2.5rem_1fr_auto] items-baseline gap-4 py-5 transition-colors hover:bg-secondary/60 sm:grid-cols-[3rem_1fr_7rem_7rem] sm:gap-6"
-                  >
-                    <span className="figure text-2xs text-muted-foreground">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {featured.map((s) => (
+              <Link key={s.id} to="/reservation" className="group">
+                <div className={cn('frame aspect-[4/5]', !s.image && 'frame-empty')}>
+                  {s.image && <img src={s.image} alt={s.name} loading="lazy" decoding="async" />}
+                  <span className="absolute right-3 top-3 rounded-pill bg-card/92 px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur-sm">
+                    {s.price === 0 ? 'Devis' : money(s.price)}
+                  </span>
+                </div>
+                <h3 className="mt-4 font-display text-lg transition-colors group-hover:text-primary">
+                  {s.name}
+                </h3>
+                <p className="mt-0.5 text-sm text-muted-foreground">{formatDuration(s.duration)}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
-                    <span className="min-w-0">
-                      <span className="block font-medium">{s.name}</span>
-                      {s.description && (
-                        <span className="mt-0.5 block max-w-prose truncate text-sm text-muted-foreground">
-                          {s.description}
-                        </span>
-                      )}
-                    </span>
-
-                    <span className="figure hidden text-sm text-muted-foreground sm:block">
-                      {formatDuration(s.duration)}
-                    </span>
-
-                    <span className="figure text-right text-sm font-medium sm:text-base">
-                      {s.price === 0 ? 'Devis' : money(s.price)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+      {isEnabled('specialInfos') && specialInfos.length > 0 && (
+        <section className="mx-auto max-w-grid px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid gap-4 md:grid-cols-3">
+            {specialInfos.slice(0, 3).map((info) => (
+              <div key={info.id} className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
+                <span aria-hidden className="text-2xl">
+                  {info.icon}
+                </span>
+                <h3 className="mt-3 font-display text-lg">{info.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{info.content}</p>
+              </div>
+            ))}
           </div>
         </section>
       )}
 
       {/*
-        Galerie en bande à défilement horizontal. Une grille de vignettes
-        carrées toutes identiques aplatit le propos ; une bande impose un
-        rythme et laisse la première image respirer.
+        Mosaïque irrégulière : la première image occupe deux colonnes et deux
+        rangées. Une grille de vignettes identiques met tout sur le même plan ;
+        ici la composition a un point d'entrée.
       */}
       {isEnabled('gallery') && gallery.length > 0 && (
-        <section className="border-b border-border">
-          <div className="mx-auto max-w-grid px-gutter py-20 lg:px-gutter-lg">
-            <div className="flex items-end justify-between gap-8">
-              <h2 className="text-2xl font-semibold lg:text-3xl">{t('gallery', 'many')}</h2>
-              <Link to="/galerie" className="link-underline shrink-0 text-sm">
-                Tout voir
-              </Link>
+        <section className="mx-auto max-w-grid px-4 py-12 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">Nos réalisations</p>
+              <h2 className="mt-2 font-display text-3xl lg:text-4xl">{t('gallery', 'many')}</h2>
             </div>
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link to="/galerie">
+                Tout voir <ArrowRight />
+              </Link>
+            </Button>
           </div>
 
-          {/* Débordement volontaire hors de la gouttière : la bande se
-              poursuit au-delà du bord, ce qui indique qu'elle défile. */}
-          <div className="-mt-4 flex snap-x snap-mandatory gap-px overflow-x-auto pb-20">
-            {gallery.map((g, i) => (
+          <div className="mt-8 grid auto-rows-[10rem] grid-cols-2 gap-4 sm:auto-rows-[12rem] lg:grid-cols-4">
+            {gallery.slice(0, 6).map((g, i) => (
               <Link
                 key={g.id}
                 to="/galerie"
-                className={`group relative shrink-0 snap-start ${
-                  i === 0 ? 'ml-gutter lg:ml-gutter-lg' : ''
-                }`}
+                className={cn('frame group', i === 0 && 'col-span-2 row-span-2', i === 3 && 'lg:col-span-2')}
               >
-                <img
-                  src={g.image}
-                  alt={g.title}
-                  loading="lazy"
-                  decoding="async"
-                  className={`object-cover ${
-                    i === 0 ? 'h-[26rem] w-[20rem] sm:w-[26rem]' : 'h-[26rem] w-[16rem] sm:w-[19rem]'
-                  }`}
-                />
-                <span className="absolute inset-x-0 bottom-0 translate-y-full bg-foreground px-3 py-2 text-xs text-background transition-transform group-hover:translate-y-0">
+                <img src={g.image} alt={g.title} loading="lazy" decoding="async" />
+                <span className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-8 text-sm text-white transition-transform duration-300 ease-out group-hover:translate-y-0">
                   {g.title}
                 </span>
               </Link>
@@ -246,19 +245,25 @@ export default function Home() {
         </section>
       )}
 
-      {/* Appel final : une seule ligne, pleine largeur, en négatif. */}
-      <section className="bg-foreground text-background">
-        <div className="mx-auto flex max-w-grid flex-col gap-8 px-gutter py-16 lg:flex-row lg:items-center lg:justify-between lg:px-gutter-lg">
-          <h2 className="max-w-[24ch] text-2xl font-semibold lg:text-3xl">
-            Réservez en ligne, à toute heure.
+      {/* Appel final, sur un aplat de la couleur du client. */}
+      <section className="px-4 pb-16 pt-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-grid overflow-hidden rounded-3xl bg-primary px-8 py-14 text-center text-primary-foreground shadow-lg sm:px-14 sm:py-20">
+          <h2 className="mx-auto max-w-[18ch] font-display text-3xl sm:text-4xl lg:text-5xl">
+            Réservez votre place en quelques clics
           </h2>
-          <Link
-            to="/reservation"
-            className="group inline-flex shrink-0 items-center gap-3 self-start border-b border-background/40 pb-1 text-lg transition-colors hover:border-background"
+          <p className="mx-auto mt-4 max-w-prose text-base opacity-85">
+            En ligne, à toute heure. La confirmation arrive immédiatement.
+          </p>
+          <Button
+            asChild
+            size="lg"
+            className="mt-8 bg-primary-foreground text-primary shadow-none hover:bg-primary-foreground hover:brightness-95"
           >
-            Prendre rendez-vous
-            <ArrowUpRight className="h-5 w-5 transition-transform group- group-hover:translate-x-0.5" />
-          </Link>
+            <Link to="/reservation">
+              Prendre rendez-vous
+              <ArrowRight />
+            </Link>
+          </Button>
         </div>
       </section>
     </>

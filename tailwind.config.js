@@ -3,67 +3,40 @@ export default {
   darkMode: ['class'],
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
-    // Points de rupture calés sur la grille éditoriale, pas sur des tailles
-    // d'appareils : la mise en page change quand la colonne devient trop
-    // large pour être lue, pas quand un modèle de téléphone sort.
     extend: {
       fontFamily: {
         sans: ['Archivo', 'system-ui', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+        display: ['Fraunces', 'Georgia', 'serif'],
       },
 
-      // Échelle typographique à progression franche. Les paliers intermédiaires
-      // ont été retirés : trop de tailles voisines produisent une hiérarchie
-      // molle, où rien ne domine.
+      // Contraste d'échelle marqué : les titres montent haut, le texte reste
+      // confortable. C'est l'écart entre les deux qui crée la respiration,
+      // pas le vide autour.
       fontSize: {
         '2xs': ['0.6875rem', { lineHeight: '1rem' }],
-        xs: ['0.75rem', { lineHeight: '1.1rem' }],
-        sm: ['0.8125rem', { lineHeight: '1.25rem' }],
-        base: ['0.9375rem', { lineHeight: '1.6' }],
-        lg: ['1.0625rem', { lineHeight: '1.55' }],
-        xl: ['1.375rem', { lineHeight: '1.35', letterSpacing: '-0.011em' }],
-        '2xl': ['1.75rem', { lineHeight: '1.2', letterSpacing: '-0.016em' }],
-        '3xl': ['2.25rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        '4xl': ['3rem', { lineHeight: '1.04', letterSpacing: '-0.024em' }],
-        '5xl': ['4rem', { lineHeight: '0.98', letterSpacing: '-0.028em' }],
-        '6xl': ['5.5rem', { lineHeight: '0.94', letterSpacing: '-0.032em' }],
+        xs: ['0.75rem', { lineHeight: '1.15rem' }],
+        sm: ['0.8438rem', { lineHeight: '1.35rem' }],
+        base: ['0.9688rem', { lineHeight: '1.65' }],
+        lg: ['1.125rem', { lineHeight: '1.6' }],
+        xl: ['1.375rem', { lineHeight: '1.4' }],
+        '2xl': ['1.75rem', { lineHeight: '1.22' }],
+        '3xl': ['2.375rem', { lineHeight: '1.12' }],
+        '4xl': ['3.25rem', { lineHeight: '1.04' }],
+        '5xl': ['4.5rem', { lineHeight: '0.98' }],
+        '6xl': ['6rem', { lineHeight: '0.94' }],
       },
 
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        border: {
-          DEFAULT: 'hsl(var(--border))',
-          strong: 'hsl(var(--border-strong))',
-        },
+        card: { DEFAULT: 'hsl(var(--card))', foreground: 'hsl(var(--card-foreground))' },
+        popover: { DEFAULT: 'hsl(var(--popover))', foreground: 'hsl(var(--popover-foreground))' },
+        primary: { DEFAULT: 'hsl(var(--primary))', foreground: 'hsl(var(--primary-foreground))' },
+        secondary: { DEFAULT: 'hsl(var(--secondary))', foreground: 'hsl(var(--secondary-foreground))' },
+        muted: { DEFAULT: 'hsl(var(--muted))', foreground: 'hsl(var(--muted-foreground))' },
+        accent: { DEFAULT: 'hsl(var(--accent))', foreground: 'hsl(var(--accent-foreground))' },
+        destructive: { DEFAULT: 'hsl(var(--destructive))', foreground: 'hsl(var(--destructive-foreground))' },
+        border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         chart: {
@@ -75,45 +48,44 @@ export default {
         },
       },
 
-      // Angles droits. Les deux valeurs rondes restantes servent aux formes
-      // qui signifient : pastilles d'état, jetons de couleur, avatars.
+      // Courbes généreuses et progressives. Le rayon suit la taille de la
+      // surface : un petit élément très arrondi paraît mou, une grande image
+      // peu arrondie paraît raide.
       borderRadius: {
         none: '0',
-        DEFAULT: '0',
-        sm: '0',
-        md: '0',
-        lg: '0',
-        xl: '0',
-        '2xl': '0',
-        '3xl': '0',
+        sm: '0.375rem',
+        DEFAULT: '0.625rem',
+        md: '0.625rem',
+        lg: '0.875rem',
+        xl: '1.125rem',
+        '2xl': '1.5rem',
+        '3xl': '2rem',
         pill: '999px',
         full: '9999px',
       },
 
-      // Aucune ombre. Conservées en transparent plutôt que supprimées : les
-      // composants shadcn y font référence, et un jeton neutre vaut mieux
-      // qu'une classe inconnue silencieusement ignorée.
+      // Ombres teintées de brun, jamais du noir. Deux couches : un contact
+      // net et proche, une diffusion large et faible — c'est ce qui distingue
+      // une ombre observée d'un flou uniforme.
       boxShadow: {
         none: 'none',
-        sm: 'none',
-        DEFAULT: 'none',
-        md: 'none',
-        lg: 'none',
-        xl: 'none',
-        '2xl': 'none',
-        soft: 'none',
-        glow: 'none',
-      },
-
-      // Gouttière de la grille éditoriale.
-      spacing: {
-        gutter: '1.5rem',
-        'gutter-lg': '2.5rem',
+        sm: '0 1px 2px hsl(var(--shadow-hue) / 0.06)',
+        DEFAULT: '0 1px 2px hsl(var(--shadow-hue) / 0.05), 0 4px 12px -2px hsl(var(--shadow-hue) / 0.07)',
+        md: '0 2px 4px hsl(var(--shadow-hue) / 0.05), 0 8px 20px -4px hsl(var(--shadow-hue) / 0.09)',
+        lg: '0 4px 8px hsl(var(--shadow-hue) / 0.05), 0 16px 36px -8px hsl(var(--shadow-hue) / 0.12)',
+        xl: '0 8px 16px hsl(var(--shadow-hue) / 0.06), 0 28px 60px -12px hsl(var(--shadow-hue) / 0.16)',
+        // Halo coloré, réservé au bouton principal.
+        ring: '0 6px 20px -6px hsl(var(--primary) / 0.45)',
       },
 
       maxWidth: {
-        prose: '68ch',
-        grid: '84rem',
+        prose: '62ch',
+        grid: '80rem',
+      },
+
+      transitionTimingFunction: {
+        // Départ franc, arrivée douce : le geste paraît répondre, pas glisser.
+        out: 'cubic-bezier(0.22, 1, 0.36, 1)',
       },
 
       keyframes: {
@@ -127,8 +99,8 @@ export default {
         },
       },
       animation: {
-        'accordion-down': 'accordion-down 0.18s ease-out',
-        'accordion-up': 'accordion-up 0.18s ease-out',
+        'accordion-down': 'accordion-down 0.22s cubic-bezier(0.22, 1, 0.36, 1)',
+        'accordion-up': 'accordion-up 0.22s cubic-bezier(0.22, 1, 0.36, 1)',
       },
     },
   },

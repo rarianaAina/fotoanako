@@ -4,22 +4,22 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 /*
- * Étiquette d'état. En mono, petites capitales espacées : elle se lit comme une
- * donnée, pas comme du texte. Rectangulaire, sauf `dot` — la seule forme ronde
- * conservée, parce qu'un point rond signifie un état par convention.
+ * Étiquette en gélule. La forme ronde est ici assumée : une étiquette d'état
+ * n'est pas une surface de contenu, et sa silhouette la distingue au premier
+ * regard du texte qui l'entoure.
  */
 const badgeVariants = cva(
-  'inline-flex items-center gap-1.5 font-mono text-2xs font-medium uppercase tracking-[0.1em] transition-colors',
+  'inline-flex items-center gap-1.5 rounded-pill px-3 py-1 text-xs font-semibold transition-colors',
   {
     variants: {
       variant: {
-        default: 'bg-foreground px-2 py-1 text-background',
-        primary: 'bg-primary px-2 py-1 text-primary-foreground',
-        outline: 'border border-border px-2 py-1 text-muted-foreground',
-        secondary: 'bg-secondary px-2 py-1 text-secondary-foreground',
-        destructive: 'bg-destructive px-2 py-1 text-destructive-foreground',
-        /* Pastille d'état : le point coloré porte l'information, le texte la nomme. */
-        dot: 'gap-2 px-0 text-foreground',
+        default: 'bg-primary/12 text-primary',
+        solid: 'bg-primary text-primary-foreground',
+        neutral: 'bg-secondary text-secondary-foreground',
+        outline: 'border border-border bg-card/60 text-muted-foreground',
+        destructive: 'bg-destructive/12 text-destructive',
+        /* Point coloré : l'état sur fond neutre, pour les listes denses. */
+        dot: 'gap-2 bg-secondary/80 pl-2.5 text-foreground',
       },
     },
     defaultVariants: { variant: 'default' },

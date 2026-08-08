@@ -5,96 +5,100 @@
 @tailwind utilities;
 
 /*
- * Système visuel — éditorial.
+ * Système visuel — chaleureux, conduit par l'image.
  *
- * Trois partis pris, tenus partout :
+ * Quatre partis pris :
  *
- * 1. La structure vient des filets, pas des ombres. Une bordure d'un pixel
- *    sépare mieux qu'un halo, et ne suggère pas une profondeur qui n'existe
- *    pas. Aucune ombre portée dans le produit.
+ * 1. La photo commande. Elle occupe l'écran, le texte se pose dessus ou à
+ *    côté. Les surfaces sont pensées comme des cadres, d'où les courbes
+ *    généreuses : 20 px sur les images, 16 px sur les blocs.
  *
- * 2. Les angles sont droits. Le rayon vaut zéro sauf exception justifiée
- *    (pastilles d'état, jetons de couleur), où la forme porte du sens.
+ * 2. Rien n'est gris. Les neutres tirent tous vers le sable et le café — un
+ *    gris pur à côté d'une photo chaude a l'air d'une erreur d'impression.
  *
- * 3. Une seule couleur. Le reste est une échelle de gris chauds. L'accent
- *    vient de `business_settings` : c'est la seule variable d'identité, donc
- *    elle doit rester rare pour signifier quelque chose.
+ * 3. La profondeur est teintée. Une ombre noire transparente grise ce qu'elle
+ *    touche ; les ombres portent ici la teinte du fond, en plus sombre et
+ *    plus saturé, comme une ombre réelle sur du bois clair.
+ *
+ * 4. Le mouvement répond au geste. Les images se rapprochent au survol, les
+ *    surfaces s'éclairent. Rien n'apparaît en fondu au défilement.
  */
 
 @layer base {
   :root {
-    /* Papier et encre. Le fond n'est pas blanc : un blanc pur fatigue et
-       trahit l'écran. Le texte n'est pas noir : le noir pur vibre. */
-    --background: 40 14% 97%;
-    --foreground: 30 8% 11%;
+    /* Ivoire, pas blanc. Café, pas noir. */
+    --background: 36 38% 97%;
+    --foreground: 22 22% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 30 8% 11%;
+    --card-foreground: 22 22% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 30 8% 11%;
+    --popover-foreground: 22 22% 14%;
 
     /* Remplacées à l'exécution par les couleurs du client. */
-    --primary: 12 68% 44%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 14 62% 47%;
+    --primary-foreground: 40 40% 98%;
 
-    --secondary: 40 12% 93%;
-    --secondary-foreground: 30 8% 11%;
+    /* Sable : les surfaces en retrait. */
+    --secondary: 34 30% 92%;
+    --secondary-foreground: 22 22% 14%;
 
-    --muted: 40 12% 93%;
-    --muted-foreground: 30 5% 40%;
+    --muted: 34 26% 93%;
+    --muted-foreground: 24 12% 42%;
 
-    --accent: 30 8% 11%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 30 42% 88%;
+    --accent-foreground: 22 22% 14%;
 
-    --destructive: 4 66% 44%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 4 62% 46%;
+    --destructive-foreground: 40 40% 98%;
 
-    /* Deux valeurs de filet : la règle courante, et celle qui structure. */
-    --border: 30 8% 87%;
-    --border-strong: 30 8% 20%;
-    --input: 30 8% 80%;
-    --ring: 30 8% 11%;
+    --border: 32 20% 88%;
+    --input: 32 20% 84%;
+    --ring: 14 62% 47%;
 
-    /* Camaïeu de l'accent, pour les graphiques uniquement. */
-    --chart-1: 12 68% 44%;
-    --chart-2: 30 8% 25%;
-    --chart-3: 30 6% 48%;
-    --chart-4: 30 5% 68%;
-    --chart-5: 30 5% 82%;
+    --chart-1: 14 62% 47%;
+    --chart-2: 28 48% 56%;
+    --chart-3: 40 44% 62%;
+    --chart-4: 18 32% 40%;
+    --chart-5: 34 24% 74%;
 
-    --radius: 0px;
+    --radius: 1rem;
+
+    /* Teinte des ombres : brune et saturée, jamais du noir pur. */
+    --shadow-hue: 24 30% 22%;
   }
 
   .dark {
-    --background: 30 8% 9%;
-    --foreground: 40 14% 94%;
+    --background: 24 14% 10%;
+    --foreground: 36 26% 94%;
 
-    --card: 30 8% 12%;
-    --card-foreground: 40 14% 94%;
+    --card: 24 12% 14%;
+    --card-foreground: 36 26% 94%;
 
-    --popover: 30 8% 12%;
-    --popover-foreground: 40 14% 94%;
+    --popover: 24 12% 14%;
+    --popover-foreground: 36 26% 94%;
 
-    --primary: 12 70% 54%;
-    --primary-foreground: 30 8% 9%;
+    --primary: 14 66% 56%;
+    --primary-foreground: 24 14% 10%;
 
-    --secondary: 30 6% 17%;
-    --secondary-foreground: 40 14% 94%;
+    --secondary: 24 10% 19%;
+    --secondary-foreground: 36 26% 94%;
 
-    --muted: 30 6% 17%;
-    --muted-foreground: 40 8% 65%;
+    --muted: 24 10% 19%;
+    --muted-foreground: 34 12% 66%;
 
-    --accent: 40 14% 94%;
-    --accent-foreground: 30 8% 9%;
+    --accent: 24 12% 24%;
+    --accent-foreground: 36 26% 94%;
 
-    --destructive: 4 62% 52%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 4 58% 52%;
+    --destructive-foreground: 40 40% 98%;
 
-    --border: 30 6% 22%;
-    --border-strong: 40 10% 70%;
-    --input: 30 6% 28%;
-    --ring: 40 14% 94%;
+    --border: 24 10% 23%;
+    --input: 24 10% 28%;
+    --ring: 14 66% 56%;
+
+    --shadow-hue: 24 40% 4%;
   }
 }
 
@@ -105,91 +109,96 @@
 
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: Archivo, system-ui, sans-serif;
-    /* Chiffres tabulaires par défaut : prix et horaires s'alignent en colonne
-       sans réglage au cas par cas. */
-    font-feature-settings: 'tnum' 1, 'cv05' 1;
+    font-feature-settings: 'tnum' 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Les grandes tailles ont besoin d'un crénage resserré ; les petites, non.
-     Le réglage suit donc l'échelle plutôt que d'être appliqué globalement. */
-  h1, h2, h3 {
-    letter-spacing: -0.022em;
+  /* Les titres passent au serif. L'axe optique de Fraunces est poussé au
+     maximum : à grande taille, le dessin se contraste et s'affirme. */
+  h1, h2, h3, .font-display {
+    font-family: Fraunces, Georgia, serif;
+    font-variation-settings: 'opsz' 144, 'SOFT' 40;
+    font-weight: 600;
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
 
-  /* Le focus est visible et carré, comme le reste. Jamais supprimé. */
   :focus-visible {
-    outline: 2px solid hsl(var(--foreground));
-    outline-offset: 2px;
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 3px;
   }
 
   ::selection {
-    background: hsl(var(--foreground));
-    color: hsl(var(--background));
+    background: hsl(var(--primary) / 0.22);
   }
 
-  ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-  }
-  ::-webkit-scrollbar-track {
-    background: hsl(var(--background));
-  }
+  ::-webkit-scrollbar { width: 12px; height: 12px; }
+  ::-webkit-scrollbar-track { background: hsl(var(--secondary)); }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--border));
-    border: 3px solid hsl(var(--background));
+    background: hsl(var(--muted-foreground) / 0.32);
+    border-radius: 999px;
+    border: 3px solid hsl(var(--secondary));
   }
-  ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground));
-  }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.55); }
 }
 
 @layer components {
-  /* Libellé en petites capitales espacées — sert de sur-titre de section et
-     d'étiquette de champ. Le mono le sépare nettement du texte courant. */
-  .label-mono {
-    font-family: 'IBM Plex Mono', ui-monospace, monospace;
-    @apply text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-muted-foreground;
+  /* Sur-titre : petites capitales espacées, dans la couleur du client. */
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.16em] text-primary;
   }
 
-  /* Chiffres à comparer : prix, durées, horaires. */
-  .figure {
-    font-family: 'IBM Plex Mono', ui-monospace, monospace;
-    font-feature-settings: 'tnum' 1;
+  /*
+   * Cadre photographique.
+   *
+   * L'image déborde légèrement son conteneur et se rapproche au survol. Le
+   * `will-change` évite le tremblement de l'échelle sur les grandes images.
+   */
+  .frame {
+    @apply relative overflow-hidden rounded-2xl bg-secondary;
+  }
+  .frame > img {
+    @apply h-full w-full object-cover transition-transform duration-700 ease-out;
+    will-change: transform;
+  }
+  .group:hover .frame > img,
+  .frame:hover > img {
+    transform: scale(1.045);
   }
 
-  /* Filet structurant, plus appuyé que la bordure courante. */
-  .rule-strong {
-    border-color: hsl(var(--border-strong));
-  }
-
-  /* Le trait qui se dessine au survol d'un lien, de gauche à droite. */
-  .link-underline {
-    @apply relative inline-block;
-  }
-  .link-underline::after {
+  /* Voile dégradé du bas d'image, pour poser du texte blanc sur une photo
+     dont on ne maîtrise pas la luminosité. */
+  .frame-veil::after {
     content: '';
-    @apply absolute bottom-[-2px] left-0 h-px w-full origin-right scale-x-0 bg-current transition-transform duration-300;
+    @apply pointer-events-none absolute inset-0;
+    background: linear-gradient(
+      to top,
+      hsl(var(--shadow-hue) / 0.78) 0%,
+      hsl(var(--shadow-hue) / 0.28) 38%,
+      transparent 68%
+    );
   }
-  .link-underline:hover::after {
-    @apply origin-left scale-x-100;
+
+  /* Repli quand aucune photo n'est configurée : une surface chaude et texturée
+     plutôt qu'un rectangle vide ou une image cassée. */
+  .frame-empty {
+    background-image:
+      radial-gradient(circle at 22% 18%, hsl(var(--primary) / 0.16), transparent 52%),
+      radial-gradient(circle at 82% 78%, hsl(var(--accent) / 0.5), transparent 55%);
+    background-color: hsl(var(--secondary));
   }
 }
 
-/* Le mouvement se limite à la réponse au geste. Rien n'apparaît en fondu au
-   défilement : c'est le tic le plus reconnaissable des pages générées, et il
-   retarde la lecture sans rien apporter. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
