@@ -55,6 +55,7 @@ CREATE FUNCTION storage.foldername(name text) RETURNS text[]
   LANGUAGE sql AS $$ SELECT string_to_array(name, '/') $$;
 CREATE ROLE anon;
 CREATE ROLE authenticated;
+CREATE ROLE service_role;
 SQL
 
 echo "▸ Migrations, amorçage et preset"
@@ -124,6 +125,15 @@ BEGIN
 END $$;
 SQL
 echo "  ✅ tarif relu en base, fiche client, rappel, anti-doublon, annulation"
+
+echo "▸ Remise à zéro, puis reconstruction complète"
+run -f "$REPO/supabase/reset.sql" >/dev/null
+for f in "$REPO"/supabase/migrations/*.sql "$REPO"/supabase/seed.sql \
+         "$REPO"/supabase/presets/salon-beaute.sql; do
+  run -f "$f" >/dev/null
+done
+run -c "SELECT 1 / count(*) FROM public.business_settings;" >/dev/null
+echo "  ✅ le cycle reset → migrations → seed → preset aboutit à une base utilisable"
 
 echo
 echo "Tout le SQL du dépôt est valide."

@@ -114,6 +114,21 @@ Puis, dans un navigateur en navigation privée :
 
 ---
 
+## Repartir de zéro
+
+Sur un projet de mise au point dont on veut effacer l'ardoise :
+
+```
+supabase/reset.sql          ← DESTRUCTIF : données, images et comptes
+```
+
+puis rejouer les migrations, `seed.sql` et un preset, comme à l'étape 2.
+
+Le script rétablit les droits du schéma `public`. C'est indispensable et
+souvent oublié : recréer le schéma efface les droits que Supabase y avait
+posés, et sans eux PostgREST ne voit plus aucune table — l'API répond 401
+partout alors que les tables existent bel et bien.
+
 ## Mettre à jour un client existant
 
 Le code est commun : `git pull` puis redéploiement. Seules les migrations

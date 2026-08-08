@@ -55,7 +55,12 @@ redéployable. À appliquer dans l'ordre sur un projet Supabase vierge :
 supabase/migrations/0001_schema.sql   -- tables, index, déclencheurs
 supabase/migrations/0002_rls.sql      -- politiques Row Level Security
 supabase/seed.sql                     -- données initiales selon le preset métier
+supabase/presets/<métier>.sql         -- vocabulaire, modules et catégories
 ```
+
+Pour repartir de zéro sur un projet de mise au point : `supabase/reset.sql`,
+puis rejouer la séquence ci-dessus. Le script est destructif — il efface
+données, images et comptes.
 
 ### Note de sécurité
 
