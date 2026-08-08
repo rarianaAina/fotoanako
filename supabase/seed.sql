@@ -58,12 +58,22 @@ ON CONFLICT DO NOTHING;
 -- Créneaux : les trente prochains jours, toutes les 30 minutes, hors dimanche.
 -- L'administration les ajuste ensuite jour par jour.
 -- ---------------------------------------------------------------------------
+-- `generate_series` ne connaît pas le type `time` : la série des heures passe
+-- donc par des `timestamp` sur une date arbitraire, dont seule l'heure est lue.
 INSERT INTO public.time_slots (date, label, sort_order)
 SELECT d::date,
        to_char(t, 'HH24:MI'),
        (EXTRACT(HOUR FROM t) * 60 + EXTRACT(MINUTE FROM t))::int
-  FROM generate_series(current_date, current_date + 30, '1 day')      AS d,
-       generate_series('09:00'::time, '17:30'::time, '30 minutes')    AS t
+  FROM generate_series(
+         current_date::timestamp,
+         (current_date + 30)::timestamp,
+         interval '1 day'
+       ) AS d,
+       generate_series(
+         timestamp '2000-01-01 09:00',
+         timestamp '2000-01-01 17:30',
+         interval '30 minutes'
+       ) AS t
  WHERE EXTRACT(ISODOW FROM d) <> 7
 ON CONFLICT (date, label) DO NOTHING;
 

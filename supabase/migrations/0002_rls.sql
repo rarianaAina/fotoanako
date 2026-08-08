@@ -252,8 +252,11 @@ CREATE POLICY appointments_delete_admin ON public.appointments FOR DELETE
 
 -- Créneaux déjà pris, sans aucune donnée personnelle : c'est tout ce dont
 -- la page de réservation publique a besoin.
-CREATE OR REPLACE VIEW public.public_busy_slots
-WITH (security_invoker = false) AS
+-- La vue s'exécute avec les droits de son propriétaire, ce qui court-circuite
+-- volontairement la RLS de `appointments` : c'est ce qui permet d'exposer les
+-- créneaux occupés sans ouvrir la table. C'est le comportement par défaut —
+-- ne pas y ajouter `security_invoker`, qui l'annulerait.
+CREATE OR REPLACE VIEW public.public_busy_slots AS
   SELECT date, time
   FROM public.appointments
   WHERE status IN ('pending', 'confirmed');

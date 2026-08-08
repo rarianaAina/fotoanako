@@ -44,6 +44,7 @@ npm run dev
 | `npm run preview` | Prévisualisation du build |
 | `npm run typecheck` | Vérification TypeScript sans émission |
 | `npm run lint` | ESLint |
+| `./scripts/validate-sql.sh` | Rejoue tout le SQL sur une base jetable et teste la réservation |
 
 ## Base de données
 
