@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Save, Gift } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,7 +40,7 @@ export default function LoyaltySettings() {
   if (loading) {
     return (
       <div className="flex justify-center py-10">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+        <div className="h-8 w-8 animate-spin border-b-2 border-primary" />
       </div>
     );
   }
@@ -49,12 +48,12 @@ export default function LoyaltySettings() {
   const visitsNeeded = pointsPerVisit > 0 ? Math.ceil(rewardThreshold / pointsPerVisit) : null;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Gift className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Programme de fidélité</CardTitle>
+            <CardTitle className="text-lg">Programme de fidélité</CardTitle>
           </div>
           <p className="text-sm text-muted-foreground">
             Les points se cumulent à chaque visite. Le comptage est par visite et non
@@ -118,13 +117,13 @@ export default function LoyaltySettings() {
 
           <Separator />
           <div className="flex justify-end">
-            <Button className="rounded-full" onClick={save} disabled={saving}>
+            <Button onClick={save} disabled={saving}>
               <Save className="mr-2 h-4 w-4" />
               {saving ? 'Enregistrement…' : 'Enregistrer'}
             </Button>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

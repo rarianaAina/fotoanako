@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { Plus, Trash2, Copy, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -108,12 +107,12 @@ export default function TimeSlotsSettings() {
   }, [cursor]);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Créneaux horaires par date</CardTitle>
+            <CardTitle className="text-lg">Créneaux horaires par date</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -158,12 +157,12 @@ export default function TimeSlotsSettings() {
                     onClick={() => setSelectedDate(iso)}
                     className={cn(
                       'min-h-[56px] rounded-xl border p-1 text-left transition-all sm:p-2',
-                      isSelected ? 'border-primary bg-primary/5 shadow-glow' : 'border-border hover:border-primary/40'
+                      isSelected ? 'border-primary bg-primary/5 ' : 'border-border hover:border-primary/40'
                     )}
                   >
                     <div className="flex items-center justify-between">
                       <span className={cn(
-                        'grid h-6 w-6 place-items-center rounded-full text-xs font-semibold',
+                        'grid h-6 w-6 place-items-center  text-xs font-semibold',
                         isTodayDate ? 'bg-primary text-primary-foreground' : 'text-foreground'
                       )}>
                         {d.getDate()}
@@ -220,7 +219,7 @@ export default function TimeSlotsSettings() {
                   <div
                     key={s.id}
                     className={cn(
-                      'flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-all',
+                      'flex items-center gap-1.5  border px-3 py-1.5 text-sm transition-all',
                       s.active
                         ? 'border-primary/30 bg-primary/5 text-foreground'
                         : 'border-border bg-secondary text-muted-foreground line-through'
@@ -263,6 +262,6 @@ export default function TimeSlotsSettings() {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

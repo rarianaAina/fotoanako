@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Save, Palette } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,12 +21,12 @@ export default function ColorsSettings() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Palette className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Couleurs du site</CardTitle>
+            <CardTitle className="text-lg">Couleurs du site</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -38,12 +37,12 @@ export default function ColorsSettings() {
                 onClick={() => setColor(c)}
                 className={cn(
                   'rounded-2xl border p-3 text-left transition-all',
-                  color.name === c.name ? 'border-primary shadow-glow' : 'border-border hover:border-primary/40'
+                  color.name === c.name ? 'border-primary ' : 'border-border hover:border-primary/40'
                 )}
               >
                 <div className="flex gap-1.5">
-                  <span className="h-8 w-8 rounded-full" style={{ background: c.primary }} />
-                  <span className="h-8 w-8 rounded-full" style={{ background: c.accent }} />
+                  <span className="h-8 w-8" style={{ background: c.primary }} />
+                  <span className="h-8 w-8" style={{ background: c.accent }} />
                 </div>
                 <p className="mt-2 text-xs font-medium">{c.name}</p>
               </button>
@@ -51,24 +50,24 @@ export default function ColorsSettings() {
           </div>
           <Separator />
           <div className="flex flex-wrap items-center gap-4">
-            <span className="h-12 w-12 rounded-full" style={{ background: color.primary }} />
+            <span className="h-12 w-12" style={{ background: color.primary }} />
             <div>
               <p className="text-sm font-medium">Aperçu principal</p>
               <p className="text-xs text-muted-foreground">{color.primary}</p>
             </div>
-            <span className="h-12 w-12 rounded-full" style={{ background: color.accent }} />
+            <span className="h-12 w-12" style={{ background: color.accent }} />
             <div>
               <p className="text-sm font-medium">Aperçu accent</p>
               <p className="text-xs text-muted-foreground">{color.accent}</p>
             </div>
           </div>
           <div className="flex justify-end">
-            <Button className="rounded-full" onClick={save}>
+            <Button onClick={save}>
               <Save className="mr-2 h-4 w-4" /> Enregistrer les couleurs
             </Button>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

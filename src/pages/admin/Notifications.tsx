@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
   Bell, Clock, User, ShieldCheck, Users, CheckCircle2, AlertCircle, RefreshCw,
 } from 'lucide-react';
@@ -29,12 +28,6 @@ const DELAY_LABEL: Record<number, string> = {
   24: '24 h avant',
   12: '12 h avant',
   2: '2 h avant',
-};
-
-const fadeUp = {
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4 },
 };
 
 function formatScheduledAt(iso: string): string {
@@ -79,7 +72,7 @@ export default function Notifications() {
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-3xl font-semibold">Notifications & Rappels</h1>
+          <h1 className="text-3xl font-semibold">Notifications & Rappels</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Suivi des rappels automatiques programmés pour les rendez-vous.
           </p>
@@ -87,14 +80,13 @@ export default function Notifications() {
         <div className="flex gap-2">
           <Button 
             variant="default" 
-            className="rounded-full" 
             onClick={sendRemindersNow}
             disabled={sending}
           >
             <Bell className="mr-2 h-4 w-4" /> 
             {sending ? 'Envoi en cours...' : 'Envoyer les rappels maintenant'}
           </Button>
-          <Button variant="outline" className="rounded-full" onClick={refresh}>
+          <Button variant="outline" onClick={refresh}>
             <RefreshCw className="mr-2 h-4 w-4" /> Actualiser
           </Button>
         </div>
@@ -102,9 +94,9 @@ export default function Notifications() {
 
       {/* Config active */}
       {reminderSettings && (
-        <motion.div {...fadeUp}>
+        <div >
           <Card className={cn(
-            'border shadow-soft',
+            'border ',
             reminderSettings.enabled ? 'border-emerald-200 bg-emerald-50' : 'border-border/60 bg-secondary/30'
           )}>
             <CardContent className="flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center">
@@ -118,7 +110,7 @@ export default function Notifications() {
                 <div>
                   <p className="font-medium">
                     Rappels automatiques{' '}
-                    <Badge className={cn('ml-1 rounded-full', reminderSettings.enabled ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-secondary text-muted-foreground border-border')}>
+                    <Badge className={cn('ml-1 ', reminderSettings.enabled ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-secondary text-muted-foreground border-border')}>
                       {reminderSettings.enabled ? 'Activés' : 'Désactivés'}
                     </Badge>
                   </p>
@@ -128,18 +120,18 @@ export default function Notifications() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-3 text-sm">
-                <div className="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2 shadow-soft">
+                <div className="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2">
                   <Clock className="h-4 w-4 text-primary" />
                   <span>{DELAY_LABEL[reminderSettings.delayHours]}</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2 shadow-soft">
+                <div className="flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2">
                   <Users className="h-4 w-4 text-primary" />
                   <span>{RECIPIENT_LABEL[reminderSettings.recipients]}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       )}
 
       {/* Stats */}
@@ -148,9 +140,9 @@ export default function Notifications() {
           { label: 'Rappels à envoyer plus tard', value: upcoming.length, icon: Clock, color: 'text-primary', bg: 'bg-primary/10' },
           { label: 'En retard', value: overdue.length, icon: AlertCircle, color: 'text-rose-500', bg: 'bg-rose-100' },
           { label: 'Envoyés', value: sent.length, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-        ].map((s, i) => (
-          <motion.div key={s.label} {...fadeUp} transition={{ delay: i * 0.07 }}>
-            <Card className="border-border/60 shadow-soft">
+        ].map((s) => (
+          <div key={s.label} >
+            <Card className="border-border/60">
               <CardContent className="flex items-center gap-3 p-5">
                 <span className={cn('grid h-11 w-11 place-items-center rounded-2xl', s.bg, s.color)}>
                   <s.icon className="h-5 w-5" />
@@ -161,15 +153,15 @@ export default function Notifications() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       {/* Rappels programmés */}
-      <motion.div {...fadeUp} transition={{ delay: 0.15 }}>
-        <Card className="border-border/60 shadow-soft">
+      <div >
+        <Card className="border-border/60">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-display text-xl">
+            <CardTitle className="flex items-center gap-2 text-xl">
               <Clock className="h-5 w-5 text-primary" /> Rappels programmés
             </CardTitle>
           </CardHeader>
@@ -188,15 +180,13 @@ export default function Notifications() {
               </div>
             ) : (
               <div className="divide-y divide-border/60">
-                {[...overdue, ...upcoming].map((r, i) => {
+                {[...overdue, ...upcoming].map((r) => {
                   const Icon = RECIPIENT_ICON[r.recipients];
                   const isOverdue = new Date(r.scheduledAt) <= new Date();
                   return (
-                    <motion.div
+                    <div
                       key={r.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
+                     
                       className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex items-start gap-4">
@@ -209,7 +199,7 @@ export default function Notifications() {
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="font-medium">{r.clientName}</p>
-                            <Badge className={cn('rounded-full border text-[10px]',
+                            <Badge className={cn(' border text-[10px]',
                               isOverdue ? 'border-rose-200 bg-rose-100 text-rose-700' : 'border-primary/20 bg-primary/10 text-primary'
                             )}>
                               {isOverdue ? 'En retard' : 'Programmé'}
@@ -231,21 +221,21 @@ export default function Notifications() {
                           <span>{RECIPIENT_LABEL[r.recipients]}</span>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })}
               </div>
             )}
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
       {/* Historique envoyés */}
       {sent.length > 0 && (
-        <motion.div {...fadeUp} transition={{ delay: 0.2 }}>
-          <Card className="border-border/60 shadow-soft">
+        <div >
+          <Card className="border-border/60">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-display text-xl">
+              <CardTitle className="flex items-center gap-2 text-xl">
                 <CheckCircle2 className="h-5 w-5 text-emerald-600" /> Rappels envoyés
               </CardTitle>
             </CardHeader>
@@ -275,7 +265,7 @@ export default function Notifications() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       )}
     </div>
   );

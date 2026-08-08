@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -47,15 +46,15 @@ export default function CalendarPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl font-semibold">Calendrier</h1>
+        <h1 className="text-3xl font-semibold">Calendrier</h1>
         <p className="mt-1 text-sm text-muted-foreground">Vue mensuelle de vos rendez-vous.</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="border-border/60 shadow-soft lg:col-span-2">
+        <Card className="border-border/60 lg:col-span-2">
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-xl font-semibold">
+              <h2 className="text-xl font-semibold">
                 {cursor.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
               </h2>
               <div className="flex gap-1">
@@ -84,11 +83,11 @@ export default function CalendarPage() {
                     onClick={() => setSelected(iso)}
                     className={cn(
                       'min-h-[56px] rounded-xl border p-1 text-left transition-all sm:min-h-[80px] sm:p-2',
-                      isSelected ? 'border-primary bg-primary/5 shadow-glow' : 'border-border hover:border-primary/40'
+                      isSelected ? 'border-primary bg-primary/5 ' : 'border-border hover:border-primary/40'
                     )}
                   >
                     <div className="flex items-center justify-between">
-                      <span className={cn('grid h-5 w-5 place-items-center rounded-full text-[11px] font-semibold sm:h-6 sm:w-6 sm:text-xs', isToday ? 'bg-primary text-primary-foreground' : 'text-foreground')}>
+                      <span className={cn('grid h-5 w-5 place-items-center  text-[11px] font-semibold sm:h-6 sm:w-6 sm:text-xs', isToday ? 'bg-primary text-primary-foreground' : 'text-foreground')}>
                         {d.getDate()}
                       </span>
                       {appts.length > 0 && (
@@ -111,7 +110,7 @@ export default function CalendarPage() {
                     {appts.length > 0 && (
                       <div className="mt-1 flex justify-center gap-0.5 sm:hidden">
                         {appts.slice(0, 3).map((a) => (
-                          <span key={a.id} className="h-1 w-1 rounded-full bg-primary" />
+                          <span key={a.id} className="h-1 w-1 bg-primary" />
                         ))}
                       </div>
                     )}
@@ -122,9 +121,9 @@ export default function CalendarPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-4 sm:p-6">
-            <h2 className="font-display text-xl font-semibold">
+            <h2 className="text-xl font-semibold">
               {selected
                 ? new Date(selected).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
                 : 'Sélectionnez une date'}
@@ -137,10 +136,9 @@ export default function CalendarPage() {
                   const totalPrice = getTotalPrice(a);
                   const serviceNames = getServiceNames(a);
                   return (
-                    <motion.div
+                    <div
                       key={a.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
+                     
                       className="rounded-xl border border-border/60 bg-secondary/30 p-3"
                     >
                       <div className="flex items-center justify-between">
@@ -154,7 +152,7 @@ export default function CalendarPage() {
                       <p className="mt-2 text-sm font-medium">{a.clientName}</p>
                       <p className="text-xs text-muted-foreground line-clamp-2">{serviceNames}</p>
                       <p className="mt-1 text-xs font-medium text-primary">{money(totalPrice)}</p>
-                    </motion.div>
+                    </div>
                   );
                 })
               )}

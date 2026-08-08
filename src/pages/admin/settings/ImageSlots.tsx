@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Images, Plus, Trash2, GripVertical } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -76,18 +75,18 @@ export default function ImageSlotsSettings() {
   if (loading) {
     return (
       <div className="flex justify-center py-10">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+        <div className="h-8 w-8 animate-spin border-b-2 border-primary" />
       </div>
     );
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Images className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Images de référence</CardTitle>
+            <CardTitle className="text-lg">Images de référence</CardTitle>
           </div>
           <p className="text-sm text-muted-foreground">
             Les photos demandées au {customer} au moment de la réservation. Un
@@ -199,12 +198,12 @@ export default function ImageSlotsSettings() {
                 placeholder="Photo d'inspiration, Ordonnance, Dégâts…"
               />
             </div>
-            <Button onClick={add} disabled={!newLabel.trim() || busy} className="rounded-full">
+            <Button onClick={add} disabled={!newLabel.trim() || busy} >
               <Plus className="mr-2 h-4 w-4" /> Ajouter
             </Button>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 // pages/admin/Appointments.tsx
 import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Search, Eye, Pencil, Check, X, CalendarPlus, Bell, Image as ImageIcon } from 'lucide-react';
 import { useServiceCatalog } from '@/hooks/useServiceCatalog';
 import { useClients } from '@/hooks/useClients';
@@ -167,12 +166,12 @@ export default function Appointments() {
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-3xl font-semibold">Rendez-vous</h1>
+          <h1 className="text-3xl font-semibold">Rendez-vous</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Gérez et suivez tous vos rendez-vous.
           </p>
         </div>
-        <Button className="rounded-full" onClick={() => setShowCreate(true)}>
+        <Button onClick={() => setShowCreate(true)}>
           <CalendarPlus className="mr-2 h-4 w-4" /> Nouveau rendez-vous
         </Button>
       </div>
@@ -188,7 +187,7 @@ export default function Appointments() {
         </div>
       )}
 
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/60">
         <CardContent className="p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative max-w-sm flex-1">
@@ -206,7 +205,7 @@ export default function Appointments() {
                   key={f}
                   onClick={() => setFilter(f)}
                   className={cn(
-                    'whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition-all',
+                    'whitespace-nowrap  border px-3 py-1.5 text-xs font-medium transition-all',
                     filter === f
                       ? 'border-primary bg-primary text-primary-foreground'
                       : 'border-border text-foreground/70 hover:border-primary/40'
@@ -220,7 +219,7 @@ export default function Appointments() {
         </CardContent>
       </Card>
 
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/60">
         <CardContent className="p-0">
           {/* Desktop */}
           <div className="hidden overflow-x-auto md:block">
@@ -242,10 +241,9 @@ export default function Appointments() {
                   const totalPrice = getTotalPrice(a);
                   const serviceNames = getServiceNames(a);
                   return (
-                    <motion.tr
+                    <tr
                       key={a.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
+                     
                       className="border-b border-border/60 transition-colors hover:bg-secondary/30"
                     >
                       <TableCell className="font-medium">{a.clientName}</TableCell>
@@ -260,7 +258,7 @@ export default function Appointments() {
                       <TableCell>{a.time}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className={cn('rounded-full border px-2.5 py-0.5 text-xs', STATUS_COLORS[a.status])}>
+                          <span className={cn(' border px-2.5 py-0.5 text-xs', STATUS_COLORS[a.status])}>
                             {STATUS_LABELS[a.status]}
                           </span>
                           {a.status === 'confirmed' && reminderSettings?.enabled && (
@@ -295,7 +293,7 @@ export default function Appointments() {
                           )}
                         </div>
                       </TableCell>
-                    </motion.tr>
+                    </tr>
                   );
                 })}
                 {filtered.length === 0 && (
@@ -328,7 +326,7 @@ export default function Appointments() {
                       {a.referenceImages && a.referenceImages.length > 0 && (
                         <ImageIcon className="h-3.5 w-3.5 text-primary" />
                       )}
-                      <span className={cn('shrink-0 rounded-full border px-2.5 py-0.5 text-xs', STATUS_COLORS[a.status])}>
+                      <span className={cn('shrink-0  border px-2.5 py-0.5 text-xs', STATUS_COLORS[a.status])}>
                         {STATUS_LABELS[a.status]}
                       </span>
                     </div>
@@ -341,16 +339,16 @@ export default function Appointments() {
                     <span className="text-sm font-semibold text-primary">{money(totalPrice)}</span>
                   </div>
                   <div className="mt-3 flex gap-1">
-                    <Button size="sm" variant="outline" className="h-8 flex-1 rounded-full" onClick={() => setViewing(a)}>
+                    <Button size="sm" variant="outline" className="h-8 flex-1" onClick={() => setViewing(a)}>
                       <Eye className="mr-1.5 h-3.5 w-3.5" /> Voir
                     </Button>
                     {a.status === 'pending' && (
-                      <Button size="sm" variant="outline" className="h-8 flex-1 rounded-full text-emerald-600" onClick={() => handleStatus(a.id, 'confirmed')}>
+                      <Button size="sm" variant="outline" className="h-8 flex-1 text-emerald-600" onClick={() => handleStatus(a.id, 'confirmed')}>
                         <Check className="mr-1.5 h-3.5 w-3.5" /> Confirmer
                       </Button>
                     )}
                     {a.status !== 'cancelled' && a.status !== 'completed' && (
-                      <Button size="sm" variant="outline" className="h-8 flex-1 rounded-full text-rose-600" onClick={() => handleStatus(a.id, 'cancelled')}>
+                      <Button size="sm" variant="outline" className="h-8 flex-1 text-rose-600" onClick={() => handleStatus(a.id, 'cancelled')}>
                         <X className="mr-1.5 h-3.5 w-3.5" /> Annuler
                       </Button>
                     )}
@@ -430,7 +428,7 @@ export default function Appointments() {
                       )}
                     >
                       <span className={cn(
-                        'grid h-5 w-5 place-items-center rounded-full border-2',
+                        'grid h-5 w-5 place-items-center  border-2',
                         isSelected
                           ? 'border-primary bg-primary text-primary-foreground'
                           : 'border-muted-foreground'

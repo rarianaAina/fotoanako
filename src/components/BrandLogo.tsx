@@ -29,7 +29,7 @@ export default function BrandLogo({ size = 10, className }: BrandLogoProps) {
       <img
         src={settings.logoUrl}
         alt={settings.name}
-        className={cn(box, 'rounded-full border-2 border-primary/20 object-cover', className)}
+        className={cn(box, ' border-2 border-primary/20 object-cover', className)}
       />
     );
   }
@@ -39,7 +39,7 @@ export default function BrandLogo({ size = 10, className }: BrandLogoProps) {
       className={cn(
         box,
         text,
-        'grid place-items-center rounded-full border-2 border-primary/20 bg-primary/10 font-display text-primary',
+        'grid place-items-center  border-2 border-primary/20 bg-primary/10 text-primary',
         className,
       )}
       aria-label={settings.name}

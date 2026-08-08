@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CalendarHeart, Check, Clock, ArrowLeft, ArrowRight, PartyPopper, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarHeart, Check, Clock, ArrowLeft, ArrowRight, PartyPopper, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -71,8 +70,7 @@ export default function Booking() {
   const [info, setInfo] = useState({
     name: user?.name ?? '',
     phone: user?.phone ?? '',
-    email: user?.email ?? '',
-  });
+    email: user?.email ?? '' });
   const [submitting, setSubmitting] = useState(false);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [slotsByDate, setSlotsByDate] = useState<Record<string, number>>({});
@@ -193,8 +191,7 @@ export default function Booking() {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         url: reader.result as string,
         slot: slotKey,
-        file,
-      };
+        file };
       setSlotImages((prev) => ({ ...prev, [slotKey]: [...(prev[slotKey] ?? []), newImage] }));
     };
     reader.readAsDataURL(file);
@@ -203,8 +200,7 @@ export default function Booking() {
   const handleImageRemove = (slotKey: string, imageId: string) => {
     setSlotImages((prev) => ({
       ...prev,
-      [slotKey]: (prev[slotKey] ?? []).filter((img) => img.id !== imageId),
-    }));
+      [slotKey]: (prev[slotKey] ?? []).filter((img) => img.id !== imageId) }));
   };
 
   const handleCaptionChange = (slotKey: string, imageId: string, caption: string) => {
@@ -212,8 +208,7 @@ export default function Booking() {
       ...prev,
       [slotKey]: (prev[slotKey] ?? []).map((img) =>
         img.id === imageId ? { ...img, caption } : img,
-      ),
-    }));
+      ) }));
   };
 
   /** Emplacements obligatoires encore vides. */
@@ -270,8 +265,7 @@ export default function Booking() {
           time,
           paymentMethodId,
           referenceImages: uploadedImages,
-          clientNotes: clientNotes || undefined,
-        });
+          clientNotes: clientNotes || undefined });
         setStep(5);
       } catch (error) {
         console.error(error);
@@ -302,15 +296,15 @@ export default function Booking() {
   };
 
   return (
-    <div className="min-h-screen gradient-rose pt-24 pb-20">
+    <div className="min-h-screen pt-24 pb-20">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-          <Badge variant="secondary" className="mb-4 gap-1.5 rounded-full border border-primary/20 bg-white/70 px-4 py-1.5 text-xs text-primary backdrop-blur">
+        <div className="text-center">
+          <Badge variant="secondary" className="mb-4 gap-1.5 border border-primary/20 bg-white/70 px-4 py-1.5 text-xs text-primary">
             <CalendarHeart className="h-3.5 w-3.5" /> Réservation
           </Badge>
-          <h1 className="font-display text-4xl font-semibold text-foreground sm:text-5xl">Prendre rendez-vous</h1>
+          <h1 className="text-4xl font-semibold text-foreground sm:text-5xl">Prendre rendez-vous</h1>
           <p className="mx-auto mt-3 max-w-xl text-foreground/70">Réservez votre créneau en quelques étapes simples.</p>
-        </motion.div>
+        </div>
 
         {/* Stepper */}
         <div className="mt-10 flex items-center justify-center">
@@ -318,8 +312,8 @@ export default function Booking() {
             {stepsMeta.map((s, i) => (
               <div key={s.n} className="flex flex-1 items-center last:flex-none">
                 <div className="flex flex-col items-center">
-                  <div className={cn('grid h-10 w-10 place-items-center rounded-full border-2 text-sm font-semibold transition-all',
-                    step === s.n ? 'border-primary bg-primary text-primary-foreground shadow-glow'
+                  <div className={cn('grid h-10 w-10 place-items-center  border-2 text-sm font-semibold transition-all',
+                    step === s.n ? 'border-primary bg-primary text-primary-foreground '
                     : step > s.n ? 'border-primary bg-primary/10 text-primary'
                     : 'border-border bg-card text-muted-foreground')}>
                     {step > s.n ? <Check className="h-4 w-4" /> : s.n}
@@ -329,19 +323,18 @@ export default function Booking() {
                   </span>
                 </div>
                 {i < stepsMeta.length - 1 && (
-                  <div className={cn('mx-2 h-0.5 flex-1 rounded-full transition-colors', step > s.n ? 'bg-primary' : 'bg-border')} />
+                  <div className={cn('mx-2 h-0.5 flex-1  transition-colors', step > s.n ? 'bg-primary' : 'bg-border')} />
                 )}
               </div>
             ))}
           </div>
         </div>
 
-        <Card className="mt-10 border-border/60 bg-card/90 shadow-soft backdrop-blur">
+        <Card className="mt-10 border-border/60 bg-card/90">
           <CardContent className="p-6 sm:p-8">
-            <AnimatePresence mode="wait">
-              {step === 1 && (
-                <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                  <h2 className="font-display text-2xl font-semibold">Choisissez vos prestations</h2>
+            {step === 1 && (
+                <div key="s1">
+                  <h2 className="text-2xl font-semibold">Choisissez vos prestations</h2>
                   <p className="mt-1 text-sm text-muted-foreground">
                     Sélectionnez une ou plusieurs prestations. Vous pouvez en choisir plusieurs.
                   </p>
@@ -355,7 +348,7 @@ export default function Booking() {
                           className={cn(
                             'flex items-center gap-4 rounded-2xl border p-3 text-left transition-all',
                             isSelected
-                              ? 'border-primary bg-primary/5 shadow-glow'
+                              ? 'border-primary bg-primary/5 '
                               : 'border-border hover:border-primary/40'
                           )}
                         >
@@ -364,7 +357,7 @@ export default function Booking() {
                             <div className="flex items-center justify-between">
                               <p className="font-medium">{s.name}</p>
                               {isSelected && (
-                                <span className="grid h-5 w-5 place-items-center rounded-full bg-primary text-primary-foreground">
+                                <span className="grid h-5 w-5 place-items-center bg-primary text-primary-foreground">
                                   <Check className="h-3 w-3" />
                                 </span>
                               )}
@@ -378,9 +371,7 @@ export default function Booking() {
                   </div>
 
                   {selectedServices.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
+                    <div
                       className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-4"
                     >
                       <p className="font-medium text-sm">Récapitulatif</p>
@@ -402,17 +393,17 @@ export default function Booking() {
                           <span>{formatDuration(totalDuration)}</span>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   )}
-                </motion.div>
+                </div>
               )}
 
               {step === 2 && (
-                <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                  <h2 className="font-display text-2xl font-semibold">Choisissez une date</h2>
+                <div key="s2">
+                  <h2 className="text-2xl font-semibold">Choisissez une date</h2>
                   <p className="mt-1 text-sm text-muted-foreground">Sélectionnez le jour de votre rendez-vous.</p>
                   <div className="mt-6 mx-auto max-w-md">
-                    <Card className="border-border/60 shadow-soft">
+                    <Card className="border-border/60">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-4">
                           <span className="text-sm font-medium">
@@ -464,7 +455,7 @@ export default function Booking() {
                                 className={cn(
                                   'aspect-square rounded-lg text-sm transition-all flex flex-col items-center justify-center',
                                   isSelected
-                                    ? 'bg-primary text-primary-foreground shadow-glow'
+                                    ? 'bg-primary text-primary-foreground '
                                     : hasAvailableSlots
                                     ? 'bg-primary/5 text-primary hover:bg-primary/10 hover:scale-105 cursor-pointer'
                                     : 'text-muted-foreground cursor-default opacity-40',
@@ -479,7 +470,7 @@ export default function Booking() {
                                 </span>
                                 {hasAvailableSlots && (
                                   <div className={cn(
-                                    'mt-0.5 h-1 w-1 rounded-full',
+                                    'mt-0.5 h-1 w-1 ',
                                     isSelected ? 'bg-primary-foreground' : 'bg-primary'
                                   )} />
                                 )}
@@ -490,27 +481,27 @@ export default function Booking() {
 
                         <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1.5">
-                            <span className="inline-block h-2 w-2 rounded-full bg-primary" />
+                            <span className="inline-block h-2 w-2 bg-primary" />
                             <span>Créneaux disponibles</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <span className="inline-block h-2 w-2 rounded-full bg-muted-foreground/30" />
+                            <span className="inline-block h-2 w-2 bg-muted-foreground/30" />
                             <span>Aucun créneau</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <span className="inline-block h-2 w-2 rounded-full bg-primary ring-1 ring-primary/30" />
+                            <span className="inline-block h-2 w-2 bg-primary ring-1 ring-primary/30" />
                             <span>Aujourd'hui</span>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
                   </div>
-                </motion.div>
+                </div>
               )}
 
               {step === 3 && (
-                <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                  <h2 className="font-display text-2xl font-semibold">Choisissez un créneau</h2>
+                <div key="s3">
+                  <h2 className="text-2xl font-semibold">Choisissez un créneau</h2>
                   <p className="mt-1 text-sm text-muted-foreground">
                     Créneaux disponibles pour le {date ? new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : ''}
                   </p>
@@ -525,7 +516,7 @@ export default function Booking() {
                           className={cn(
                             'flex items-center justify-center gap-1.5 rounded-xl border py-2.5 text-sm transition-all disabled:opacity-30 disabled:line-through',
                             time === t
-                              ? 'border-primary bg-primary text-primary-foreground shadow-glow'
+                              ? 'border-primary bg-primary text-primary-foreground '
                               : 'border-border hover:border-primary/40'
                           )}
                         >
@@ -539,12 +530,12 @@ export default function Booking() {
                       </div>
                     )}
                   </div>
-                </motion.div>
+                </div>
               )}
 
               {step === 4 && (
-                <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                  <h2 className="font-display text-2xl font-semibold">Vos informations</h2>
+                <div key="s4">
+                  <h2 className="text-2xl font-semibold">Vos informations</h2>
                   <p className="mt-1 text-sm text-muted-foreground">Pour confirmer votre rendez-vous.</p>
                   <div className="mt-6 space-y-4">
                     <div className="space-y-1.5">
@@ -570,7 +561,7 @@ export default function Booking() {
                         <SelectContent>
                           {loadingPayments ? (
                             <div className="flex justify-center py-4">
-                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary" />
+                              <div className="animate-spin h-5 w-5 border-b-2 border-primary" />
                             </div>
                           ) : activePaymentMethods.length === 0 ? (
                             <SelectItem value="" disabled>Aucun moyen de paiement disponible</SelectItem>
@@ -636,16 +627,16 @@ export default function Booking() {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               )}
 
               {step === 5 && (
-                <motion.div key="s5" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-                    className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-primary/10 text-primary">
+                <div key="s5" className="text-center">
+                  <div
+                    className="mx-auto grid h-24 w-24 place-items-center bg-primary/10 text-primary">
                     <PartyPopper className="h-12 w-12" />
-                  </motion.div>
-                  <h2 className="mt-6 font-display text-3xl font-semibold">Rendez-vous confirmé !</h2>
+                  </div>
+                  <h2 className="mt-6 text-3xl font-semibold">Rendez-vous confirmé !</h2>
                   <p className="mx-auto mt-3 max-w-sm text-muted-foreground">
                     Votre rendez-vous pour{' '}
                     <span className="font-medium text-foreground">
@@ -663,26 +654,24 @@ export default function Booking() {
                   </p>
                   <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                     {isLoggedIn ? (
-                      <Button size="lg" className="rounded-full px-8" onClick={() => navigate('/mon-espace')}>
-                        <Sparkles className="mr-2 h-4 w-4" /> Retour à mon espace
+                      <Button size="lg" className="px-8" onClick={() => navigate('/mon-espace')}> Retour à mon espace
                       </Button>
                     ) : (
                       <>
-                        <Button asChild size="lg" className="rounded-full px-8"><Link to="/">Retour à l'accueil</Link></Button>
-                        <Button asChild size="lg" variant="outline" className="rounded-full"><Link to="/mon-espace"><Sparkles className="mr-2 h-4 w-4" /> Mon espace</Link></Button>
+                        <Button asChild size="lg" className="px-8"><Link to="/">Retour à l'accueil</Link></Button>
+                        <Button asChild size="lg" variant="outline" ><Link to="/mon-espace"> Mon espace</Link></Button>
                       </>
                     )}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
 
             {step < 5 && (
               <div className="mt-8 flex items-center justify-between border-t border-border/60 pt-6">
-                <Button variant="ghost" className="rounded-full" onClick={prev} disabled={step === 1}>
+                <Button variant="ghost" onClick={prev} disabled={step === 1}>
                   <ArrowLeft className="mr-2 h-4 w-4" /> Retour
                 </Button>
-                <Button className="rounded-full" onClick={next} disabled={!canNext || submitting || isUploading}>
+                <Button onClick={next} disabled={!canNext || submitting || isUploading}>
                   {step === 4 ? (submitting ? 'Confirmation...' : 'Confirmer') : 'Suivant'}
                   {step < 4 && <ArrowRight className="ml-2 h-4 w-4" />}
                 </Button>

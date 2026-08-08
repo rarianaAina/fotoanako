@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Plus, Trash2, Pencil, Save, X, Upload, Image, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -103,16 +102,16 @@ export default function GalleryManagement() {
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-3xl font-semibold">Gestion de la galerie</h1>
+          <h1 className="text-3xl font-semibold">Gestion de la galerie</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Gérez les images de la galerie. Les images sont automatiquement compressées en WebP.
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-full" onClick={handleCleanup}>
+          <Button variant="outline" onClick={handleCleanup}>
             <RefreshCw className="mr-2 h-4 w-4" /> Nettoyer
           </Button>
-          <Button className="rounded-full" onClick={() => setShowAddDialog(true)}>
+          <Button onClick={() => setShowAddDialog(true)}>
             <Plus className="mr-2 h-4 w-4" /> Ajouter une image
           </Button>
         </div>
@@ -128,17 +127,16 @@ export default function GalleryManagement() {
           <div className="col-span-full py-20 text-center text-muted-foreground">
             <Image className="mx-auto h-12 w-12 text-muted-foreground/50" />
             <p className="mt-4">Aucune image dans la galerie</p>
-            <Button variant="outline" className="mt-4 rounded-full" onClick={() => setShowAddDialog(true)}>
+            <Button variant="outline" className="mt-4" onClick={() => setShowAddDialog(true)}>
               <Plus className="mr-2 h-4 w-4" /> Ajouter une image
             </Button>
           </div>
         ) : (
           items.map((item) => (
-            <motion.div
+            <div
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="group relative overflow-hidden rounded-2xl shadow-soft"
+             
+              className="group relative overflow-hidden rounded-2xl"
             >
               <div className="aspect-square overflow-hidden">
                 <img
@@ -204,7 +202,7 @@ export default function GalleryManagement() {
                   </div>
                 </>
               )}
-            </motion.div>
+            </div>
           ))
         )}
       </div>
@@ -231,7 +229,7 @@ export default function GalleryManagement() {
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="absolute -right-2 -top-2 h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70"
+                    className="absolute -right-2 -top-2 h-8 w-8 bg-black/50 text-white hover:bg-black/70"
                     onClick={() => { setSelectedFile(null); setPreviewUrl(null); }}
                   >
                     <X className="h-4 w-4" />

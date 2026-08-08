@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import BrandLogo from '@/components/BrandLogo';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,18 +42,16 @@ export default function ForgotPassword() {
 
   if (sent) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-rose p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div
           className="w-full max-w-md"
         >
-          <Card className="border-border/60 shadow-soft">
+          <Card className="border-border/60">
             <CardContent className="p-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center bg-emerald-100 text-emerald-600">
                 <CheckCircle className="h-8 w-8" />
               </div>
-              <h2 className="font-display text-2xl font-semibold">Email envoyé !</h2>
+              <h2 className="text-2xl font-semibold">Email envoyé !</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Un lien de réinitialisation a été envoyé à <strong>{email}</strong>.
                 <br />
@@ -65,7 +62,7 @@ export default function ForgotPassword() {
               </p>
               <Button
                 variant="outline"
-                className="mt-6 rounded-full"
+                className="mt-6"
                 onClick={() => {
                   setSent(false);
                   setEmail('');
@@ -75,23 +72,21 @@ export default function ForgotPassword() {
               </Button>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-rose p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <div
         className="w-full max-w-md"
       >
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-8">
             <div className="text-center">
               <BrandLogo size={12} className="mx-auto" />
-              <h2 className="mt-4 font-display text-2xl font-semibold">Mot de passe oublié</h2>
+              <h2 className="mt-4 text-2xl font-semibold">Mot de passe oublié</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Entrez votre email pour recevoir un lien de réinitialisation.
               </p>
@@ -116,7 +111,7 @@ export default function ForgotPassword() {
 
               <Button
                 type="submit"
-                className="w-full rounded-full"
+                className="w-full"
                 disabled={loading}
               >
                 {loading ? 'Envoi en cours...' : 'Envoyer le lien'}
@@ -134,7 +129,7 @@ export default function ForgotPassword() {
             </form>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

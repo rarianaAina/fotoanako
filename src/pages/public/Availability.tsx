@@ -1,23 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles, Clock, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Clock, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
 import { toDateString } from '@/utils/date';
 import { cn } from '@/utils/cn';
 import { useActiveConfig } from '@/hooks/useActiveConfig';
 import { useSettings } from '@/hooks/useSettings';
 import type { BusinessHours } from '@/types';
+import PageHeader from '@/components/public/PageHeader';
 
 const weekDays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-
-const fadeUp = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-60px' },
-  transition: { duration: 0.5 },
-};
 
 export default function Availability() {
   const { settings } = useSettings();
@@ -92,32 +84,18 @@ export default function Availability() {
   return (
     <div>
       {/* Hero */}
-      <section className="gradient-rose pt-32 pb-16">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Badge variant="secondary" className="mb-4 gap-1.5 rounded-full border border-primary/20 bg-white/70 px-4 py-1.5 text-xs text-primary backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" /> Disponibilités
-            </Badge>
-            <h1 className="font-display text-5xl font-semibold text-foreground sm:text-6xl">
-              Créneaux disponibles
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-foreground/70">
-              Consultez les créneaux disponibles pour chaque date.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Agenda"
+        title="Créneaux disponibles"
+        lead="Les horaires encore libres, jour par jour."
+      />
 
       <section className="py-16">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2">
             {/* Calendrier */}
-            <motion.div {...fadeUp}>
-              <Card className="border-border/60 shadow-soft">
+            <div >
+              <Card className="border-border/60">
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-sm font-medium">
@@ -169,7 +147,7 @@ export default function Availability() {
                           className={cn(
                             'aspect-square rounded-lg text-sm transition-all flex flex-col items-center justify-center',
                             isSelected
-                              ? 'bg-primary text-primary-foreground shadow-glow'
+                              ? 'bg-primary text-primary-foreground '
                               : hasAvailableSlots
                               ? 'bg-primary/5 text-primary hover:bg-primary/10 hover:scale-105 cursor-pointer'
                               : 'text-muted-foreground cursor-default opacity-40',
@@ -184,7 +162,7 @@ export default function Availability() {
                           </span>
                           {hasAvailableSlots && (
                             <div className={cn(
-                              'mt-0.5 h-1 w-1 rounded-full',
+                              'mt-0.5 h-1 w-1 ',
                               isSelected ? 'bg-primary-foreground' : 'bg-primary'
                             )} />
                           )}
@@ -195,27 +173,27 @@ export default function Availability() {
 
                   <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1.5">
-                      <span className="inline-block h-2 w-2 rounded-full bg-primary" />
+                      <span className="inline-block h-2 w-2 bg-primary" />
                       <span>Créneaux disponibles</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="inline-block h-2 w-2 rounded-full bg-muted-foreground/30" />
+                      <span className="inline-block h-2 w-2 bg-muted-foreground/30" />
                       <span>Aucun créneau</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="inline-block h-2 w-2 rounded-full bg-primary ring-1 ring-primary/30" />
+                      <span className="inline-block h-2 w-2 bg-primary ring-1 ring-primary/30" />
                       <span>Aujourd'hui</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
             {/* Liste des créneaux */}
-            <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-              <Card className="border-border/60 shadow-soft h-full">
+            <div >
+              <Card className="border-border/60 h-full">
                 <CardContent className="p-4 sm:p-6">
-                  <h3 className="font-display text-xl font-semibold mb-2">
+                  <h3 className="text-xl font-semibold mb-2">
                     Créneaux du {selectedDate ? new Date(selectedDate + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : ''}
                   </h3>
                   
@@ -228,11 +206,9 @@ export default function Availability() {
                   ) : (
                     <div className="mt-4 space-y-2">
                       {availableSlots.map((slot, index) => (
-                        <motion.div
+                        <div
                           key={slot}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.05 }}
+                         
                           className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3"
                         >
                           <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -240,7 +216,7 @@ export default function Availability() {
                           <span className="ml-auto text-xs text-muted-foreground">
                             {index + 1} / {availableSlots.length}
                           </span>
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -254,7 +230,7 @@ export default function Availability() {
                   )}
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>

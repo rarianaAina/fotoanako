@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Save, Languages } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -60,12 +59,12 @@ export default function VocabularySettings() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Languages className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Vocabulaire</CardTitle>
+            <CardTitle className="text-lg">Vocabulaire</CardTitle>
           </div>
           <p className="text-sm text-muted-foreground">
             Les mots employés dans toute l'application. Un cabinet parle de patients
@@ -80,8 +79,7 @@ export default function VocabularySettings() {
                 key={preset.name}
                 variant="outline"
                 size="sm"
-                className="rounded-full"
-                onClick={() =>
+                                onClick={() =>
                   setLabels((l) => ({ ...DEFAULT_LABELS, ...l, ...preset.labels }))
                 }
               >
@@ -126,13 +124,13 @@ export default function VocabularySettings() {
 
           <Separator />
           <div className="flex justify-end">
-            <Button onClick={save} disabled={saving} className="rounded-full">
+            <Button onClick={save} disabled={saving} >
               <Save className="mr-2 h-4 w-4" />
               {saving ? 'Enregistrement…' : 'Enregistrer'}
             </Button>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

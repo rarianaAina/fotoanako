@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Save, Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,12 +18,12 @@ export default function CancellationSettings() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Annulation de rendez-vous</CardTitle>
+            <CardTitle className="text-lg">Annulation de rendez-vous</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -81,12 +80,12 @@ export default function CancellationSettings() {
           </div>
 
           <div className="flex justify-end pt-2">
-            <Button className="rounded-full" onClick={handleSave}>
+            <Button onClick={handleSave}>
               <Save className="mr-2 h-4 w-4" /> Enregistrer
             </Button>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

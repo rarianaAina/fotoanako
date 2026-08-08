@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import BrandLogo from '@/components/BrandLogo';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,46 +67,42 @@ export default function ResetPassword() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-rose p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div
           className="w-full max-w-md"
         >
-          <Card className="border-border/60 shadow-soft">
+          <Card className="border-border/60">
             <CardContent className="p-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center bg-rose-100 text-rose-600">
                 <Lock className="h-8 w-8" />
               </div>
-              <h2 className="font-display text-2xl font-semibold">Lien invalide</h2>
+              <h2 className="text-2xl font-semibold">Lien invalide</h2>
               <p className="mt-2 text-sm text-muted-foreground">{error}</p>
               <Button
-                className="mt-6 rounded-full"
+                className="mt-6"
                 onClick={() => navigate('/connexion')}
               >
                 Retour à la connexion
               </Button>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     );
   }
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-rose p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div
           className="w-full max-w-md"
         >
-          <Card className="border-border/60 shadow-soft">
+          <Card className="border-border/60">
             <CardContent className="p-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center bg-emerald-100 text-emerald-600">
                 <CheckCircle className="h-8 w-8" />
               </div>
-              <h2 className="font-display text-2xl font-semibold">Mot de passe mis à jour !</h2>
+              <h2 className="text-2xl font-semibold">Mot de passe mis à jour !</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Votre mot de passe a été modifié avec succès.
                 <br />
@@ -115,23 +110,21 @@ export default function ResetPassword() {
               </p>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-rose p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <div
         className="w-full max-w-md"
       >
-        <Card className="border-border/60 shadow-soft">
+        <Card className="border-border/60">
           <CardContent className="p-8">
             <div className="text-center">
               <BrandLogo size={12} className="mx-auto" />
-              <h2 className="mt-4 font-display text-2xl font-semibold">Nouveau mot de passe</h2>
+              <h2 className="mt-4 text-2xl font-semibold">Nouveau mot de passe</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Choisissez un nouveau mot de passe pour votre compte.
               </p>
@@ -181,7 +174,7 @@ export default function ResetPassword() {
 
               <Button
                 type="submit"
-                className="w-full rounded-full"
+                className="w-full"
                 disabled={loading}
               >
                 {loading ? 'Mise à jour...' : 'Mettre à jour le mot de passe'}
@@ -189,7 +182,7 @@ export default function ResetPassword() {
             </form>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

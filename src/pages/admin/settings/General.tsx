@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { Save, Upload, Store, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -125,12 +124,12 @@ export default function GeneralSettings() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Store className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Informations de l’entreprise</CardTitle>
+            <CardTitle className="text-lg">Informations de l’entreprise</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
@@ -168,14 +167,14 @@ export default function GeneralSettings() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-4xl font-display text-muted-foreground">
+                  <div className="flex h-full w-full items-center justify-center text-4xl text-muted-foreground">
                     {info.name[0]?.toUpperCase() ?? '?'}
                   </div>
                 )}
                 {logoUrl && !previewUrl && (
                   <button
                     onClick={handleRemoveLogo}
-                    className="absolute -right-1 -top-1 rounded-full bg-destructive p-0.5 text-destructive-foreground hover:bg-destructive/90"
+                    className="absolute -right-1 -top-1 bg-destructive p-0.5 text-destructive-foreground hover:bg-destructive/90"
                     title="Supprimer le logo"
                   >
                     <X className="h-4 w-4" />
@@ -187,8 +186,7 @@ export default function GeneralSettings() {
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    className="rounded-full"
-                    onClick={() => fileInputRef.current?.click()}
+                                        onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
                   >
                     <Upload className="mr-2 h-4 w-4" />
@@ -208,7 +206,7 @@ export default function GeneralSettings() {
                 </p>
                 {uploading && (
                   <div className="flex items-center gap-2 text-sm text-primary">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <div className="h-4 w-4 animate-spin border-2 border-primary border-t-transparent" />
                     Compression en cours...
                   </div>
                 )}
@@ -217,12 +215,12 @@ export default function GeneralSettings() {
           </div>
 
           <div className="sm:col-span-2 flex justify-end">
-            <Button className="rounded-full" onClick={save} disabled={uploading}>
+            <Button onClick={save} disabled={uploading}>
               <Save className="mr-2 h-4 w-4" /> Enregistrer
             </Button>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

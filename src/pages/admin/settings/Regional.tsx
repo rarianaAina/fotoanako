@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Save, Globe } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -78,12 +77,12 @@ export default function RegionalSettings() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Globe className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Devise et région</CardTitle>
+            <CardTitle className="text-lg">Devise et région</CardTitle>
           </div>
         </CardHeader>
 
@@ -94,8 +93,7 @@ export default function RegionalSettings() {
                 key={c.code}
                 variant="outline"
                 size="sm"
-                className="rounded-full"
-                onClick={() =>
+                                onClick={() =>
                   setForm((f) => ({
                     ...f,
                     currencyCode: c.code,
@@ -173,18 +171,18 @@ export default function RegionalSettings() {
 
           <div className="rounded-2xl bg-secondary/50 p-4">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Aperçu</p>
-            <p className="mt-1 font-display text-2xl text-primary">{preview}</p>
+            <p className="mt-1 text-2xl text-primary">{preview}</p>
           </div>
 
           <Separator />
           <div className="flex justify-end">
-            <Button onClick={save} disabled={saving} className="rounded-full">
+            <Button onClick={save} disabled={saving} >
               <Save className="mr-2 h-4 w-4" />
               {saving ? 'Enregistrement…' : 'Enregistrer'}
             </Button>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

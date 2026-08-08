@@ -1,7 +1,6 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
-  Store, Clock, Share2, CreditCard, Calendar, Bell, Palette, Tag, Gift, Sparkles, Image,
+  Store, Clock, Share2, CreditCard, Calendar, Bell, Palette, Tag, Gift, Megaphone, Image,
   ToggleLeft, Languages, Globe, Images,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -29,7 +28,7 @@ const SECTIONS: {
   { id: 'payment', label: 'Paiements', icon: CreditCard, path: '/admin/parametres/paiements', module: 'payments' },
   { id: 'reminders', label: 'Rappels', icon: Bell, path: '/admin/parametres/rappels', module: 'reminders' },
   { id: 'loyalty', label: 'Fidélité', icon: Gift, path: '/admin/parametres/fidelite', module: 'loyalty' },
-  { id: 'informations', label: 'Infos spéciales', icon: Sparkles, path: '/admin/parametres/informations', module: 'specialInfos' },
+  { id: 'informations', label: 'Infos spéciales', icon: Megaphone, path: '/admin/parametres/informations', module: 'specialInfos' },
   { id: 'images', label: 'Images de référence', icon: Images, path: '/admin/parametres/images', module: 'referenceImages' },
   { id: 'galerie', label: 'Galerie', icon: Image, path: '/admin/parametres/galerie', module: 'gallery' },
 ];
@@ -42,7 +41,7 @@ export default function SettingsLayout() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl font-semibold">Paramètres</h1>
+        <h1 className="text-3xl font-semibold">Paramètres</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Personnalisez les informations et l'apparence de votre site.
         </p>
@@ -58,9 +57,9 @@ export default function SettingsLayout() {
               to={section.path}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all',
+                  'flex items-center gap-2  px-4 py-2 text-sm font-medium transition-all',
                   isActive || (section.id === 'general' && location.pathname === '/admin/parametres')
-                    ? 'bg-primary text-primary-foreground shadow-glow'
+                    ? 'bg-primary text-primary-foreground '
                     : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
                 )
               }
@@ -73,14 +72,14 @@ export default function SettingsLayout() {
       </div>
 
       {/* Contenu de la sous-page */}
-      <motion.div
+      <div
         key={location.pathname}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+       
+       
+       
       >
         <Outlet />
-      </motion.div>
+      </div>
     </div>
   );
 }

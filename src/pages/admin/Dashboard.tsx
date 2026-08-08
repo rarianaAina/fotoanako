@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
   TrendingUp,
   CalendarDays,
@@ -40,12 +39,6 @@ const PIE_COLORS = [
   'hsl(200 30% 70%)',
   'hsl(320 40% 72%)',
 ];
-
-const fadeUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
-};
 
 export default function Dashboard() {
   const t = useLabels();
@@ -125,16 +118,16 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl font-semibold">Tableau de bord</h1>
+        <h1 className="text-3xl font-semibold">Tableau de bord</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Bienvenue ! Voici un aperçu de votre activité aujourd'hui.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s, i) => (
-          <motion.div key={s.label} {...fadeUp} transition={{ delay: i * 0.08 }}>
-            <Card className="border-border/60 shadow-soft">
+        {stats.map((s) => (
+          <div key={s.label} >
+            <Card className="border-border/60">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between">
                   <span className="grid h-11 w-11 place-items-center rounded-2xl bg-primary/10 text-primary">
@@ -149,16 +142,16 @@ export default function Dashboard() {
                 <p className="text-sm text-muted-foreground">{s.label}</p>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
 
-      <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-        <Card className="border-border/60 bg-gradient-to-br from-primary/5 to-accent/5 shadow-soft">
+      <div >
+        <Card className="border-border/60 bg-gradient-to-br from-primary/5 to-accent/5">
           <CardContent className="flex items-center justify-between p-5">
             <div>
               <p className="text-sm text-muted-foreground">Panier moyen</p>
-              <p className="mt-1 font-display text-3xl font-semibold text-primary">
+              <p className="mt-1 text-3xl font-semibold text-primary">
                 {money(dashboardStats?.averageBasket ?? 0)}
               </p>
             </div>
@@ -167,13 +160,13 @@ export default function Dashboard() {
             </span>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <motion.div {...fadeUp} transition={{ delay: 0.15 }}>
-          <Card className="border-border/60 shadow-soft">
+        <div >
+          <Card className="border-border/60">
             <CardHeader>
-              <CardTitle className="font-display text-lg">Évolution du chiffre d'affaires</CardTitle>
+              <CardTitle className="text-lg">Évolution du chiffre d'affaires</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={260}>
@@ -205,12 +198,12 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
 
-        <motion.div {...fadeUp} transition={{ delay: 0.2 }}>
-          <Card className="border-border/60 shadow-soft">
+        <div >
+          <Card className="border-border/60">
             <CardHeader>
-              <CardTitle className="font-display text-lg">{t('service', 'many')} les plus demandées</CardTitle>
+              <CardTitle className="text-lg">{t('service', 'many')} les plus demandées</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={260}>
@@ -233,13 +226,13 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
 
-      <motion.div {...fadeUp} transition={{ delay: 0.25 }}>
-        <Card className="border-border/60 shadow-soft">
+      <div >
+        <Card className="border-border/60">
           <CardHeader>
-            <CardTitle className="font-display text-lg">Rendez-vous par mois</CardTitle>
+            <CardTitle className="text-lg">Rendez-vous par mois</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={240}>
@@ -259,12 +252,12 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
-      <motion.div {...fadeUp} transition={{ delay: 0.3 }}>
-        <Card className="border-border/60 shadow-soft">
+      <div >
+        <Card className="border-border/60">
           <CardHeader>
-            <CardTitle className="font-display text-lg">Rendez-vous à venir</CardTitle>
+            <CardTitle className="text-lg">Rendez-vous à venir</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {upcomingAppointments.map((a) => {
@@ -276,7 +269,7 @@ export default function Dashboard() {
                   className="flex flex-col gap-3 rounded-xl border border-border/60 bg-secondary/30 p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10 font-display text-sm font-semibold text-primary">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center bg-primary/10 text-sm font-semibold text-primary">
                       {a.clientName[0]}
                     </span>
                     <div className="min-w-0">
@@ -291,7 +284,7 @@ export default function Dashboard() {
                     <span className="shrink-0 text-xs font-medium text-primary">
                       {money(totalPrice)}
                     </span>
-                    <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs ${STATUS_COLORS[a.status]}`}>
+                    <span className={`shrink-0  border px-2.5 py-0.5 text-xs ${STATUS_COLORS[a.status]}`}>
                       {STATUS_LABELS[a.status]}
                     </span>
                   </div>
@@ -303,7 +296,7 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

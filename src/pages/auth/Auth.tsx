@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail, Lock, User as UserIcon,
   Phone, ArrowRight, Eye, EyeOff, ShieldCheck, Heart,
@@ -57,60 +56,57 @@ export default function Auth() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Left panel */}
-      <div className="relative hidden overflow-hidden gradient-rose lg:flex lg:flex-col lg:justify-between lg:p-12">
-        <div className="absolute inset-0 bg-grid opacity-30" />
-        <div className="absolute -right-24 top-10 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute -left-24 bottom-10 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
+      <div className="relative hidden overflow-hidden lg:flex lg:flex-col lg:justify-between lg:p-12">
+        <div className="absolute inset-0 opacity-30" />
         
         {/* ✅ Logo et nom cliquables vers l'accueil */}
         <Link to="/" className="relative flex items-center gap-3 hover:opacity-80 transition-opacity">
           <BrandLogo size={12} />
           <div>
-            <p className="font-display text-xl font-semibold">{settings.name}</p>
+            <p className="text-xl font-semibold">{settings.name}</p>
           </div>
         </Link>
         
         <div className="relative">
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
-            className="font-display text-5xl font-semibold leading-tight text-foreground">
+          <h1
+            className="text-5xl font-semibold leading-tight text-foreground">
             {settings.name}<span className="block italic text-primary">{settings.tagline}</span>
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
+          </h1>
+          <p
             className="mt-5 max-w-md text-foreground/70">
             Connectez-vous pour réserver vos rendez-vous, suivre votre historique et profiter d'offres exclusives.
-          </motion.p>
+          </p>
         </div>
         <div className="relative text-xs text-muted-foreground">© {new Date().getFullYear()} {settings.name}</div>
       </div>
 
       {/* Right form */}
       <div className="relative flex items-center justify-center overflow-y-auto bg-background px-4 py-10 sm:px-6 lg:px-8">
-        <div className="absolute inset-0 bg-grid opacity-[0.15] lg:hidden" />
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="relative w-full max-w-md">
+        <div className="absolute inset-0 opacity-[0.15] lg:hidden" />
+        <div className="relative w-full max-w-md">
           {/* ✅ Logo et nom cliquables vers l'accueil (version mobile) */}
           <Link to="/" className="mb-8 flex items-center justify-center gap-3 hover:opacity-80 transition-opacity lg:hidden">
             <BrandLogo size={12} />
             <div>
-              <p className="font-display text-xl font-semibold">{settings.name}</p>
+              <p className="text-xl font-semibold">{settings.name}</p>
             </div>
           </Link>
 
-          <div className="rounded-3xl border border-border/60 bg-card p-6 shadow-soft sm:p-8">
-            <div className="relative mb-6 grid grid-cols-2 rounded-full bg-secondary p-1 text-sm font-medium">
+          <div className="rounded-3xl border border-border/60 bg-card p-6 sm:p-8">
+            <div className="relative mb-6 grid grid-cols-2 bg-secondary p-1 text-sm font-medium">
               {(['login', 'register'] as Mode[]).map((m) => (
                 <button key={m} onClick={() => setMode(m)}
-                  className={cn('relative z-10 rounded-full py-2 transition-colors', mode === m ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground')}>
+                  className={cn('relative z-10  py-2 transition-colors', mode === m ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground')}>
                   {m === 'login' ? 'Connexion' : 'Inscription'}
                   {mode === m && (
-                    <motion.span layoutId="auth-tab" className="absolute inset-0 -z-10 rounded-full bg-primary" transition={{ type: 'spring', stiffness: 300, damping: 30 }} />
+                    <span className="absolute inset-0 -z-10 bg-primary" />
                   )}
                 </button>
               ))}
             </div>
 
-            <AnimatePresence mode="wait">
-              <motion.div key={mode} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: 0.25 }}>
-                <h2 className="font-display text-2xl font-semibold">{mode === 'login' ? 'Bon retour parmi nous' : 'Créez votre compte'}</h2>
+            <div key={mode}>
+                <h2 className="text-2xl font-semibold">{mode === 'login' ? 'Bon retour parmi nous' : 'Créez votre compte'}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">{mode === 'login' ? 'Connectez-vous pour accéder à votre espace.' : `Rejoignez ${settings.name} pour réserver en ligne.`}</p>
 
                 {/* ✅ Sélecteur de rôle : affiché uniquement en mode connexion */}
@@ -119,7 +115,7 @@ export default function Auth() {
                     {([{ v: 'client', label: t('customer'), icon: Heart }, { v: 'admin', label: 'Administrateur', icon: ShieldCheck }] as { v: UserRole; label: string; icon: typeof Heart }[]).map((r) => (
                       <button key={r.v} type="button" onClick={() => setRole(r.v)}
                         className={cn('flex items-center justify-center gap-2 rounded-xl border py-2.5 text-sm font-medium transition-all',
-                          role === r.v ? 'border-primary bg-primary/5 text-primary shadow-glow' : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground')}>
+                          role === r.v ? 'border-primary bg-primary/5 text-primary ' : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground')}>
                         <r.icon className="h-4 w-4" /> {r.label}
                       </button>
                     ))}
@@ -181,15 +177,14 @@ export default function Auth() {
                     </Link>
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full rounded-full" disabled={loading}>
+                  <Button type="submit" size="lg" className="w-full" disabled={loading}>
                     {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter' : "Créer mon compte"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </form>
-              </motion.div>
-            </AnimatePresence>
+              </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

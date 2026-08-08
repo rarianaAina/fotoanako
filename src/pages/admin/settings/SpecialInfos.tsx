@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Plus, Trash2, Pencil, Save, X, GripVertical, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Pencil, Save, X, GripVertical } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,12 +65,10 @@ export default function SpecialInfosSettings() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Informations spéciales</CardTitle>
+          <div className="flex items-center gap-2"> <CardTitle className="text-lg">Informations spéciales</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -103,7 +100,7 @@ export default function SpecialInfosSettings() {
                 />
               </div>
               <div className="flex items-end">
-                <Button className="w-full rounded-full" onClick={handleCreate}>
+                <Button className="w-full" onClick={handleCreate}>
                   <Plus className="mr-2 h-4 w-4" /> Ajouter
                 </Button>
               </div>
@@ -123,17 +120,16 @@ export default function SpecialInfosSettings() {
           {/* Liste */}
           {loading ? (
             <div className="flex justify-center py-6">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+              <div className="animate-spin h-6 w-6 border-b-2 border-primary" />
             </div>
           ) : infos.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">Aucune information spéciale.</p>
           ) : (
             <div className="space-y-2">
               {infos.map((info) => (
-                <motion.div
+                <div
                   key={info.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                 
                   className={cn(
                     'flex items-center gap-3 rounded-xl border p-3 transition-all',
                     !info.active && 'opacity-50'
@@ -188,12 +184,12 @@ export default function SpecialInfosSettings() {
                       </div>
                     </>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Save, Bell, User, ShieldCheck, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -62,19 +61,19 @@ export default function RemindersSettings() {
   if (!reminderSettings) {
     return (
       <div className="flex justify-center py-10">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <div className="animate-spin h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Bell className="h-5 w-5 text-primary" />
-              <CardTitle className="font-display text-lg">Rappels automatiques</CardTitle>
+              <CardTitle className="text-lg">Rappels automatiques</CardTitle>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">{reminderSettings.enabled ? 'Activés' : 'Désactivés'}</span>
@@ -105,11 +104,11 @@ export default function RemindersSettings() {
                   className={cn(
                     'flex flex-col items-center rounded-2xl border p-4 text-center transition-all',
                     reminderSettings.delayHours === d.value
-                      ? 'border-primary bg-primary/5 shadow-glow'
+                      ? 'border-primary bg-primary/5 '
                       : 'border-border hover:border-primary/40'
                   )}
                 >
-                  <span className={cn('grid h-11 w-11 place-items-center rounded-full text-2xl font-bold',
+                  <span className={cn('grid h-11 w-11 place-items-center  text-2xl font-bold',
                     reminderSettings.delayHours === d.value ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground')}>
                     {d.value}
                   </span>
@@ -132,7 +131,7 @@ export default function RemindersSettings() {
                   className={cn(
                     'flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all',
                     reminderSettings.recipients === r.value
-                      ? 'border-primary bg-primary/5 shadow-glow'
+                      ? 'border-primary bg-primary/5 '
                       : 'border-border hover:border-primary/40'
                   )}
                 >
@@ -145,7 +144,7 @@ export default function RemindersSettings() {
                     <p className="text-xs text-muted-foreground">{r.desc}</p>
                   </div>
                   {reminderSettings.recipients === r.value && (
-                    <span className="ml-auto grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+                    <span className="ml-auto grid h-6 w-6 shrink-0 place-items-center bg-primary text-primary-foreground">
                       <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-none stroke-current stroke-2"><polyline points="20 6 9 17 4 12" /></svg>
                     </span>
                   )}
@@ -182,12 +181,12 @@ export default function RemindersSettings() {
           </div>
 
           <div className="flex justify-end">
-            <Button className="rounded-full" onClick={handleSave}>
+            <Button onClick={handleSave}>
               <Save className="mr-2 h-4 w-4" /> Enregistrer les rappels
             </Button>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

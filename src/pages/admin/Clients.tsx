@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Search, Phone, Mail, Calendar, Wallet, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,7 +26,7 @@ export default function Clients() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl font-semibold">{t('customer', 'many')}</h1>
+        <h1 className="text-3xl font-semibold">{t('customer', 'many')}</h1>
         <p className="mt-1 text-sm text-muted-foreground">Votre fichier {t('customer', 'many').toLowerCase()}.</p>
       </div>
 
@@ -37,7 +36,7 @@ export default function Clients() {
           { label: 'Total visites', value: String(aggregates.totalVisits), icon: Calendar },
           { label: 'CA cumulé', value: money(aggregates.totalRevenue), icon: Wallet },
         ].map((s) => (
-          <Card key={s.label} className="border-border/60 shadow-soft">
+          <Card key={s.label} className="border-border/60">
             <CardContent className="flex items-center gap-3 p-5">
               <span className="grid h-11 w-11 place-items-center rounded-2xl bg-primary/10 text-primary">
                 <s.icon className="h-5 w-5" />
@@ -51,7 +50,7 @@ export default function Clients() {
         ))}
       </div>
 
-      <Card className="border-border/60 shadow-soft">
+      <Card className="border-border/60">
         <CardContent className="p-4">
           <div className="relative max-w-sm">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -66,17 +65,17 @@ export default function Clients() {
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((c, i) => (
-          <motion.div
+        {filtered.map((c) => (
+          <div
             key={c.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
+           
+           
+           
           >
-            <Card className="h-full border-border/60 shadow-soft transition-all hover:-translate-y-1 hover:shadow-glow">
+            <Card className="h-full border-border">
               <CardContent className="p-5">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-12 w-12 place-items-center rounded-full bg-primary/10 font-display text-lg font-semibold text-primary">
+                  <span className="grid h-12 w-12 place-items-center bg-primary/10 text-lg font-semibold text-primary">
                     {c.name[0]}
                   </span>
                   <div>
@@ -116,7 +115,7 @@ export default function Clients() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   LineChart, Line, PieChart, Pie, Cell, Legend,
@@ -17,12 +16,6 @@ const PIE_COLORS = [
   'hsl(200 30% 70%)',
   'hsl(320 40% 72%)',
 ];
-
-const fadeUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 },
-};
 
 export default function Statistics() {
   const t = useLabels();
@@ -90,14 +83,14 @@ export default function Statistics() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl font-semibold">Statistiques</h1>
+        <h1 className="text-3xl font-semibold">Statistiques</h1>
         <p className="mt-1 text-sm text-muted-foreground">Analyse détaillée de votre activité.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((k, i) => (
-          <motion.div key={k.label} {...fadeUp} transition={{ delay: i * 0.08 }}>
-            <Card className="border-border/60 shadow-soft">
+        {kpis.map((k) => (
+          <div key={k.label} >
+            <Card className="border-border/60">
               <CardContent className="p-5">
                 <span className={`grid h-11 w-11 place-items-center rounded-2xl bg-secondary ${k.color}`}>
                   <k.icon className="h-5 w-5" />
@@ -106,14 +99,14 @@ export default function Statistics() {
                 <p className="text-sm text-muted-foreground">{k.label}</p>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-          <Card className="border-border/60 shadow-soft">
-            <CardHeader><CardTitle className="font-display text-lg">Chiffre d'affaires journalier</CardTitle></CardHeader>
+        <div >
+          <Card className="border-border/60">
+            <CardHeader><CardTitle className="text-lg">Chiffre d'affaires journalier</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={dailyData}>
@@ -126,11 +119,11 @@ export default function Statistics() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
 
-        <motion.div {...fadeUp} transition={{ delay: 0.15 }}>
-          <Card className="border-border/60 shadow-soft">
-            <CardHeader><CardTitle className="font-display text-lg">Chiffre d'affaires mensuel</CardTitle></CardHeader>
+        <div >
+          <Card className="border-border/60">
+            <CardHeader><CardTitle className="text-lg">Chiffre d'affaires mensuel</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={monthlyData}>
@@ -143,11 +136,11 @@ export default function Statistics() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
 
-        <motion.div {...fadeUp} transition={{ delay: 0.2 }}>
-          <Card className="border-border/60 shadow-soft">
-            <CardHeader><CardTitle className="font-display text-lg">{t('service', 'many')} les plus vendues</CardTitle></CardHeader>
+        <div >
+          <Card className="border-border/60">
+            <CardHeader><CardTitle className="text-lg">{t('service', 'many')} les plus vendues</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={240}>
                 <PieChart>
@@ -160,11 +153,11 @@ export default function Statistics() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
 
-        <motion.div {...fadeUp} transition={{ delay: 0.25 }}>
-          <Card className="border-border/60 shadow-soft">
-            <CardHeader><CardTitle className="font-display text-lg">Taux d'annulation & fidélisation</CardTitle></CardHeader>
+        <div >
+          <Card className="border-border/60">
+            <CardHeader><CardTitle className="text-lg">Taux d'annulation & fidélisation</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={retentionData}>
@@ -182,7 +175,7 @@ export default function Statistics() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Plus, Pencil, Trash2, Clock, Sparkles, Upload } from 'lucide-react';
+import { Plus, Pencil, Trash2, Clock, Upload } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,15 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
-} from '@/components/ui/dialog';
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useServiceCatalog } from '@/hooks/useServiceCatalog';
 import { useConfig } from '@/hooks/useConfig';
@@ -46,8 +42,7 @@ const blank: DraftService = {
   description: '',
   duration: 30,
   price: 0,
-  image: DEFAULT_IMAGE,
-};
+  image: DEFAULT_IMAGE };
 
 export default function AdminServices() {
   const t = useLabels();
@@ -146,30 +141,29 @@ export default function AdminServices() {
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-3xl font-semibold">{t('service', 'many')}</h1>
+          <h1 className="text-3xl font-semibold">{t('service', 'many')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">Ajoutez, modifiez ou supprimez des prestations.</p>
         </div>
-        <Button className="rounded-full" onClick={() => handleEdit()}>
+        <Button onClick={() => handleEdit()}>
           <Plus className="mr-2 h-4 w-4" /> Ajouter une prestation
         </Button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {services.map((s, i) => (
-          <motion.div key={s.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-            <Card className="group overflow-hidden border-border/60 shadow-soft transition-all hover:shadow-glow">
+        {services.map((s) => (
+          <div key={s.id}>
+            <Card className="group overflow-hidden border-border">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <img src={s.image} alt={s.name} className="h-full w-full object-cover" />
                 {s.popular && (
-                  <Badge className="absolute left-3 top-3 gap-1 rounded-full bg-primary text-primary-foreground shadow">
-                    <Sparkles className="h-3 w-3" /> Populaire
+                  <Badge className="absolute left-3 top-3 gap-1 bg-primary text-primary-foreground shadow"> Populaire
                   </Badge>
                 )}
-                <Badge className="absolute right-3 top-3 rounded-full bg-white/90 text-foreground">{s.category}</Badge>
+                <Badge className="absolute right-3 top-3 bg-white/90 text-foreground">{s.category}</Badge>
               </div>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
-                  <h3 className="font-display text-lg font-semibold">{s.name}</h3>
+                  <h3 className="text-lg font-semibold">{s.name}</h3>
                   <span className="text-sm font-semibold text-primary">
                     {s.price === 0 ? 'Devis' : money(s.price)}
                   </span>
@@ -179,7 +173,7 @@ export default function AdminServices() {
                   <Clock className="h-3 w-3" /> {formatDuration(s.duration)}
                 </p>
                 <div className="mt-4 flex gap-2">
-                  <Button size="sm" variant="outline" className="flex-1 rounded-full" onClick={() => handleEdit(s)}>
+                  <Button size="sm" variant="outline" className="flex-1" onClick={() => handleEdit(s)}>
                     <Pencil className="mr-1.5 h-3.5 w-3.5" /> Modifier
                   </Button>
                   <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600" onClick={() => setDeleting(s)}>
@@ -188,7 +182,7 @@ export default function AdminServices() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
 

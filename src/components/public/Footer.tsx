@@ -1,113 +1,124 @@
 import { Link } from 'react-router-dom';
-import { CalendarHeart, Phone, Mail, MapPin, Facebook, Instagram, MessageCircle } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { useLabels } from '@/hooks/useLabels';
+import { useModules } from '@/hooks/useModules';
 
+/*
+ * Pied de page en colophon.
+ *
+ * Quatre colonnes égales et un titre « Navigation » disparaissent : c'est la
+ * disposition de tous les pieds de page générés. Ici l'information suit son
+ * ordre d'utilité — où venir, quand, comment joindre — dans une grille
+ * asymétrique, et les liens tiennent sur une ligne en bas.
+ *
+ * Les horaires sont un tableau, parce que ce sont des données à comparer
+ * ligne à ligne, pas une phrase.
+ */
 export default function Footer() {
   const { settings } = useSettings();
   const t = useLabels();
+  const isEnabled = useModules();
 
-  // ✅ Fonction pour remonter en haut de page
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Seuls les réseaux renseignés sont affichés : sans cela, un client sans
-  // page Facebook hériterait d'une icône pointant dans le vide.
   const socials = [
-    { label: 'Facebook', href: settings.facebook, Icon: Facebook },
-    { label: 'Instagram', href: settings.instagram, Icon: Instagram },
+    { label: 'Instagram', href: settings.instagram },
+    { label: 'Facebook', href: settings.facebook },
+    { label: 'TikTok', href: settings.tiktok },
     {
       label: 'WhatsApp',
       href: settings.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/\D/g, '')}` : '',
-      Icon: MessageCircle,
     },
-  ].filter((s): s is { label: string; href: string; Icon: typeof Facebook } => Boolean(s.href));
+    { label: 'Site', href: settings.website },
+  ].filter((s): s is { label: string; href: string } => Boolean(s.href));
+
+  const links = [
+    { to: '/prestations', label: t('service', 'many') },
+    isEnabled('gallery') && { to: '/galerie', label: t('gallery', 'many') },
+    isEnabled('publicAvailability') && { to: '/disponibilites', label: 'Disponibilités' },
+    { to: '/contact', label: 'Contact' },
+    { to: '/reservation', label: 'Réservation' },
+  ].filter(Boolean) as { to: string; label: string }[];
+
+  const openDays = settings.hours.filter((h) => !h.closed);
 
   return (
-    <footer className="border-t border-border/60 bg-secondary/40">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-4">
-          <div className="md:col-span-1">
-            <div className="flex items-center gap-2">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
-                <CalendarHeart className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-display text-xl font-semibold">{settings.name}</p>
-              </div>
-            </div>
-            {(settings.description || settings.tagline) && (
-              <p className="mt-4 text-sm text-muted-foreground">
-                {settings.description || settings.tagline}
-              </p>
+    <footer className="mt-24 border-t border-border-strong">
+      <div className="mx-auto max-w-grid px-gutter py-16 lg:px-gutter-lg">
+        <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div>
+            <p className="text-2xl font-semibold tracking-[-0.02em]">{settings.name}</p>
+            {settings.tagline && (
+              <p className="mt-2 max-w-prose text-sm text-muted-foreground">{settings.tagline}</p>
             )}
           </div>
 
           <div>
-            <h4 className="font-display text-lg font-semibold">Navigation</h4>
-            <ul className="mt-4 space-y-2 text-sm">
-              {[
-                ['/', 'Accueil'],
-                ['/prestations', t('service', 'many')],
-                ['/galerie', t('gallery', 'many')],
-                ['/contact', 'Contact'],
-                ['/reservation', 'Réservation'],
-              ].map(([to, label]) => (
-                <li key={to}>
-                  <Link
-                    to={to}
-                    onClick={scrollToTop} // ✅ Ajouter le scroll
-                    className="text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-display text-lg font-semibold">Contact</h4>
-            <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 text-primary" />
-                <span>{settings.address}</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-primary" />
-                <span>{settings.phone}</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-primary" />
-                <span>{settings.email}</span>
-              </li>
-            </ul>
-          </div>
-
-          {socials.length > 0 && (
-            <div>
-              <h4 className="font-display text-lg font-semibold">Suivez-nous</h4>
-              <div className="mt-4 flex gap-3">
-                {socials.map(({ label, href, Icon }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    className="grid h-10 w-10 place-items-center rounded-full bg-white text-foreground shadow-soft transition-colors hover:bg-primary hover:text-primary-foreground"
-                    aria-label={label}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Icon className="h-4 w-4" />
+            <p className="label-mono">Adresse</p>
+            <address className="mt-3 space-y-1 not-italic text-sm">
+              {settings.address && <p className="whitespace-pre-line">{settings.address}</p>}
+              {settings.phone && (
+                <p>
+                  <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="link-underline">
+                    {settings.phone}
                   </a>
-                ))}
-              </div>
+                </p>
+              )}
+              {settings.email && (
+                <p>
+                  <a href={`mailto:${settings.email}`} className="link-underline">
+                    {settings.email}
+                  </a>
+                </p>
+              )}
+            </address>
+          </div>
+
+          {openDays.length > 0 && (
+            <div>
+              <p className="label-mono">Horaires</p>
+              <table className="mt-3 w-full text-sm">
+                <tbody>
+                  {openDays.map((h) => (
+                    <tr key={h.day}>
+                      <th scope="row" className="py-0.5 pr-4 text-left font-normal text-muted-foreground">
+                        {h.day}
+                      </th>
+                      <td className="figure py-0.5 text-right text-xs">
+                        {h.open}–{h.close}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} {settings.name}. Tous droits réservés.</p>
+        <div className="mt-14 flex flex-col gap-4 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <nav className="flex flex-wrap gap-x-5 gap-y-2">
+            {links.map((l) => (
+              <Link key={l.to} to={l.to} className="link-underline hover:text-foreground">
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+
+          {socials.length > 0 && (
+            <nav className="flex flex-wrap gap-x-5 gap-y-2">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-underline hover:text-foreground"
+                >
+                  {s.label}
+                </a>
+              ))}
+            </nav>
+          )}
+
+          <p className="figure">© {new Date().getFullYear()}</p>
         </div>
       </div>
     </footer>

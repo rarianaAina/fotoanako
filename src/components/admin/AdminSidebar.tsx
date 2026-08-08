@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   CalendarDays,
   CalendarRange,
   Users,
-  Sparkles,
+  LayoutList,
   BarChart3,
   Settings,
   Menu,
@@ -40,7 +39,7 @@ const ITEMS: {
   { to: '/admin/rendez-vous', labelKey: 'booking', icon: CalendarDays },
   { to: '/admin/calendrier', label: 'Calendrier', icon: CalendarRange },
   { to: '/admin/clients', labelKey: 'customer', icon: Users },
-  { to: '/admin/prestations', labelKey: 'service', icon: Sparkles },
+  { to: '/admin/prestations', labelKey: 'service', icon: LayoutList },
   { to: '/admin/statistiques', label: 'Statistiques', icon: BarChart3 },
   { to: '/admin/notifications', label: 'Notifications', icon: Bell, badge: true, module: 'reminders' },
   { to: '/admin/parametres', label: 'Paramètres', icon: Settings },
@@ -68,11 +67,11 @@ export default function AdminSidebar() {
   const content = (
     <div className="flex h-full flex-col">
       <Link to="/admin" className="flex items-center gap-2 px-5 py-5">
-        <span className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
+        <span className="grid h-10 w-10 place-items-center bg-primary/10 text-primary">
           <CalendarHeart className="h-5 w-5" />
         </span>
         <div>
-          <p className="font-display text-lg font-semibold leading-tight">{settings.name}</p>
+          <p className="text-lg font-semibold leading-tight">{settings.name}</p>
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Admin</p>
         </div>
       </Link>
@@ -88,7 +87,7 @@ export default function AdminSidebar() {
               cn(
                 'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all',
                 isActive
-                  ? 'bg-primary text-primary-foreground shadow-glow'
+                  ? 'bg-primary text-primary-foreground '
                   : 'text-foreground/70 hover:bg-secondary hover:text-foreground'
               )
             }
@@ -96,7 +95,7 @@ export default function AdminSidebar() {
             <it.icon className="h-4 w-4 shrink-0" />
             <span className="flex-1">{it.label}</span>
             {it.badge && pending.length > 0 && (
-              <span className="grid h-5 min-w-[20px] place-items-center rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground [.bg-primary_&]:bg-white [.bg-primary_&]:text-primary">
+              <span className="grid h-5 min-w-[20px] place-items-center bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground [.bg-primary_&]:bg-white [.bg-primary_&]:text-primary">
                 {pending.length}
               </span>
             )}
@@ -107,7 +106,7 @@ export default function AdminSidebar() {
       <div className="space-y-2 p-3">
         <div className="rounded-xl bg-secondary/60 p-3">
           <div className="flex items-center gap-3">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-primary font-display text-sm font-semibold text-primary-foreground">
+            <span className="grid h-9 w-9 place-items-center bg-primary text-sm font-semibold text-primary-foreground">
               {user?.name[0] ?? 'A'}
             </span>
             <div className="flex-1 min-w-0">
@@ -137,23 +136,23 @@ export default function AdminSidebar() {
       {/* Mobile top bar */}
       <div className="sticky top-0 z-40 flex items-center justify-between border-b border-border/60 bg-card px-4 py-3 lg:hidden">
         <Link to="/admin" className="flex items-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-primary/10 text-primary">
+          <span className="grid h-9 w-9 place-items-center bg-primary/10 text-primary">
             <CalendarHeart className="h-4 w-4" />
           </span>
-          <span className="font-display text-lg font-semibold">{settings.name} Admin</span>
+          <span className="text-lg font-semibold">{settings.name} Admin</span>
         </Link>
         <div className="flex items-center gap-2">
           {pending.length > 0 && (
-            <NavLink to="/admin/notifications" className="relative grid h-9 w-9 place-items-center rounded-full bg-secondary">
+            <NavLink to="/admin/notifications" className="relative grid h-9 w-9 place-items-center bg-secondary">
               <Bell className="h-4 w-4" />
-              <span className="absolute -right-0.5 -top-0.5 grid h-4 w-4 place-items-center rounded-full bg-primary text-[9px] font-semibold text-primary-foreground">
+              <span className="absolute -right-0.5 -top-0.5 grid h-4 w-4 place-items-center bg-primary text-[9px] font-semibold text-primary-foreground">
                 {pending.length}
               </span>
             </NavLink>
           )}
           <button
             onClick={() => setOpen(true)}
-            className="grid h-10 w-10 place-items-center rounded-full bg-secondary"
+            className="grid h-10 w-10 place-items-center bg-secondary"
             aria-label="Menu"
           >
             <Menu className="h-5 w-5" />
@@ -161,35 +160,27 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {open && (
+      {open && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
               onClick={() => setOpen(false)}
-              className="fixed inset-0 z-50 bg-foreground/30 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-50 bg-foreground/40 lg:hidden"
             />
-            <motion.aside
-              initial={{ x: -300 }}
-              animate={{ x: 0 }}
-              exit={{ x: -300 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed inset-y-0 left-0 z-50 w-72 bg-card shadow-glow lg:hidden"
+            <aside
+             
+              className="fixed inset-y-0 left-0 z-50 w-72 bg-card lg:hidden"
             >
               <button
                 onClick={() => setOpen(false)}
-                className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-secondary"
+                className="absolute right-3 top-3 grid h-9 w-9 place-items-center bg-secondary"
                 aria-label="Fermer"
               >
                 <X className="h-4 w-4" />
               </button>
               {content}
-            </motion.aside>
+            </aside>
           </>
         )}
-      </AnimatePresence>
     </>
   );
 }

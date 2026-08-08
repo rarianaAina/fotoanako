@@ -1,5 +1,4 @@
 import { useRef } from 'react';
-import { motion } from 'framer-motion';
 import { X, ImagePlus } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import type { ImageSlot } from '@/types';
@@ -55,10 +54,9 @@ export default function ImageSlotUpload({
 
       <div className="flex flex-wrap gap-2">
         {images.map((img) => (
-          <motion.div
+          <div
             key={img.id}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+           
             className="group relative"
           >
             <div className="relative h-20 w-20 overflow-hidden rounded-lg border border-border/60">
@@ -71,7 +69,7 @@ export default function ImageSlotUpload({
                 type="button"
                 aria-label="Retirer l'image"
                 onClick={() => onRemove(slot.key, img.id)}
-                className="absolute -right-1 -top-1 rounded-full bg-destructive p-0.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
+                className="absolute -right-1 -top-1 bg-destructive p-0.5 text-destructive-foreground opacity-0 transition-opacity hover:bg-destructive/90 group-hover:opacity-100"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -83,7 +81,7 @@ export default function ImageSlotUpload({
               onChange={(e) => onCaptionChange(slot.key, img.id, e.target.value)}
               className="mt-1 w-20 border-b border-transparent bg-transparent text-[10px] transition-colors hover:border-border focus:border-primary focus:outline-none"
             />
-          </motion.div>
+          </div>
         ))}
 
         {!full && (

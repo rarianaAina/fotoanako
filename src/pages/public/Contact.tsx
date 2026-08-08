@@ -1,21 +1,13 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Phone, MessageCircle, Facebook, Instagram, MapPin, Clock, Mail, Send, Sparkles } from 'lucide-react';
+import { Phone, MessageCircle, Facebook, Instagram, MapPin, Clock, Mail, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useSettings } from '@/hooks/useSettings';
-
-const fadeUp = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-60px' },
-  transition: { duration: 0.5 },
-};
+import PageHeader from '@/components/public/PageHeader';
 
 export default function Contact() {
   const { settings } = useSettings();
@@ -29,29 +21,21 @@ export default function Contact() {
 
   return (
     <div>
-      <section className="gradient-rose pt-32 pb-16">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <Badge variant="secondary" className="mb-4 gap-1.5 rounded-full border border-primary/20 bg-white/70 px-4 py-1.5 text-xs text-primary backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" /> Contact
-            </Badge>
-            <h1 className="font-display text-5xl font-semibold text-foreground sm:text-6xl">Nous contacter</h1>
-            <p className="mx-auto mt-4 max-w-2xl text-foreground/70">
-              Une question, une demande spéciale ? Notre équipe est à votre écoute.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Contact"
+        title="Nous joindre"
+        lead="Une question, une demande particulière ? Écrivez ou appelez."
+      />
 
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-2">
-            <motion.div {...fadeUp} className="space-y-6">
+            <div className="space-y-6">
               {settings && (
                 <>
-                  <Card className="border-border/60 shadow-soft">
+                  <Card className="border-border/60">
                     <CardContent className="p-6">
-                      <h3 className="font-display text-2xl font-semibold">Coordonnées</h3>
+                      <h3 className="text-2xl font-semibold">Coordonnées</h3>
                       <div className="mt-5 space-y-4">
                         <a href={`tel:${settings.phone}`} className="flex items-center gap-4 transition-colors hover:text-primary">
                           <span className="grid h-11 w-11 place-items-center rounded-2xl bg-primary/10 text-primary"><Phone className="h-5 w-5" /></span>
@@ -71,21 +55,21 @@ export default function Contact() {
                         </div>
                       </div>
                       <div className="mt-6 flex gap-3">
-                        <a href={settings.facebook} className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground transition-colors hover:bg-primary hover:text-primary-foreground" aria-label="Facebook">
+                        <a href={settings.facebook} className="grid h-10 w-10 place-items-center bg-secondary text-foreground transition-colors hover:bg-primary hover:text-primary-foreground" aria-label="Facebook">
                           <Facebook className="h-4 w-4" />
                         </a>
-                        <a href={settings.instagram} className="grid h-10 w-10 place-items-center rounded-full bg-secondary text-foreground transition-colors hover:bg-primary hover:text-primary-foreground" aria-label="Instagram">
+                        <a href={settings.instagram} className="grid h-10 w-10 place-items-center bg-secondary text-foreground transition-colors hover:bg-primary hover:text-primary-foreground" aria-label="Instagram">
                           <Instagram className="h-4 w-4" />
                         </a>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="border-border/60 shadow-soft">
+                  <Card className="border-border/60">
                     <CardContent className="p-6">
                       <div className="flex items-center gap-2">
                         <Clock className="h-5 w-5 text-primary" />
-                        <h3 className="font-display text-2xl font-semibold">Horaires</h3>
+                        <h3 className="text-2xl font-semibold">Horaires</h3>
                       </div>
                       <div className="mt-4 divide-y divide-border/60">
                         {settings.hours.map((h) => (
@@ -102,12 +86,12 @@ export default function Contact() {
                 </>
               )}
 
-            </motion.div>
+            </div>
 
-            <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-              <Card className="border-border/60 shadow-soft">
+            <div >
+              <Card className="border-border/60">
                 <CardContent className="p-6 sm:p-8">
-                  <h3 className="font-display text-2xl font-semibold">Envoyez-nous un message</h3>
+                  <h3 className="text-2xl font-semibold">Envoyez-nous un message</h3>
                   <p className="mt-2 text-sm text-muted-foreground">Réponse sous 24h ouvrées.</p>
                   <form onSubmit={onSubmit} className="mt-6 space-y-4">
                     <div className="space-y-1.5">
@@ -128,13 +112,13 @@ export default function Contact() {
                       <Label htmlFor="message">Message</Label>
                       <Textarea id="message" required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Votre message..." />
                     </div>
-                    <Button type="submit" size="lg" className="w-full rounded-full">
+                    <Button type="submit" size="lg" className="w-full">
                       <Send className="mr-2 h-4 w-4" /> Envoyer le message
                     </Button>
                   </form>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>

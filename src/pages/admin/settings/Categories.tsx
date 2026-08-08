@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Plus, Trash2, Tag, GripVertical } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,12 +29,12 @@ export default function CategoriesSettings() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="border-border/60 shadow-soft">
+    <div>
+      <Card className="border-border/60">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Tag className="h-5 w-5 text-primary" />
-            <CardTitle className="font-display text-lg">Catégories de prestations</CardTitle>
+            <CardTitle className="text-lg">Catégories de prestations</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -74,6 +73,6 @@ export default function CategoriesSettings() {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }
