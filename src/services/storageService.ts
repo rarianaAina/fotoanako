@@ -108,9 +108,12 @@ export async function uploadImage(
 
   const { error } = await supabase.storage
     .from(bucket) // ✅ Utiliser le bucket spécifié
-    .upload(fileName, compressedFile, { 
+    .upload(fileName, compressedFile, {
       cacheControl: '31536000',
-      upsert: true
+      // L'écrasement n'a de sens que pour un nom fixe — le logo, par exemple.
+      // Avec un nom horodaté la collision est impossible, et l'exiger
+      // réclamerait un droit de mise à jour que la réservation anonyme n'a pas.
+      upsert: Boolean(fixedName),
     });
 
   if (error) throw error;
