@@ -10,6 +10,7 @@ import { cn } from '@/utils/cn';
 import { useServiceCatalog } from '@/hooks/useServiceCatalog';
 import { useActiveConfig } from '@/hooks/useActiveConfig';
 import { useMoney } from '@/hooks/useMoney';
+import { useLabels } from '@/hooks/useLabels';
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -19,6 +20,7 @@ const fadeUp = {
 };
 
 export default function Services() {
+  const t = useLabels();
   const money = useMoney();
   const { services } = useServiceCatalog();
   const { categories } = useActiveConfig();
@@ -42,7 +44,7 @@ export default function Services() {
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <Badge variant="secondary" className="mb-4 gap-1.5 rounded-full border border-primary/20 bg-white/70 px-4 py-1.5 text-xs text-primary backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" /> Nos prestations
+              <Sparkles className="h-3.5 w-3.5" /> Nos {t('service', 'many').toLowerCase()}
             </Badge>
             <h1 className="font-display text-5xl font-semibold text-foreground sm:text-6xl">Des soins pour chaque envie</h1>
             <p className="mx-auto mt-4 max-w-2xl text-foreground/70">

@@ -29,14 +29,14 @@ export default function CancellationSettings() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Configurez les règles d'annulation pour vos clientes.
+            Configurez les règles d'annulation des rendez-vous.
           </p>
 
           <div className="flex items-center justify-between">
             <div>
               <Label className="font-medium">Autoriser les annulations</Label>
               <p className="text-sm text-muted-foreground">
-                Si désactivé, les clientes ne pourront pas annuler leurs rendez-vous.
+                Si désactivé, personne ne pourra annuler son rendez-vous en ligne.
               </p>
             </div>
             <Switch
@@ -64,7 +64,7 @@ export default function CancellationSettings() {
               <span className="text-sm text-muted-foreground">heures avant le rendez-vous</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Les clientes ne pourront pas annuler après ce délai.
+              Passé ce délai, l'annulation en ligne n'est plus possible.
             </p>
           </div>
 

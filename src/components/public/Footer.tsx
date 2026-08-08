@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { CalendarHeart, Phone, Mail, MapPin, Facebook, Instagram, MessageCircle } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
+import { useLabels } from '@/hooks/useLabels';
 
 export default function Footer() {
   const { settings } = useSettings();
+  const t = useLabels();
 
   // ✅ Fonction pour remonter en haut de page
   const scrollToTop = () => {
@@ -47,8 +49,8 @@ export default function Footer() {
             <ul className="mt-4 space-y-2 text-sm">
               {[
                 ['/', 'Accueil'],
-                ['/prestations', 'Prestations'],
-                ['/galerie', 'Galerie'],
+                ['/prestations', t('service', 'many')],
+                ['/galerie', t('gallery', 'many')],
                 ['/contact', 'Contact'],
                 ['/reservation', 'Réservation'],
               ].map(([to, label]) => (

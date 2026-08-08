@@ -130,7 +130,7 @@ export default function Auth() {
                 {mode === 'register' && (
                   <div className="mt-4 rounded-xl bg-secondary/50 p-3 text-center text-sm text-muted-foreground">
                     <Heart className="inline h-4 w-4 text-primary mr-1.5" />
-                    Vous créez un compte <span className="font-medium text-foreground">cliente</span>
+                    Vous créez un compte <span className="font-medium text-foreground">{t('customer').toLowerCase()}</span>
                   </div>
                 )}
 

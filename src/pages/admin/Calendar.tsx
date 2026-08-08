@@ -48,7 +48,7 @@ export default function CalendarPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl font-semibold">Calendrier</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Vue mensuelle des rendez-vous du salon.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Vue mensuelle de vos rendez-vous.</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

@@ -44,6 +44,7 @@ import type { Appointment } from '@/types';
 import { useMoney } from '@/hooks/useMoney';
 import { useSettings } from '@/hooks/useSettings';
 import { useModules } from '@/hooks/useModules';
+import { useLabels } from '@/hooks/useLabels';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -59,6 +60,7 @@ const statusIcon: Record<string, typeof CheckCircle2> = {
 };
 
 export default function ClientSpace() {
+  const t = useLabels();
   const isEnabled = useModules();
   const { settings } = useSettings();
   const money = useMoney();
@@ -207,7 +209,7 @@ export default function ClientSpace() {
               <p className="text-sm text-muted-foreground">Bienvenue,</p>
               <h1 className="font-display text-3xl font-semibold sm:text-4xl">{user.name}</h1>
               <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                <Sparkles className="h-4 w-4 text-primary" /> Cliente fidèle
+                <Sparkles className="h-4 w-4 text-primary" /> {t('customer')} fidèle
               </p>
             </div>
             <Button asChild size="lg" className="rounded-full shadow-glow">

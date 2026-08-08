@@ -24,6 +24,7 @@ import { uploadImage } from '@/services/storageService';
 
 import type { Service } from '@/types';
 import { useMoney } from '@/hooks/useMoney';
+import { useLabels } from '@/hooks/useLabels';
 
 const DEFAULT_IMAGE = 'https://images.pexels.com/photos/3997389/pexels-photo-3997389.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop';
 
@@ -49,6 +50,7 @@ const blank: DraftService = {
 };
 
 export default function AdminServices() {
+  const t = useLabels();
   const money = useMoney();
   const { services, createService, updateService, deleteService } = useServiceCatalog();
   const { categories } = useConfig();
@@ -144,7 +146,7 @@ export default function AdminServices() {
     <div className="space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-3xl font-semibold">Prestations</h1>
+          <h1 className="font-display text-3xl font-semibold">{t('service', 'many')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">Ajoutez, modifiez ou supprimez des prestations.</p>
         </div>
         <Button className="rounded-full" onClick={() => handleEdit()}>

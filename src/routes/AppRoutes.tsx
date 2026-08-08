@@ -107,7 +107,7 @@ export default function AppRoutes() {
           <Route index element={<Dashboard />} />
           <Route path="rendez-vous" element={<Appointments />} />
           <Route path="calendrier" element={<CalendarPage />} />
-          <Route path="clientes" element={<Clients />} />
+          <Route path="clients" element={<Clients />} />
           <Route path="prestations" element={<AdminServices />} />
           <Route path="statistiques" element={<Statistics />} />
           {isEnabled('reminders') && <Route path="notifications" element={<Notifications />} />}

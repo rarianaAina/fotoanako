@@ -105,7 +105,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!profile) throw new Error('Profil introuvable.');
     if (profile.role !== role) {
       await supabase.auth.signOut();
-      throw new Error(`Ce compte n'est pas un compte ${role === 'admin' ? 'administratrice' : 'cliente'}.`);
+      throw new Error(
+        role === 'admin'
+          ? "Ce compte n'a pas les droits d'administration."
+          : "Ce compte n'est pas un compte client.",
+      );
     }
     setUser(profile);
     return profile;

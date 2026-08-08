@@ -32,6 +32,7 @@ import type { Appointment, AppointmentStatus } from '@/types';
 import { useMoney } from '@/hooks/useMoney';
 import { useImageSlots } from '@/hooks/useImageSlots';
 import type { ImageSlot, ReferenceImage } from '@/types';
+import { useLabels } from '@/hooks/useLabels';
 
 const FILTERS: ('Tous' | AppointmentStatus)[] = ['Tous', 'pending', 'confirmed', 'completed', 'cancelled'];
 
@@ -63,6 +64,7 @@ function groupImagesBySlot(
 
 export default function Appointments() {
   const { slots: imageSlots } = useImageSlots(true);
+  const t = useLabels();
   const money = useMoney();
   const { appointments, updateStatus, createAppointment, refresh } = useAppointments();
   const { reminderSettings } = useReminderSettings();
@@ -133,8 +135,8 @@ export default function Appointments() {
           });
           toast.success(
             `Rendez-vous confirmé. Un rappel sera envoyé ${reminderSettings.delayHours} h avant à : ${
-              reminderSettings.recipients === 'client' ? 'la cliente' :
-              reminderSettings.recipients === 'admin' ? "l'administratrice" : 'la cliente et l\'administratrice'
+              reminderSettings.recipients === 'client' ? `le ${t('customer').toLowerCase()}` :
+              reminderSettings.recipients === 'admin' ? "l'administration" : `le ${t('customer').toLowerCase()} et l'administration`
             }.`,
             { duration: 5000, icon: <Bell className="h-4 w-4" /> }
           );
@@ -167,7 +169,7 @@ export default function Appointments() {
         <div>
           <h1 className="font-display text-3xl font-semibold">Rendez-vous</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Gérez et suivez tous les rendez-vous du salon.
+            Gérez et suivez tous vos rendez-vous.
           </p>
         </div>
         <Button className="rounded-full" onClick={() => setShowCreate(true)}>
@@ -192,7 +194,7 @@ export default function Appointments() {
             <div className="relative max-w-sm flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Rechercher une cliente, un téléphone..."
+                placeholder={`Rechercher un ${t('customer').toLowerCase()}, un téléphone…`}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="pl-9"
@@ -225,9 +227,9 @@ export default function Appointments() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-secondary/40">
-                  <TableHead>Cliente</TableHead>
+                  <TableHead>{t('customer')}</TableHead>
                   <TableHead>Téléphone</TableHead>
-                  <TableHead>Prestation(s)</TableHead>
+                  <TableHead>{t('service', 'many')}</TableHead>
                   <TableHead>Prix total</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Heure</TableHead>
@@ -367,11 +369,11 @@ export default function Appointments() {
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Nouveau rendez-vous</DialogTitle>
-            <DialogDescription>Créez un rendez-vous pour une cliente.</DialogDescription>
+            <DialogDescription>Créez un rendez-vous pour un {t('customer').toLowerCase()}.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label>Cliente existante (optionnel)</Label>
+              <Label>{t('customer')} existant (optionnel)</Label>
               <Select
                 value={newAppt.clientId}
                 onValueChange={(v) => {
@@ -385,7 +387,7 @@ export default function Appointments() {
                   }));
                 }}
               >
-                <SelectTrigger><SelectValue placeholder="Sélectionner une cliente" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={`Sélectionner un ${t('customer').toLowerCase()}`} /></SelectTrigger>
                 <SelectContent>
                   {clients.map((c) => (
                     <SelectItem key={c.id} value={c.id}>{c.name} — {c.phone}</SelectItem>
@@ -411,7 +413,7 @@ export default function Appointments() {
             )}
             
             <div className="space-y-1.5">
-              <Label>Prestations * (sélectionnez une ou plusieurs)</Label>
+              <Label>{t('service', 'many')} *</Label>
               <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1">
                 {services.map((s) => {
                   const isSelected = newAppt.serviceIds.includes(s.id);
@@ -566,12 +568,12 @@ export default function Appointments() {
           </DialogHeader>
           {viewing && (
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Cliente</span><span className="font-medium">{viewing.clientName}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">{t('customer')}</span><span className="font-medium">{viewing.clientName}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Téléphone</span><span>{viewing.phone}</span></div>
               {viewing.email && <div className="flex justify-between"><span className="text-muted-foreground">Email</span><span>{viewing.email}</span></div>}
               
               <div className="space-y-1">
-                <span className="text-muted-foreground">Prestations</span>
+                <span className="text-muted-foreground">{t('service', 'many')}</span>
                 {viewing.services.map((s, index) => (
                   <div key={index} className="flex justify-between text-sm pl-4">
                     <span>{s.name}</span>

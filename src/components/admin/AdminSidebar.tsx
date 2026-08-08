@@ -39,7 +39,7 @@ const ITEMS: {
   { to: '/admin', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
   { to: '/admin/rendez-vous', labelKey: 'booking', icon: CalendarDays },
   { to: '/admin/calendrier', label: 'Calendrier', icon: CalendarRange },
-  { to: '/admin/clientes', labelKey: 'customer', icon: Users },
+  { to: '/admin/clients', labelKey: 'customer', icon: Users },
   { to: '/admin/prestations', labelKey: 'service', icon: Sparkles },
   { to: '/admin/statistiques', label: 'Statistiques', icon: BarChart3 },
   { to: '/admin/notifications', label: 'Notifications', icon: Bell, badge: true, module: 'reminders' },

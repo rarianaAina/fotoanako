@@ -88,7 +88,7 @@ export default function PaymentMethodsSettings() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Gérez les moyens de paiement disponibles pour vos clientes lors de la réservation.
+            Gérez les moyens de paiement proposés lors de la réservation.
           </p>
 
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end">

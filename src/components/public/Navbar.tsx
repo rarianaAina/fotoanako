@@ -7,13 +7,15 @@ import { cn } from '@/lib/utils';
 import { useSettings } from '@/hooks/useSettings';
 import { useModules } from '@/hooks/useModules';
 import type { ModuleKey } from '@/config/modules';
+import { useLabels } from '@/hooks/useLabels';
+import type { LabelKey } from '@/config/labels';
 
 
 // `module` absent = lien toujours visible.
-const LINKS: { to: string; label: string; module?: ModuleKey }[] = [
+const LINKS: { to: string; label?: string; labelKey?: LabelKey; module?: ModuleKey }[] = [
   { to: '/', label: 'Accueil' },
-  { to: '/prestations', label: 'Prestations' },
-  { to: '/galerie', label: 'Galerie', module: 'gallery' },
+  { to: '/prestations', labelKey: 'service' },
+  { to: '/galerie', labelKey: 'gallery', module: 'gallery' },
   { to: '/contact', label: 'Contact' },
   { to: '/disponibilites', label: 'Disponibilités', module: 'publicAvailability' },
 ];
@@ -21,7 +23,11 @@ const LINKS: { to: string; label: string; module?: ModuleKey }[] = [
 export default function Navbar() {
   const { settings } = useSettings();
   const isEnabled = useModules();
-  const links = LINKS.filter((l) => !l.module || isEnabled(l.module));
+  const t = useLabels();
+  const links = LINKS.filter((l) => !l.module || isEnabled(l.module)).map((l) => ({
+    to: l.to,
+    label: l.labelKey ? t(l.labelKey, 'many') : (l.label as string),
+  }));
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();

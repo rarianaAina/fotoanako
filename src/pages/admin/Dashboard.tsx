@@ -31,6 +31,7 @@ import { STATUS_COLORS, STATUS_LABELS } from '@/utils';
 import { todayISO } from '@/utils/formatters';
 import { getServiceNames, getTotalPrice } from '@/types';
 import { useMoney } from '@/hooks/useMoney';
+import { useLabels } from '@/hooks/useLabels';
 
 const PIE_COLORS = [
   'hsl(340 55% 62%)',
@@ -47,6 +48,7 @@ const fadeUp = {
 };
 
 export default function Dashboard() {
+  const t = useLabels();
   const money = useMoney();
   const { appointments } = useAppointments();
   const { aggregates } = useClients();
@@ -86,7 +88,7 @@ export default function Dashboard() {
       icon: CalendarDays,
     },
     {
-      label: 'Clientes',
+      label: t('customer', 'many'),
       value: String(aggregates.totalClients),
       delta: '+3',
       up: true,
@@ -208,7 +210,7 @@ export default function Dashboard() {
         <motion.div {...fadeUp} transition={{ delay: 0.2 }}>
           <Card className="border-border/60 shadow-soft">
             <CardHeader>
-              <CardTitle className="font-display text-lg">Prestations les plus populaires</CardTitle>
+              <CardTitle className="font-display text-lg">{t('service', 'many')} les plus demandées</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={260}>

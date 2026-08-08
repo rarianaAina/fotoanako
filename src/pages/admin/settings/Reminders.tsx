@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { cn } from '@/utils/cn';
 import { useReminderSettings } from '@/hooks/useReminderSettings';
 import type { ReminderDelay, ReminderRecipients } from '@/types/reminder';
+import { useLabels } from '@/hooks/useLabels';
 
 const DELAYS: { value: ReminderDelay; label: string }[] = [
   { value: 24, label: '24 heures avant' },
@@ -17,13 +18,39 @@ const DELAYS: { value: ReminderDelay; label: string }[] = [
   { value: 2, label: '2 heures avant' },
 ];
 
-const RECIPIENTS: { value: ReminderRecipients; label: string; icon: typeof User; desc: string }[] = [
-  { value: 'client', label: 'Cliente uniquement', icon: User, desc: 'Le rappel est envoyé uniquement à la cliente.' },
-  { value: 'admin', label: 'Administratrice uniquement', icon: ShieldCheck, desc: 'Le rappel est envoyé uniquement à l\'administratrice.' },
-  { value: 'both', label: 'Les deux', icon: Users, desc: 'Le rappel est envoyé à la cliente et à l\'administratrice.' },
-];
+/**
+ * Les intitulés dépendent du vocabulaire du déploiement — « la cliente »
+ * ne convient ni à un cabinet ni à une école. Construits à l'exécution.
+ */
+function buildRecipients(
+  customer: string,
+): { value: ReminderRecipients; label: string; icon: typeof User; desc: string }[] {
+  const c = customer.toLowerCase();
+  return [
+    {
+      value: 'client',
+      label: `${customer} uniquement`,
+      icon: User,
+      desc: `Le rappel est envoyé au ${c} seulement.`,
+    },
+    {
+      value: 'admin',
+      label: 'Administration uniquement',
+      icon: ShieldCheck,
+      desc: 'Le rappel vous est envoyé, pas au ' + c + '.',
+    },
+    {
+      value: 'both',
+      label: 'Les deux',
+      icon: Users,
+      desc: `Le rappel est envoyé au ${c} et à vous.`,
+    },
+  ];
+}
 
 export default function RemindersSettings() {
+  const t = useLabels();
+  const RECIPIENTS = buildRecipients(t('customer'));
   const { reminderSettings, updateReminderSettings } = useReminderSettings();
 
   const handleSave = async () => {
@@ -130,7 +157,7 @@ export default function RemindersSettings() {
           <Separator />
 
           <div className="space-y-3">
-            <Label className="text-base font-semibold">Coordonnées de l'administratrice</Label>
+            <Label className="text-base font-semibold">Coordonnées de l'administration</Label>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="admin-phone">Téléphone admin</Label>

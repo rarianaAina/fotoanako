@@ -5,9 +5,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useClients } from '@/hooks/useClients';
 import { useMoney } from '@/hooks/useMoney';
+import { useLabels } from '@/hooks/useLabels';
 
 
 export default function Clients() {
+  const t = useLabels();
   const money = useMoney();
   const { clients, aggregates } = useClients();
   const [query, setQuery] = useState('');
@@ -25,13 +27,13 @@ export default function Clients() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl font-semibold">Clientes</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Base de clientes du salon.</p>
+        <h1 className="font-display text-3xl font-semibold">{t('customer', 'many')}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Votre fichier {t('customer', 'many').toLowerCase()}.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         {[
-          { label: 'Total clientes', value: String(aggregates.totalClients), icon: Users },
+          { label: `Total ${t('customer', 'many').toLowerCase()}`, value: String(aggregates.totalClients), icon: Users },
           { label: 'Total visites', value: String(aggregates.totalVisits), icon: Calendar },
           { label: 'CA cumulé', value: money(aggregates.totalRevenue), icon: Wallet },
         ].map((s) => (
@@ -54,7 +56,7 @@ export default function Clients() {
           <div className="relative max-w-sm">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Rechercher une cliente..."
+              placeholder={`Rechercher un ${t('customer').toLowerCase()}…`}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="pl-9"

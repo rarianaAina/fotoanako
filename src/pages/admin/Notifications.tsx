@@ -20,7 +20,7 @@ const RECIPIENT_ICON: Record<Reminder['recipients'], typeof User> = {
 };
 
 const RECIPIENT_LABEL: Record<Reminder['recipients'], string> = {
-  client: 'Cliente',
+  client: 'Client',
   admin: 'Administratrice',
   both: 'Les deux',
 };

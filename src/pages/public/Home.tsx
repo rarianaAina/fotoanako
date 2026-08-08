@@ -110,7 +110,7 @@ export default function Home() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-full bg-white/60 px-7 backdrop-blur">
-                <Link to="/prestations">Découvrir nos prestations</Link>
+                <Link to="/prestations">Découvrir nos {t('service', 'many').toLowerCase()}</Link>
               </Button>
             </div>
             <div className="mt-10 flex items-center justify-center gap-6 lg:justify-start">
@@ -233,7 +233,7 @@ export default function Home() {
           <motion.div {...fadeUp} className="flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-end">
             <div className="max-w-2xl">
               <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary">
-                Nos prestations
+                Nos {t('service', 'many').toLowerCase()}
               </p>
               <h2 className="mt-3 font-display text-4xl font-semibold text-foreground sm:text-5xl">
                 Des soins pour chaque envie

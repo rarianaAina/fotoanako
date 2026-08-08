@@ -7,6 +7,7 @@ import { TrendingUp, Wallet, XCircle, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useStats } from '@/hooks/useStats';
 import { useMoney } from '@/hooks/useMoney';
+import { useLabels } from '@/hooks/useLabels';
 
 
 const PIE_COLORS = [
@@ -24,6 +25,7 @@ const fadeUp = {
 };
 
 export default function Statistics() {
+  const t = useLabels();
   const money = useMoney();
   const {
     dashboardStats,
@@ -89,7 +91,7 @@ export default function Statistics() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl font-semibold">Statistiques</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Analyse détaillée de la performance du salon.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Analyse détaillée de votre activité.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -145,7 +147,7 @@ export default function Statistics() {
 
         <motion.div {...fadeUp} transition={{ delay: 0.2 }}>
           <Card className="border-border/60 shadow-soft">
-            <CardHeader><CardTitle className="font-display text-lg">Prestations les plus vendues</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="font-display text-lg">{t('service', 'many')} les plus vendues</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={240}>
                 <PieChart>
