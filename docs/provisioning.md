@@ -129,6 +129,11 @@ souvent oublié : recréer le schéma efface les droits que Supabase y avait
 posés, et sans eux PostgREST ne voit plus aucune table — l'API répond 401
 partout alors que les tables existent bel et bien.
 
+Les **fichiers déjà téléversés** ne sont pas effacés : Supabase interdit la
+suppression directe dans les tables de stockage. Ils ne sont plus référencés
+par rien après la remise à zéro, donc sans conséquence. Pour les effacer
+réellement : dashboard → Storage → `images` → tout sélectionner → supprimer.
+
 ## Mettre à jour un client existant
 
 Le code est commun : `git pull` puis redéploiement. Seules les migrations

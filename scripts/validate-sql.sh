@@ -56,6 +56,17 @@ CREATE FUNCTION storage.foldername(name text) RETURNS text[]
 CREATE ROLE anon;
 CREATE ROLE authenticated;
 CREATE ROLE service_role;
+
+-- Supabase interdit la suppression directe dans les tables de stockage.
+-- Reproduit ici pour que le harnais refuse tout SQL qui l'ignorerait.
+CREATE FUNCTION storage.protect_delete() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  RAISE EXCEPTION 'Direct deletion from storage tables is not allowed. Use the Storage API instead.';
+END $$;
+CREATE TRIGGER protect_objects_delete BEFORE DELETE ON storage.objects
+  FOR EACH ROW EXECUTE FUNCTION storage.protect_delete();
+CREATE TRIGGER protect_buckets_delete BEFORE DELETE ON storage.buckets
+  FOR EACH ROW EXECUTE FUNCTION storage.protect_delete();
 SQL
 
 echo "▸ Migrations, amorçage et preset"
@@ -127,6 +138,11 @@ SQL
 echo "  ✅ tarif relu en base, fiche client, rappel, anti-doublon, annulation"
 
 echo "▸ Remise à zéro, puis reconstruction complète"
+# Un objet et un compte préexistants, pour que les garde-fous soient sollicités.
+run <<'SQL' >/dev/null
+INSERT INTO storage.objects (bucket_id, name) VALUES ('images', 'gallery/vieux.webp');
+INSERT INTO auth.users DEFAULT VALUES;
+SQL
 run -f "$REPO/supabase/reset.sql" >/dev/null
 for f in "$REPO"/supabase/migrations/*.sql "$REPO"/supabase/seed.sql \
          "$REPO"/supabase/presets/salon-beaute.sql; do

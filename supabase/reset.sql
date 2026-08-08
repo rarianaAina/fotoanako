@@ -53,13 +53,20 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
 --
 -- Les politiques vivent sur storage.objects, table gérée par Supabase : elle
 -- survit au DROP SCHEMA ci-dessus et doit être nettoyée à part.
+--
+-- Les fichiers, en revanche, ne peuvent pas être supprimés en SQL : Supabase
+-- interpose un déclencheur `storage.protect_delete()` qui refuse toute
+-- suppression directe, pour éviter que des objets restent référencés dans son
+-- index sans exister dans le stockage.
+--
+-- Ce n'est pas gênant ici. Le bucket est recréé par `0004_storage.sql` avec un
+-- ON CONFLICT DO UPDATE, et les anciennes images ne sont plus référencées par
+-- rien après la remise à zéro. Pour les effacer réellement, passez par
+-- Storage → images → tout sélectionner → supprimer, dans le dashboard.
 -- ---------------------------------------------------------------------------
 DROP POLICY IF EXISTS images_public_read    ON storage.objects;
 DROP POLICY IF EXISTS images_admin_write    ON storage.objects;
 DROP POLICY IF EXISTS images_booking_upload ON storage.objects;
-
-DELETE FROM storage.objects WHERE bucket_id = 'images';
-DELETE FROM storage.buckets WHERE id = 'images';
 
 -- ---------------------------------------------------------------------------
 -- 3. Comptes utilisateurs
@@ -67,8 +74,18 @@ DELETE FROM storage.buckets WHERE id = 'images';
 -- Commentez ce bloc pour conserver les comptes existants. Les garder laisse
 -- des inscriptions orphelines : `public.users` ayant disparu avec le schéma,
 -- une nouvelle inscription avec la même adresse sera refusée pour doublon.
+--
+-- La suppression est tentée puis signalée en cas de refus, plutôt que
+-- d'interrompre la remise à zéro à mi-parcours : une base laissée entre deux
+-- états est bien plus pénible qu'un nettoyage à finir à la main.
 -- ---------------------------------------------------------------------------
-DELETE FROM auth.users;
+DO $$
+BEGIN
+  DELETE FROM auth.users;
+  RAISE NOTICE 'Comptes utilisateurs supprimés.';
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'Comptes non supprimés (%). Videz-les depuis Authentication → Users.', SQLERRM;
+END $$;
 
 -- ---------------------------------------------------------------------------
 -- 4. Contrôle
