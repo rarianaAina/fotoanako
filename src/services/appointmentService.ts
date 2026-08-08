@@ -1,0 +1,423 @@
+import { supabase } from '@/lib/supabase';
+import type { Appointment, AppointmentStatus, CreateAppointmentDto, UpdateAppointmentDto, ServiceItem, ReferenceImage } from '@/types';
+import { reminderSettingsService } from './reminderSettingsService';
+import { reminderService } from './reminderService';
+
+interface AppointmentRow {
+  id: string;
+  client_id: string | null;
+  client_name: string;
+  phone: string;
+  email: string | null;
+  services: any; // JSONB
+  date: string;
+  time: string;
+  status: string;
+  payment_method_id: string | null;
+  reference_images: any; // ✅ JSONB pour les images multiples
+  client_notes: string | null;
+  notes: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+function rowToAppointment(r: AppointmentRow): Appointment {
+  const services = (r.services as ServiceItem[]) || [];
+  const referenceImages = (r.reference_images as ReferenceImage[]) || [];
+  
+  return {
+    id: r.id,
+    clientId: r.client_id ?? undefined,
+    clientName: r.client_name,
+    phone: r.phone,
+    email: r.email ?? undefined,
+    services: services,
+    date: r.date,
+    time: r.time,
+    status: r.status as AppointmentStatus,
+    paymentMethodId: r.payment_method_id ?? undefined,
+    referenceImages: referenceImages, // ✅ Tableau d'images
+    clientNotes: r.client_notes ?? undefined,
+    notes: r.notes ?? undefined,
+    createdAt: r.created_at ?? undefined,
+    updatedAt: r.updated_at ?? undefined,
+  };
+}
+
+function patchToRow(data: UpdateAppointmentDto): Partial<AppointmentRow> {
+  const row: Record<string, unknown> = {};
+  if (data.clientId !== undefined) row.client_id = data.clientId ?? null;
+  if (data.clientName !== undefined) row.client_name = data.clientName;
+  if (data.phone !== undefined) row.phone = data.phone;
+  if (data.email !== undefined) row.email = data.email ?? null;
+  if (data.date !== undefined) row.date = data.date;
+  if (data.time !== undefined) row.time = data.time;
+  if (data.status !== undefined) row.status = data.status;
+  if (data.paymentMethodId !== undefined) row.payment_method_id = data.paymentMethodId ?? null;
+  if (data.referenceImages !== undefined) row.reference_images = data.referenceImages; // ✅ Tableau d'images
+  if (data.clientNotes !== undefined) row.client_notes = data.clientNotes ?? null;
+  if (data.notes !== undefined) row.notes = data.notes ?? null;
+  return row as Partial<AppointmentRow>;
+}
+
+export const appointmentService = {
+  async getAll(): Promise<Appointment[]> {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        payment_method:payment_method_id (
+          id,
+          name,
+          label,
+          icon
+        )
+      `)
+      .order('date', { ascending: true })
+      .order('time', { ascending: true });
+    if (error) throw error;
+    return (data as AppointmentRow[]).map(rowToAppointment);
+  },
+
+  async getById(id: string): Promise<Appointment | null> {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        payment_method:payment_method_id (
+          id,
+          name,
+          label,
+          icon
+        )
+      `)
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    return rowToAppointment(data as AppointmentRow);
+  },
+
+  async getByDate(date: string): Promise<Appointment[]> {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        payment_method:payment_method_id (
+          id,
+          name,
+          label,
+          icon
+        )
+      `)
+      .eq('date', date)
+      .order('time', { ascending: true });
+    if (error) throw error;
+    return (data as AppointmentRow[]).map(rowToAppointment);
+  },
+
+  async getByClientEmail(email: string): Promise<Appointment[]> {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        payment_method:payment_method_id (
+          id,
+          name,
+          label,
+          icon
+        )
+      `)
+      .eq('email', email)
+      .order('date', { ascending: true });
+    if (error) throw error;
+    return (data as AppointmentRow[]).map(rowToAppointment);
+  },
+
+  async create(data: CreateAppointmentDto): Promise<Appointment> {
+    if (!data.serviceIds || data.serviceIds.length === 0) {
+      throw new Error('Au moins un service est requis');
+    }
+
+    const { data: servicesData, error: servicesError } = await supabase
+      .from('services')
+      .select('id, name, price, duration')
+      .in('id', data.serviceIds);
+
+    if (servicesError) throw servicesError;
+    if (!servicesData || servicesData.length === 0) {
+      throw new Error('Services non trouvés');
+    }
+
+    const services: ServiceItem[] = servicesData.map(s => ({
+      id: s.id,
+      name: s.name,
+      price: s.price,
+      duration: s.duration,
+    }));
+
+    const row = {
+      client_id: data.clientId ?? null,
+      client_name: data.clientName,
+      phone: data.phone,
+      email: data.email ?? null,
+      services: services,
+      date: data.date,
+      time: data.time,
+      status: 'pending',
+      payment_method_id: data.paymentMethodId ?? null,
+      reference_images: data.referenceImages || [], // ✅ Tableau d'images
+      client_notes: data.clientNotes ?? null,
+      notes: data.notes ?? null,
+    };
+
+    if (!row.client_id && row.email) {
+      const { data: existing } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('email', row.email)
+        .maybeSingle();
+      if (existing) {
+        row.client_id = (existing as { id: string }).id;
+      } else {
+        const { data: created, error: clientErr } = await supabase
+          .from('clients')
+          .insert({
+            name: data.clientName,
+            phone: data.phone,
+            email: row.email,
+          })
+          .select('id')
+          .single();
+        if (!clientErr && created) {
+          row.client_id = (created as { id: string }).id;
+        }
+      }
+    }
+
+    const { error: insertError } = await supabase
+      .from('appointments')
+      .insert(row);
+    if (insertError) throw insertError;
+
+    const { data: rows, error: selError } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        payment_method:payment_method_id (
+          id,
+          name,
+          label,
+          icon
+        )
+      `)
+      .eq('client_name', data.clientName)
+      .eq('phone', data.phone)
+      .eq('date', data.date)
+      .eq('time', data.time)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (selError) throw selError;
+    if (!rows || rows.length === 0) {
+      return {
+        id: '',
+        clientId: data.clientId,
+        clientName: data.clientName,
+        phone: data.phone,
+        email: data.email,
+        services: services,
+        date: data.date,
+        time: data.time,
+        status: 'pending',
+        paymentMethodId: data.paymentMethodId,
+        referenceImages: data.referenceImages || [],
+        clientNotes: data.clientNotes,
+        notes: data.notes,
+      };
+    }
+
+    const appointment = rowToAppointment(rows[0] as AppointmentRow);
+
+    try {
+      const settings = await reminderSettingsService.get();
+      if (settings.enabled) {
+        const serviceNames = appointment.services.map(s => s.name).join(' + ');
+        await reminderService.create({
+          appointmentId: appointment.id,
+          clientName: appointment.clientName,
+          clientPhone: appointment.phone,
+          clientEmail: appointment.email,
+          serviceName: serviceNames,
+          appointmentDate: appointment.date,
+          appointmentTime: appointment.time,
+          delayHours: settings.delayHours,
+          recipients: settings.recipients,
+        });
+        console.log(`✅ Rappel créé pour le rendez-vous ${appointment.id}`);
+      }
+    } catch (reminderError) {
+      console.error('Erreur lors de la création du rappel:', reminderError);
+    }
+
+    return appointment;
+  },
+
+  async update(id: string, data: UpdateAppointmentDto): Promise<Appointment> {
+    if (data.status === 'cancelled') {
+      await reminderService.deleteByAppointmentId(id);
+      console.log(`🗑️ Rappels supprimés pour le rendez-vous annulé ${id}`);
+    }
+
+    const row = patchToRow(data);
+
+    if (data.serviceIds !== undefined) {
+      if (data.serviceIds.length === 0) {
+        throw new Error('Au moins un service est requis');
+      }
+
+      const { data: servicesData, error: servicesError } = await supabase
+        .from('services')
+        .select('id, name, price, duration')
+        .in('id', data.serviceIds);
+
+      if (servicesError) throw servicesError;
+      if (!servicesData || servicesData.length === 0) {
+        throw new Error('Services non trouvés');
+      }
+
+      const services: ServiceItem[] = servicesData.map(s => ({
+        id: s.id,
+        name: s.name,
+        price: s.price,
+        duration: s.duration,
+      }));
+
+      (row as any).services = services;
+    }
+
+    const { data: oldAppointment } = await supabase
+      .from('appointments')
+      .select('client_id, status')
+      .eq('id', id)
+      .single();
+
+    const { data: updatedRow, error } = await supabase
+      .from('appointments')
+      .update(row)
+      .eq('id', id)
+      .select(`
+        *,
+        payment_method:payment_method_id (
+          id,
+          name,
+          label,
+          icon
+        )
+      `)
+      .single();
+
+    if (error) throw error;
+    
+    const appointment = rowToAppointment(updatedRow as AppointmentRow);
+
+    if (data.status === 'confirmed' && oldAppointment?.status !== 'confirmed') {
+      try {
+        const { data: loyaltySettings } = await supabase
+          .from('loyalty_settings')
+          .select('points_per_visit')
+          .maybeSingle();
+
+        const pointsToAdd = loyaltySettings?.points_per_visit ?? 10;
+
+        if (appointment.clientId) {
+          const { data: client } = await supabase
+            .from('clients')
+            .select('loyalty_points')
+            .eq('id', appointment.clientId)
+            .single();
+
+          const currentPoints = client?.loyalty_points ?? 0;
+          
+          await supabase
+            .from('clients')
+            .update({ loyalty_points: currentPoints + pointsToAdd })
+            .eq('id', appointment.clientId);
+
+          console.log(`⭐ ${pointsToAdd} points de fidélité ajoutés pour ${appointment.clientName}`);
+        }
+      } catch (loyaltyError) {
+        console.error('Erreur lors de l\'ajout des points de fidélité:', loyaltyError);
+      }
+    }
+
+    if (data.status === 'confirmed' && !data.date && !data.time && !data.serviceIds) {
+      try {
+        const settings = await reminderSettingsService.get();
+        if (settings.enabled) {
+          await reminderService.deleteByAppointmentId(id);
+          
+          const serviceNames = appointment.services.map(s => s.name).join(' + ');
+          await reminderService.create({
+            appointmentId: appointment.id,
+            clientName: appointment.clientName,
+            clientPhone: appointment.phone,
+            clientEmail: appointment.email,
+            serviceName: serviceNames,
+            appointmentDate: appointment.date,
+            appointmentTime: appointment.time,
+            delayHours: settings.delayHours,
+            recipients: settings.recipients,
+          });
+          console.log(`✅ Rappel recréé pour le rendez-vous confirmé ${id}`);
+        }
+      } catch (reminderError) {
+        console.error('Erreur lors de la mise à jour du rappel:', reminderError);
+      }
+    }
+
+    if (data.date || data.time) {
+      try {
+        await reminderService.deleteByAppointmentId(id);
+        
+        const settings = await reminderSettingsService.get();
+        if (settings.enabled) {
+          const serviceNames = appointment.services.map(s => s.name).join(' + ');
+          await reminderService.create({
+            appointmentId: appointment.id,
+            clientName: appointment.clientName,
+            clientPhone: appointment.phone,
+            clientEmail: appointment.email,
+            serviceName: serviceNames,
+            appointmentDate: appointment.date,
+            appointmentTime: appointment.time,
+            delayHours: settings.delayHours,
+            recipients: settings.recipients,
+          });
+          console.log(`🔄 Rappel mis à jour pour le rendez-vous ${id}`);
+        }
+      } catch (reminderError) {
+        console.error('Erreur lors de la mise à jour du rappel:', reminderError);
+      }
+    }
+
+    return appointment;
+  },
+
+  async updateStatus(id: string, status: AppointmentStatus): Promise<Appointment> {
+    const appointment = await appointmentService.update(id, { status });
+    return appointment;
+  },
+
+  async delete(id: string): Promise<void> {
+    try {
+      await reminderService.deleteByAppointmentId(id);
+      console.log(`🗑️ Rappels supprimés pour le rendez-vous ${id}`);
+    } catch (reminderError) {
+      console.error('Erreur lors de la suppression des rappels:', reminderError);
+    }
+
+    const { error } = await supabase.from('appointments').delete().eq('id', id);
+    if (error) throw error;
+  },
+};
